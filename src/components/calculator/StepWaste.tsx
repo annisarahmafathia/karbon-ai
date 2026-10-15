@@ -49,10 +49,10 @@ export function StepWaste() {
     <div className="space-y-8 animate-in fade-in-50 duration-300">
       <div>
         <h2 className="text-xl font-bold text-charcoal">
-          5. Pengelolaan Sampah Padat
+          5. Pengelolaan Sampah
         </h2>
         <p className="text-sm text-muted mt-1">
-          Dihitung dari timbulan rata-rata sampah mahasiswa Banda Aceh (0.45 kg/hari), dekomposisi metana di TPA, dan faktor emisi pembakaran terbuka IPCC.
+          Dihitung dari rata-rata sampah mahasiswa Banda Aceh (0.45 kg/hari), dekomposisi metana di TPA, dan faktor emisi pembakaran terbuka IPCC.
         </p>
       </div>
 
@@ -91,9 +91,6 @@ export function StepWaste() {
             Praktik Pembakaran Sampah Terbuka (Open Burning)
           </h3>
         </div>
-        <p className="text-xs text-muted">
-          Di beberapa kawasan kos pinggiran Banda Aceh atau Aceh Besar, sampah terkadang dibakar karena keterbatasan tong sampah gampong. Pembakaran terbuka melipatgandakan emisi gas rumah kaca dan menghasilkan racun dioksin.
-        </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
           {burningOptions.map((opt) => {
