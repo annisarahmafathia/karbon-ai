@@ -66,18 +66,18 @@ export default function HomePage() {
             <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-mint text-forest-dark border border-sage/40 text-xs sm:text-sm font-semibold tracking-wide">
                 <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
-                <span>Inisiatif Iklim Mahasiswa Aceh • Metodologi Berbasis Sains</span>
+                <span>Inisiatif Iklim Mahasiswa Banda Aceh • Metodologi Berbasis Sains</span>
               </div>
 
               <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-charcoal tracking-tight leading-[1.15]">
                 Berapa Jejak Karbonmu Selama Kuliah di{" "}
                 <span className="text-forest underline decoration-sage/60 decoration-wavy underline-offset-8">
-                  Aceh?
+                  Banda Aceh?
                 </span>
               </h1>
 
               <p className="text-base sm:text-lg text-muted max-w-2xl leading-relaxed">
-                Kalkulator jejak karbon ilmiah pertama yang disesuaikan secara khusus dengan realitas kehidupan mahasiswa di Aceh. Dari rute harian Trans Koetaradja, konsumsi listrik kos di grid Sumatera, hingga kebiasaan nongkrong di warung kopi.
+                Kalkulator jejak karbon ilmiah pertama yang disesuaikan secara khusus dengan realitas kehidupan mahasiswa di Banda Aceh. Dari rute harian Trans Koetaradja, konsumsi listrik kos di grid Sumatera, hingga kebiasaan nongkrong di warung kopi.
               </p>
 
               {/* CTAs */}
@@ -98,23 +98,8 @@ export default function HomePage() {
                   <span>Transparansi Metodologi</span>
                 </Link>
               </div>
-
-              {/* Trust badges */}
-              <div className="pt-6 border-t border-sage/20 flex flex-wrap items-center justify-center lg:justify-start gap-y-2 gap-x-6 text-xs text-muted">
-                <div className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-4 h-4 text-forest" />
-                  <span>Faktor Emisi Resmi ESDM & KLHK</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-4 h-4 text-forest" />
-                  <span>Tanpa Tebak-tebakan Belanja Uang</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-4 h-4 text-forest" />
-                  <span>Privasi 100% di Browser Kamu</span>
-                </div>
-              </div>
             </div>
+        
 
             {/* Right Card: Interactive Preview (Dynamically Computed from Default Student Archetype) */}
             <div className="lg:col-span-5">
@@ -219,13 +204,13 @@ export default function HomePage() {
           <div className="text-center max-w-3xl mx-auto space-y-3 mb-14">
             <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-forest px-3 py-1 rounded-full bg-mint">
               <MapPin className="w-3.5 h-3.5" />
-              <span>Mengapa Konteks Aceh Berbeda?</span>
+              <span>Mengapa Konteks Banda Aceh Berbeda?</span>
             </div>
             <h2 className="text-2xl sm:text-4xl font-extrabold text-charcoal">
-              Kalkulasi Karbon yang Memahami Kehidupan Mahasiswa Aceh
+              Kalkulasi Karbon yang Memahami Kehidupan Mahasiswa Banda Aceh
             </h2>
             <p className="text-muted text-sm sm:text-base leading-relaxed">
-              Banyak kalkulator karbon di internet menggunakan faktor emisi rata-rata negara barat atau kota metropolitan besar yang tidak mencerminkan realitas mahasiswa di Serambi Mekkah.
+              Banyak kalkulator karbon di internet menggunakan faktor emisi rata-rata negara barat atau kota metropolitan besar yang tidak mencerminkan realitas mahasiswa di Banda Aceh.
             </p>
           </div>
 
