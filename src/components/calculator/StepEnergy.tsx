@@ -23,7 +23,7 @@ export function StepEnergy() {
     {
       value: "rumah_sewa",
       label: "Rumah Sewa Mahasiswa",
-      desc: "Menyewa satu rumah bersama teman-teman kampus",
+      desc: "Menyewa satu rumah untuk ditempati",
     },
     {
       value: "asrama_kampus",

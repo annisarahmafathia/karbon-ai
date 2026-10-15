@@ -17,8 +17,8 @@ export function StepTransport() {
   }[] = [
     {
       value: "motor_matic_bebek",
-      label: "Motor Matic / Bebek",
-      sublabel: "Beat, Vario, Scoopy, Supra (Paling umum di Aceh)",
+      label: "Motor Matic / Manual",
+      sublabel: "Beat, Vario, Scoopy, Supra dll",
       icon: Bike,
     },
     {

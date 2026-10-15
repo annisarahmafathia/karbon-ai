@@ -18,14 +18,10 @@ export function Footer() {
               </span>
             </div>
             <p className="text-sage-light/90 text-sm leading-relaxed max-w-sm">
-              Inisiatif platform keterbukaan sains untuk membantu mahasiswa di Aceh
+              Inisiatif platform keterbukaan sains untuk membantu mahasiswa di Banda Aceh
               memahami, mengukur, dan mengurangi jejak karbon dari aktivitas kehidupan
               kampus sehari-hari.
             </p>
-            <div className="flex items-center gap-2 text-xs text-sage-light/75">
-              <MapPin className="w-4 h-4 text-sage" />
-              <span>Banda Aceh & Lingkungan Kampus di Provinsi Aceh</span>
-            </div>
           </div>
 
           {/* Navigasi Cepat */}

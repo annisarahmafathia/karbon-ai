@@ -377,7 +377,7 @@ export default function HomePage() {
       <section className="py-16 bg-forest text-cream">
         <div className="max-w-4xl mx-auto px-4 text-center space-y-6">
           <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
-            Ambil Peran Nyata untuk Iklim Bumi dari Kampusmu
+            Ambil Peran Nyata untuk Iklim Bumi
           </h2>
           <p className="text-sage-light text-base sm:text-lg max-w-2xl mx-auto">
             Hanya butuh 3 menit untuk mengetahui jejak karbon harianmu dan menemukan langkah penghematan emisi paling efektif.
@@ -387,7 +387,7 @@ export default function HomePage() {
               href="/kalkulator"
               className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-cream hover:bg-white text-forest font-extrabold text-base shadow-xl hover:scale-105 transition-all duration-200"
             >
-              <span>Mulai Kalkulasi Karbon Gratis</span>
+              <span>Mulai Kalkulasi Karbon</span>
               <ArrowRight className="w-5 h-5 text-forest" />
             </Link>
           </div>
