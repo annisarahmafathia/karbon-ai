@@ -19,26 +19,13 @@ export function StepConsumption() {
         </p>
       </div>
 
-      {/* Transparency Note */}
-      <div className="bg-white rounded-2xl p-4 sm:p-5 border border-sage/30 flex items-start gap-3">
-        <ShieldCheck className="w-5 h-5 text-forest shrink-0 mt-0.5" />
-        <div className="text-xs text-charcoal/80 space-y-1">
-          <strong className="text-forest font-bold block">
-            Prinsip Bebas Asumsi Finansial Semu:
-          </strong>
-          <span>
-            Kami menolak metode yang mengalikan jumlah uang belanja (Rp) dengan angka emisi sembarang. Baju seharga Rp 50.000 dan Rp 500.000 berbahan katun memiliki emisi manufaktur fisik yang serupa. Oleh karena itu, kami menghitung unit riil barang yang kamu konsumsi.
-          </span>
-        </div>
-      </div>
-
       <div className="bg-white p-6 rounded-2xl border border-sage/30 space-y-6">
         {/* Fast Fashion / New Clothes */}
         <div className="space-y-2">
           <div className="flex items-center justify-between text-xs">
             <span className="font-semibold text-charcoal flex items-center gap-2">
               <ShoppingBag className="w-4 h-4 text-forest" />
-              Pembelian Pakaian Baru (Baju, Kaos, Celana, Jilbab) per Bulan:
+              Pembelian Pakaian Baru (Baju, Kaos, Celana, Jilbab)
             </span>
             <span className="font-bold text-forest bg-mint px-2.5 py-0.5 rounded-full">
               {consumption.newClothesPerMonth} helai / bulan
@@ -65,7 +52,7 @@ export function StepConsumption() {
           <div className="flex items-center justify-between text-xs">
             <span className="font-semibold text-charcoal flex items-center gap-2">
               <Truck className="w-4 h-4 text-forest" />
-              Paket Belanja Online dari Marketplace (Jawa ke Aceh) per Bulan:
+              Paket Belanja Online dari Marketplace (Jawa ke Aceh)
             </span>
             <span className="font-bold text-forest bg-mint px-2.5 py-0.5 rounded-full">
               {consumption.onlinePackagesPerMonth} paket / bulan
@@ -92,7 +79,7 @@ export function StepConsumption() {
           <div className="flex items-center justify-between text-xs">
             <span className="font-semibold text-charcoal flex items-center gap-2">
               <FileText className="w-4 h-4 text-forest" />
-              Fotokopi Diktat, Modul, & Kertas Tugas Kuliah:
+              Fotokopi Diktat, Modul, & Kertas Tugas Kuliah
             </span>
             <span className="font-bold text-forest bg-mint px-2.5 py-0.5 rounded-full">
               {consumption.photocopySheetsPerMonth} lembar / bulan
@@ -118,7 +105,7 @@ export function StepConsumption() {
       {/* Gadget Purchases */}
       <div className="bg-white p-6 rounded-2xl border border-sage/30 space-y-4">
         <h3 className="text-sm font-bold text-charcoal border-b border-sage/20 pb-3">
-          Pembelian Gadget Baru (Amortisasi Tahun Pertama)
+          Pembelian Gadget Baru
         </h3>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
