@@ -60,14 +60,14 @@ export function StepTransport() {
           1. Transportasi & Mobilitas Harian
         </h2>
         <p className="text-sm text-muted mt-1">
-          Pilih moda transportasi utama yang biasa kamu gunakan untuk pergi ke kampus dan mobilitas di Aceh.
+          Pilih transportasi utama yang biasa kamu gunakan untuk pergi ke kampus dan mobilitas di Aceh.
         </p>
       </div>
 
       {/* Vehicle Grid Selection */}
       <div className="space-y-3">
         <label className="text-xs font-bold uppercase tracking-wider text-charcoal block">
-          Moda Transportasi Utama ke Kampus
+          Transportasi Utama ke Kampus
         </label>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {vehicleOptions.map((opt) => {
@@ -220,7 +220,7 @@ export function StepTransport() {
           {transport.weekendTripKmPerMonth > 0 && (
             <div className="pt-2 space-y-1.5">
               <label className="text-xs font-semibold text-charcoal block">
-                Moda yang Digunakan untuk Perjalanan Luar Kota:
+                Transportasi yang digunakan untuk perjalanan luar kota:
               </label>
               <select
                 value={transport.weekendTripVehicle}
@@ -229,7 +229,7 @@ export function StepTransport() {
                 }
                 className="w-full px-3 py-2 text-xs font-semibold rounded-xl border border-sage/40 bg-cream/30 text-charcoal"
               >
-                <option value="motor_matic_bebek">Sepeda Motor Matic / Bebek</option>
+                <option value="motor_matic_bebek">Sepeda Motor Matic / Manual</option>
                 <option value="trans_koetaradja">Bus Antarkota / Bus Umum</option>
                 <option value="labi_labi">Minibus L300 / HiAce / Labi-Labi</option>
                 <option value="mobil_bensin">Mobil Pribadi / Rental</option>
