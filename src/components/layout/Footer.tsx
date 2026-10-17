@@ -49,6 +49,11 @@ export function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/riwayat" className="hover:text-cream transition-colors">
+                  Riwayat Emisi
+                </Link>
+              </li>
+              <li>
                 <Link
                   href="/green-action"
                   className="hover:text-cream transition-colors"

@@ -1,9 +1,9 @@
+
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
-import { Navbar } from "@/components/layout/Navbar";
-import { Footer } from "@/components/layout/Footer";
 import { CalculatorProvider } from "@/context/CalculatorContext";
+import { AuthProvider } from "@/context/AuthContext";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   variable: "--font-jakarta",
@@ -33,16 +33,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="id" className={`${plusJakartaSans.variable} h-full`}>
+    <html
+      lang="id"
+      className={`${plusJakartaSans.variable} h-full`}
+    >
       <body className="min-h-full flex flex-col font-sans bg-cream text-charcoal">
-        <CalculatorProvider>
-          <Navbar />
-          <main className="flex-1 flex flex-col">{children}</main>
-          <Footer />
-        </CalculatorProvider>
+        <AuthProvider>
+          <CalculatorProvider>
+            {children}
+          </CalculatorProvider>
+        </AuthProvider>
       </body>
     </html>
   );
 }
-
-

@@ -2,7 +2,10 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCalculator } from "@/context/CalculatorContext";
+import { useAuth } from "@/context/AuthContext";
+import { createClient } from "@/lib/supabase/client";
 import { EmissionsCharts } from "@/components/results/EmissionsCharts";
 import {
   Bike,
@@ -20,12 +23,20 @@ import {
   ChevronUp,
   CheckCircle2,
   Share2,
+  BookmarkCheck,
+  Loader2,
 } from "lucide-react";
 
 export default function ResultsPage() {
-  const { result } = useCalculator();
+  const router = useRouter();
+  const { input, result } = useCalculator();
+  const { user } = useAuth();
+
   const [showTransparencyAudit, setShowTransparencyAudit] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+  const [saveMessage, setSaveMessage] = useState<string | null>(null);
 
   const categoryIcons = {
     transportasi: Bike,
@@ -45,6 +56,61 @@ export default function ResultsPage() {
     }
   };
 
+  const handleSaveToAccount = async () => {
+    if (!user) {
+      router.push("/login?redirect=/hasil");
+      return;
+    }
+
+    setIsSaving(true);
+    setSaveMessage(null);
+
+    try {
+      const supabase = createClient();
+      const now = new Date();
+      const { error } = await supabase.from("carbon_calculations").insert({
+        user_id: user.id,
+        period_month: now.getMonth() + 1,
+        period_year: now.getFullYear(),
+        total_monthly_kg: result.totalMonthlyKgCO2e,
+        total_yearly_kg: result.totalYearlyKgCO2e,
+        transport_monthly_kg: result.categories.transportasi.monthlyKgCO2e,
+        energy_monthly_kg: result.categories.energi.monthlyKgCO2e,
+        food_monthly_kg: result.categories.pangan.monthlyKgCO2e,
+        consumption_monthly_kg: result.categories.konsumsi.monthlyKgCO2e,
+        waste_monthly_kg: result.categories.sampah.monthlyKgCO2e,
+        highest_category: result.highestCategory.category,
+        confidence_score: result.dataQuality.confidenceScore,
+        input_snapshot: input,
+        result_snapshot: result,
+      });
+
+      if (error) {
+        console.error("Gagal menyimpan kalkulasi ke Supabase:", {
+          message: error.message,
+          code: error.code,
+          details: error.details,
+          hint: error.hint,
+        });
+        setSaveMessage("Gagal menyimpan: " + error.message);
+      } else {
+        setSaveSuccess(true);
+        setSaveMessage("Kalkulasi berhasil disimpan ke akun Anda!");
+        setTimeout(() => setSaveSuccess(false), 4000);
+      }
+    } catch (err: unknown) {
+      const jsError = err instanceof Error ? err : new Error(String(err));
+      console.error("Kesalahan JavaScript saat menyimpan kalkulasi (bukan error Supabase):", {
+        name: jsError.name,
+        message: jsError.message,
+        stack: jsError.stack,
+      });
+      setSaveMessage("Terjadi kesalahan saat menyimpan kalkulasi.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   return (
     <div className="w-full bg-cream py-10 md:py-16">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
@@ -60,22 +126,65 @@ export default function ResultsPage() {
             <p className="text-xs sm:text-sm text-muted mt-1">
               Dihitung berdasarkan profil aktivitas harianmu di wilayah Aceh
             </p>
+            {saveMessage && (
+              <div
+                className={`mt-2 text-xs font-bold flex items-center gap-1.5 ${
+                  saveSuccess ? "text-forest" : "text-red-600"
+                }`}
+              >
+                {saveSuccess ? (
+                  <CheckCircle2 className="w-4 h-4 text-forest shrink-0" />
+                ) : (
+                  <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
+                )}
+                <span>{saveMessage}</span>
+              </div>
+            )}
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2.5">
+            <button
+              type="button"
+              onClick={handleSaveToAccount}
+              disabled={isSaving}
+              className={`inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold shadow transition-all active:scale-95 cursor-pointer ${
+                saveSuccess
+                  ? "bg-forest text-cream"
+                  : "bg-forest hover:bg-forest-dark text-cream"
+              } disabled:opacity-60`}
+            >
+              {isSaving ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin text-sage" />
+                  <span>Menyimpan...</span>
+                </>
+              ) : saveSuccess ? (
+                <>
+                  <CheckCircle2 className="w-4 h-4 text-sage-light" />
+                  <span>Tersimpan!</span>
+                </>
+              ) : (
+                <>
+                  <BookmarkCheck className="w-4 h-4 text-sage" />
+                  <span>{user ? "Simpan ke Akun" : "Masuk untuk Simpan"}</span>
+                </>
+              )}
+            </button>
+
             <Link
               href="/kalkulator"
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-sage/40 bg-white hover:bg-mint/40 text-charcoal text-xs sm:text-sm font-bold shadow-sm transition-all"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl border border-sage/40 bg-white hover:bg-mint/40 text-charcoal text-xs sm:text-sm font-bold shadow-sm transition-all"
             >
               <Edit3 className="w-4 h-4 text-forest" />
               <span>Sesuaikan Data</span>
             </Link>
+
             <button
               type="button"
               onClick={handleShare}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-forest hover:bg-forest-dark text-cream text-xs sm:text-sm font-bold shadow transition-all active:scale-95"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl border border-sage/40 bg-white hover:bg-mint/40 text-charcoal text-xs sm:text-sm font-bold shadow-sm transition-all active:scale-95 cursor-pointer"
             >
-              <Share2 className="w-4 h-4 text-sage" />
+              <Share2 className="w-4 h-4 text-forest" />
               <span>{copied ? "Tersalin!" : "Bagikan"}</span>
             </button>
           </div>
