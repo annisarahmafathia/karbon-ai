@@ -107,7 +107,7 @@ function LoginForm() {
           <Leaf className="w-6 h-6 text-sage" />
         </Link>
         <h1 className="text-2xl sm:text-3xl font-extrabold text-charcoal tracking-tight">
-          Masuk ke Karbon AI
+          Masuk ke KarbonAI
         </h1>
         <p className="text-xs sm:text-sm text-muted">
           Akses akun email Anda untuk melihat riwayat jejak karbon

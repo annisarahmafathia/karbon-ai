@@ -76,7 +76,7 @@ export function Navbar() {
           <Link
             href="/"
             className="group flex shrink-0 items-center gap-3 focus:outline-none"
-            aria-label="Karbon AI Beranda"
+            aria-label="KarbonAI Beranda"
           >
             <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-forest text-cream shadow-sm transition-transform duration-200 group-hover:scale-105">
               <Leaf className="h-6 w-6 text-sage" />

@@ -88,7 +88,7 @@ export default function EdukasiPage() {
       a: "Angka tolok ukur nasional 2.140 kg CO₂e/kapita/tahun diturunkan dari data gabungan inventarisasi GRK Our World in Data (2022) dan Laporan Biennial Update Report ke-3 (BUR 3) KLHK Republik Indonesia untuk sektor non-LULUCF (energi, transportasi, industri/IPPU, limbah, dan peternakan). Target 2.000 kg CO₂e/kapita/tahun adalah ambang batas emisi per kapita global tahun 2030 yang disimulasikan oleh IPCC Working Group III (AR6) untuk menjaga skenario kenaikan suhu bumi di bawah 1,5°C - 2°C.",
     },
     {
-      q: "Mengapa Karbon AI tidak menghitung emisi dari nominal rupiah uang belanja?",
+      q: "Mengapa KarbonAI tidak menghitung emisi dari nominal rupiah uang belanja?",
       a: "Pendekatan berbasis uang (Spend-based model) memiliki tingkat ketidakpastian sangat tinggi di Indonesia. Harga baju fast fashion Rp 50.000 dan baju bermerek Rp 500.000 berbahan katun yang sama memiliki emisi fisik pembuatan yang relatif setara, namun jika dihitung dari uang, baju bermerek akan diklaim beremisi 10x lebih kotor secara keliru. Karbon AI memilih menghitung unit fisik riil (helai pakaian, jumlah paket kargo, lembar kertas fotokopi) demi integritas metodologi sains.",
     },
     {
@@ -97,7 +97,7 @@ export default function EdukasiPage() {
     },
     {
       q: "Bagaimana pencegahan penghitungan ganda (double-counting) antara sampah dan belanja?",
-      a: "Dalam metodologi Karbon AI, kantong plastik kresek belanja (0.033 kg CO₂e/lembar) hanya memperhitungkan emisi manufaktur polimer virgin hulu (embodied manufacturing carbon). Sedangkan faktor emisi sampah harian (0.41 kg CO₂e/kg) dihitung secara terpisah untuk degradasi anaerobik di TPA (landfill methane emission). Ini mencegah satu kantong plastik dihitung berulang pada proses kimia yang sama.",
+      a: "Dalam metodologi KarbonAI, kantong plastik kresek belanja (0.033 kg CO₂e/lembar) hanya memperhitungkan emisi manufaktur polimer virgin hulu (embodied manufacturing carbon). Sedangkan faktor emisi sampah harian (0.41 kg CO₂e/kg) dihitung secara terpisah untuk degradasi anaerobik di TPA (landfill methane emission). Ini mencegah satu kantong plastik dihitung berulang pada proses kimia yang sama.",
     },
     {
       q: "Mengapa membakar sampah di pekarangan kos dihitung sangat tinggi emisinya?",

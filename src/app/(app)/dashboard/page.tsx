@@ -179,7 +179,7 @@ export default function DashboardPage() {
         <section className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="mb-2 text-sm font-medium text-forest">
-              Dashboard CarbonAceh
+              Dashboard KarbonAI
             </p>
 
             <h1 className="text-3xl font-bold tracking-tight text-charcoal sm:text-4xl">

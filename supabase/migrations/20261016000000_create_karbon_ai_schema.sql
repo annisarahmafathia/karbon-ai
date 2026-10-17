@@ -1,5 +1,5 @@
 -- ==============================================================================
--- KARBON AI (CarbonAceh) - Database Schema Migration (Audited & Hardened)
+-- KARBONAI - Database Schema Migration (Audited & Hardened)
 -- Target: Supabase PostgreSQL
 -- Version: 20261016000000_create_karbon_ai_schema.sql
 -- Description:

@@ -13,7 +13,7 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Karbon AI — Kalkulator Jejak Karbon",
+  title: "KarbonAI — Kalkulator Jejak Karbon",
   description:
     "Hitung estimasi jejak karbon harian dengan metodologi sains yang transparan, faktor emisi terverifikasi Kementerian ESDM & KLHK, dan rekomendasi aksi nyata.",
   keywords: [
