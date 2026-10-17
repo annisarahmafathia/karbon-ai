@@ -13,16 +13,15 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Karbon AI — Kalkulator Jejak Karbon Mahasiswa Aceh",
+  title: "Karbon AI — Kalkulator Jejak Karbon",
   description:
-    "Hitung estimasi jejak karbon harian mahasiswa di Aceh dengan metodologi sains yang transparan, faktor emisi terverifikasi Kementerian ESDM & KLHK, dan rekomendasi aksi nyata.",
+    "Hitung estimasi jejak karbon harian dengan metodologi sains yang transparan, faktor emisi terverifikasi Kementerian ESDM & KLHK, dan rekomendasi aksi nyata.",
   keywords: [
     "karbon ai",
     "jejak karbon aceh",
-    "kalkulator karbon mahasiswa",
+    "kalkulator karbon",
     "trans koetaradja",
     "emisi sumatera aceh",
-    "mahasiswa usk",
     "green action",
   ],
 };

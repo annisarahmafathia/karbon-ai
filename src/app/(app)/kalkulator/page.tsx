@@ -61,7 +61,7 @@ export default function CalculatorPage() {
             <span>Kalkulator 5 Kategori</span>
           </div>
           <h1 className="text-2xl sm:text-4xl font-extrabold text-charcoal">
-            Formulir Jejak Karbon Mahasiswa Aceh
+            Formulir Jejak Karbon
           </h1>
           <p className="text-muted text-sm sm:text-base">
             Isi estimasi kebiasaan harianmu. Data tersimpan aman di browsermu dan dihitung secara langsung secara real-time.

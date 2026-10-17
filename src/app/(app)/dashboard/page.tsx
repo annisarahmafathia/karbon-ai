@@ -474,15 +474,6 @@ export default function DashboardPage() {
           </div>
         </section>
 
-        {/* Footer note */}
-        <div className="mt-6 flex items-start gap-2 text-xs leading-5 text-gray-500">
-          <Clock className="mt-0.5 h-4 w-4 shrink-0" />
-          <p>
-            Ringkasan ini menggunakan data perhitungan yang tersimpan di
-            akunmu. Angka emisi merupakan estimasi berdasarkan faktor emisi
-            yang digunakan CarbonAceh.
-          </p>
-        </div>
       </div>
     </div>
   );

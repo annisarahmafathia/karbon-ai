@@ -18,9 +18,9 @@ export function Footer() {
               </span>
             </div>
             <p className="text-sage-light/90 text-sm leading-relaxed max-w-sm">
-              Inisiatif platform keterbukaan sains untuk membantu mahasiswa di Banda Aceh
+              Inisiatif platform keterbukaan sains untuk membantu masyarakat
               memahami, mengukur, dan mengurangi jejak karbon dari aktivitas kehidupan
-              kampus sehari-hari.
+              sehari-hari.
             </p>
           </div>
 
@@ -88,28 +88,11 @@ export function Footer() {
               <li>Tanpa Greenwashing & Angka Karangan</li>
             </ul>
           </div>
-
-          {/* Kampus Aceh */}
-          <div className="space-y-3">
-            <h4 className="text-sm font-bold uppercase tracking-wider text-sage">
-              Konteks Kampus Aceh
-            </h4>
-            <p className="text-xs text-sage-light/80 leading-relaxed">
-              Disesuaikan dengan realitas mahasiswa di Universitas Syiah Kuala (USK),
-              UIN Ar-Raniry, Universitas Malikussaleh (Unimal), Universitas Teuku Umar
-              (UTU), dan perguruan tinggi lainnya di Aceh.
-            </p>
-            <div className="pt-2">
-              <span className="inline-flex items-center gap-1 text-xs text-sage font-medium">
-                <span>Trans Koetaradja & Budaya Warkop Aceh</span>
-              </span>
-            </div>
-          </div>
         </div>
 
         {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t border-forest-light flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-sage-light/70">
-          <p>© {new Date().getFullYear()} Karbon AI. Berbasis Sains & Terbuka untuk Mahasiswa.</p>
+          <p>© {new Date().getFullYear()} Karbon AI. Berbasis Sains & Terbuka</p>
           <p className="flex items-center gap-1">
             Dibangun dengan komitmen transparansi lingkungan untuk Aceh
           </p>

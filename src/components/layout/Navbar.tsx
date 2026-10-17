@@ -87,7 +87,7 @@ export function Navbar() {
                 Karbon<span className="text-sage-dark">AI</span>
               </span>
               <span className="hidden text-xs font-medium text-muted sm:block">
-                Kalkulator Jejak Karbon Mahasiswa
+                Kalkulator Jejak Karbon
               </span>
             </div>
           </Link>

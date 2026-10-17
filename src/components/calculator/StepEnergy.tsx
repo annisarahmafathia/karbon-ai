@@ -22,13 +22,13 @@ export function StepEnergy() {
     },
     {
       value: "rumah_sewa",
-      label: "Rumah Sewa Mahasiswa",
+      label: "Rumah Sewa",
       desc: "Menyewa satu rumah untuk ditempati",
     },
     {
       value: "asrama_kampus",
-      label: "Asrama Mahasiswa / Rusunawa",
-      desc: "Asrama USK, Asrama UIN, atau pesantren mahasiswa",
+      label: "Asrama",
+      desc: "Asrama USK, Asrama UIN, dll",
     },
     {
       value: "rumah_keluarga",

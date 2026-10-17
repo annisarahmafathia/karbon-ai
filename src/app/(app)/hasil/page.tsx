@@ -121,7 +121,7 @@ export default function ResultsPage() {
               <span>Laporan Hasil Kalkulasi Emisi</span>
             </div>
             <h1 className="text-2xl sm:text-4xl font-extrabold text-charcoal mt-2">
-              Jejak Karbon Mahasiswa Aceh
+              Jejak Karbon
             </h1>
             <p className="text-xs sm:text-sm text-muted mt-1">
               Dihitung berdasarkan profil aktivitas harianmu di wilayah Aceh

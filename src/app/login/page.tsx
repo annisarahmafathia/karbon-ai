@@ -110,7 +110,7 @@ function LoginForm() {
           Masuk ke Karbon AI
         </h1>
         <p className="text-xs sm:text-sm text-muted">
-          Akses akun mahasiswa Anda untuk melihat riwayat jejak karbon dan komitmen aksi hijau.
+          Akses akun email Anda untuk melihat riwayat jejak karbon
         </p>
       </div>
 
@@ -216,7 +216,7 @@ function LoginForm() {
 
         {/* Footer link to Register */}
         <div className="pt-2 text-center border-t border-sage/20 text-xs text-muted">
-          Belum memiliki akun mahasiswa?{" "}
+          Belum memiliki akun email?{" "}
           <Link
             href="/register"
             className="font-bold text-forest hover:underline"

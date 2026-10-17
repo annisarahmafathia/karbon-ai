@@ -104,7 +104,7 @@ export default function EdukasiPage() {
       a: "Pembakaran sampah terbuka (Open Burning) tidak memiliki sistem filtrasi cerobong dan berlangsung pada suhu rendah yang tidak sempurna. Menurut IPCC Guidelines Vol 5, pembakaran terbuka menghasilkan emisi langsung gas rumah kaca metana (CH₄), dinitrogen oksida (N₂O), CO₂ fosil dari plastik, serta aerosol jelaga karbon hitam (black carbon) yang beracun bagi paru-paru dan memicu pemanasan atmosfer global.",
     },
     {
-      q: "Bagaimana cara mahasiswa memanfaatkan angka hasil kalkulasi ini?",
+      q: "Bagaimana cara masyarakat memanfaatkan angka hasil kalkulasi ini?",
       a: "Hasil kalkulasi berfungsi sebagai baseline (tolok ukur awal) untuk melihat di mana letak pemborosan energimu. Setelah mengetahui hotspot terbesarmu, buka halaman Green Action untuk memilih aksi yang paling terukur dampaknya, seperti beralih ke bus gratis Trans Koetaradja, memasang timer AC kos, atau mengganti porsi daging sapi.",
     },
   ];
