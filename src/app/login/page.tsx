@@ -129,7 +129,7 @@ function LoginForm() {
         {redirectTarget && redirectTarget !== "/dashboard" && !errorMessage && (
           <div className="p-3.5 rounded-2xl bg-mint/60 border border-sage/30 text-forest text-xs flex items-center gap-2">
             <Info className="w-4 h-4 shrink-0 text-forest" />
-            <span>Silakan masuk untuk melanjutkan ke halaman yang Anda tuju.</span>
+            <span>Silakan masuk untuk mulai menghitung jejak karbonmu.</span>
           </div>
         )}
 
