@@ -105,9 +105,6 @@ export default function GreenActionPage() {
                 {f.label}
               </button>
             ))}
-            <span className="text-[10px] text-muted whitespace-nowrap sm:hidden">
-            Geser →
-          </span>
           </div>
 
           {/* Impact Level Filter */}
