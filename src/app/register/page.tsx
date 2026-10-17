@@ -136,7 +136,7 @@ export default function RegisterPage() {
           </Link>
 
           <h1 className="text-2xl font-extrabold tracking-tight text-charcoal sm:text-3xl">
-            Daftar Akun CarbonAceh
+            Daftar Akun KarbonAI
           </h1>
 
           <p className="text-xs text-muted sm:text-sm">
@@ -173,7 +173,7 @@ export default function RegisterPage() {
 
               <p className="leading-relaxed text-muted">
                 Informasi akun dikelola dengan aman. Kamu bisa menggunakan
-                CarbonAceh tanpa perlu memasukkan informasi universitas.
+                KarbonAI tanpa perlu memasukkan informasi universitas.
               </p>
             </div>
 

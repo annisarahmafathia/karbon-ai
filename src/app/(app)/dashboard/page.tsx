@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
@@ -9,7 +8,6 @@ import {
   BarChart3,
   Calculator,
   CalendarDays,
-  Clock,
   Leaf,
   Loader2,
   Sparkles,
@@ -112,43 +110,75 @@ export default function DashboardPage() {
 
   const latestCalculation = calculations[0];
 
-  
+  // Selalu tampilkan enam bulan kalender terakhir.
+  // Data diambil dari hasil terbaru untuk setiap bulan.
   const chartData = useMemo(() => {
-  const monthlyData = new Map<
-    string,
-    {
+    const monthlyData = new Map<
+      string,
+      {
+        month: number;
+        year: number;
+        total: number;
+      }
+    >();
+
+    // Query Supabase mengurutkan hasil dari terbaru ke terlama.
+    // Karena itu, data pertama untuk setiap bulan adalah hasil terbaru.
+    for (const calculation of calculations) {
+      const month = calculation.period_month;
+      const year = calculation.period_year;
+
+      if (
+        month == null ||
+        year == null ||
+        month < 1 ||
+        month > 12
+      ) {
+        continue;
+      }
+
+      const key = `${year}-${String(month).padStart(2, "0")}`;
+
+      if (monthlyData.has(key)) continue;
+
+      monthlyData.set(key, {
+        month,
+        year,
+        total: Number(calculation.total_monthly_kg ?? 0),
+      });
+    }
+
+    const now = new Date();
+    const lastSixMonths: {
       month: number;
       year: number;
       total: number;
+    }[] = [];
+
+    // Mulai dari lima bulan sebelum bulan ini sampai bulan ini.
+    // Urutan hasil otomatis dari kiri ke kanan.
+    for (let offset = 5; offset >= 0; offset--) {
+      const date = new Date(
+        now.getFullYear(),
+        now.getMonth() - offset,
+        1
+      );
+
+      const month = date.getMonth() + 1;
+      const year = date.getFullYear();
+      const key = `${year}-${String(month).padStart(2, "0")}`;
+
+      lastSixMonths.push(
+        monthlyData.get(key) ?? {
+          month,
+          year,
+          total: 0,
+        }
+      );
     }
-  >();
 
-  // Data sudah diurutkan dari yang terbaru oleh query Supabase.
-  // Simpan hanya hasil pertama untuk setiap bulan.
-  for (const calculation of calculations) {
-    const month = calculation.period_month;
-    const year = calculation.period_year;
-
-    if (!month || !year) continue;
-
-    const key = `${year}-${String(month).padStart(2, "0")}`;
-
-    // Jika bulan ini sudah ada, abaikan hasil yang lebih lama.
-    if (monthlyData.has(key)) continue;
-
-    monthlyData.set(key, {
-      month,
-      year,
-      total: Number(calculation.total_monthly_kg ?? 0),
-    });
-  }
-
-  // Urutkan dari bulan terlama ke terbaru,
-  // lalu tampilkan maksimal 6 bulan.
-  return Array.from(monthlyData.values())
-    .sort((a, b) => a.year - b.year || a.month - b.month)
-    .slice(-6);
-}, [calculations]);
+    return lastSixMonths;
+  }, [calculations]);
 
   const highestEmission = useMemo(() => {
     return calculations.reduce((highest, calculation) => {
@@ -309,22 +339,6 @@ export default function DashboardPage() {
               <div className="flex h-48 items-center justify-center">
                 <Loader2 className="h-6 w-6 animate-spin text-forest" />
               </div>
-            ) : chartData.length === 0 ? (
-              <div className="flex min-h-48 flex-col items-center justify-center rounded-xl bg-gray-50 px-4 text-center">
-                <BarChart3 className="mb-3 h-8 w-8 text-gray-400" />
-                <p className="font-medium text-charcoal">
-                  Belum ada data untuk ditampilkan
-                </p>
-                <p className="mt-1 text-sm text-gray-500">
-                  Lakukan perhitungan pertama untuk melihat tren emisi.
-                </p>
-                <Link
-                  href="/kalkulator"
-                  className="mt-4 text-sm font-semibold text-forest hover:underline"
-                >
-                  Mulai menghitung <span aria-hidden="true">→</span>
-                </Link>
-              </div>
             ) : (
               <div>
                 <div className="flex h-48 items-end gap-3 border-b border-gray-100 pb-2 sm:gap-5">
@@ -367,8 +381,9 @@ export default function DashboardPage() {
                 </div>
 
                 <p className="mt-3 text-xs text-gray-500">
-                  Satuan: kg CO₂e per bulan. Data merangkum hasil perhitungan yang
-                  tersimpan pada setiap bulan.
+                  Satuan: kg CO₂e per bulan. Data merangkum hasil perhitungan
+                  yang tersimpan pada setiap bulan. Bulan tanpa data
+                  ditampilkan dengan nilai 0.
                 </p>
               </div>
             )}
@@ -457,10 +472,9 @@ export default function DashboardPage() {
               </h2>
 
               <p className="mt-3 text-sm leading-6 text-cream sm:text-base">
-                Coba pilih aksi sederhana yang bisa kamu lakukan, 
-                mulai dari mengurangi plastik sekali pakai,
-                menghemat listrik, hingga memilih transportasi yang
-                lebih efisien.
+                Coba pilih aksi sederhana yang bisa kamu lakukan, mulai dari
+                mengurangi plastik sekali pakai, menghemat listrik, hingga
+                memilih transportasi yang lebih efisien.
               </p>
             </div>
 
@@ -473,7 +487,6 @@ export default function DashboardPage() {
             </Link>
           </div>
         </section>
-
       </div>
     </div>
   );
