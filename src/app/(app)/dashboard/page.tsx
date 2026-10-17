@@ -112,10 +112,43 @@ export default function DashboardPage() {
 
   const latestCalculation = calculations[0];
 
-  const chartData = useMemo(
-    () => [...calculations].slice(0, 6).reverse(),
-    [calculations]
-  );
+  
+  const chartData = useMemo(() => {
+  const monthlyData = new Map<
+    string,
+    {
+      month: number;
+      year: number;
+      total: number;
+    }
+  >();
+
+  // Data sudah diurutkan dari yang terbaru oleh query Supabase.
+  // Simpan hanya hasil pertama untuk setiap bulan.
+  for (const calculation of calculations) {
+    const month = calculation.period_month;
+    const year = calculation.period_year;
+
+    if (!month || !year) continue;
+
+    const key = `${year}-${String(month).padStart(2, "0")}`;
+
+    // Jika bulan ini sudah ada, abaikan hasil yang lebih lama.
+    if (monthlyData.has(key)) continue;
+
+    monthlyData.set(key, {
+      month,
+      year,
+      total: Number(calculation.total_monthly_kg ?? 0),
+    });
+  }
+
+  // Urutkan dari bulan terlama ke terbaru,
+  // lalu tampilkan maksimal 6 bulan.
+  return Array.from(monthlyData.values())
+    .sort((a, b) => a.year - b.year || a.month - b.month)
+    .slice(-6);
+}, [calculations]);
 
   const highestEmission = useMemo(() => {
     return calculations.reduce((highest, calculation) => {
@@ -127,14 +160,14 @@ export default function DashboardPage() {
   }, [calculations]);
 
   const maxEmission = Math.max(
-    ...chartData.map((item) => Number(item.total_monthly_kg ?? 0)),
+    ...chartData.map((item) => item.total),
     1
   );
 
   if (isAuthLoading || (!user && !isAuthLoading)) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
+        <Loader2 className="h-8 w-8 animate-spin text-forest" />
       </div>
     );
   }
@@ -145,7 +178,7 @@ export default function DashboardPage() {
         {/* Header */}
         <section className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="mb-2 text-sm font-medium text-emerald-700">
+            <p className="mb-2 text-sm font-medium text-forest">
               Dashboard CarbonAceh
             </p>
 
@@ -161,7 +194,7 @@ export default function DashboardPage() {
 
           <Link
             href="/kalkulator"
-            className="inline-flex min-h-11 items-center justify-center gap-2 self-start rounded-xl bg-emerald-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-800"
+            className="inline-flex min-h-11 items-center justify-center gap-2 self-start rounded-xl bg-forest px-5 py-3 text-sm font-semibold text-white transition hover:bg-forest"
           >
             <Calculator size={18} />
             Hitung Jejak Karbon
@@ -184,7 +217,7 @@ export default function DashboardPage() {
 
         {/* Summary cards */}
         <section className="mb-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          <div className="rounded-2xl border border-emerald-100 bg-white p-5 shadow-sm">
+          <div className="rounded-2xl border border-sage/30 bg-white p-5 shadow-sm">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-500">
@@ -197,13 +230,13 @@ export default function DashboardPage() {
                   Seluruh riwayat tersimpan
                 </p>
               </div>
-              <div className="rounded-xl bg-emerald-50 p-3 text-emerald-700">
+              <div className="rounded-xl bg-mint p-3 text-forest">
                 <BarChart3 size={24} />
               </div>
             </div>
           </div>
 
-          <div className="rounded-2xl border border-emerald-100 bg-white p-5 shadow-sm">
+          <div className="rounded-2xl border border-sage/30 bg-white p-5 shadow-sm">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-500">
@@ -231,7 +264,7 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <div className="rounded-2xl border border-emerald-100 bg-white p-5 shadow-sm sm:col-span-2 xl:col-span-1">
+          <div className="rounded-2xl border border-sage/30 bg-white p-5 shadow-sm sm:col-span-2 xl:col-span-1">
             <div className="flex items-center justify-between">
               <div className="min-w-0">
                 <p className="text-sm text-gray-500">
@@ -257,24 +290,24 @@ export default function DashboardPage() {
 
         {/* Chart and latest calculation */}
         <section className="mb-8 grid gap-6 lg:grid-cols-3">
-          <div className="rounded-2xl border border-emerald-100 bg-white p-5 shadow-sm sm:p-6 lg:col-span-2">
+          <div className="rounded-2xl border border-sage/30 bg-white p-5 shadow-sm sm:p-6 lg:col-span-2">
             <div className="mb-6 flex items-start justify-between gap-3">
               <div>
                 <h2 className="text-lg font-bold text-charcoal">
                   Tren Jejak Karbon
                 </h2>
                 <p className="mt-1 text-sm text-gray-500">
-                  Enam perhitungan terbaru yang tersimpan
+                  Rekap emisi bulanan selama 6 bulan terakhir
                 </p>
               </div>
-              <div className="rounded-xl bg-emerald-50 p-2 text-emerald-700">
+              <div className="rounded-xl bg-mint p-2 text-forest">
                 <TrendingUp size={20} />
               </div>
             </div>
 
             {isLoadingData ? (
               <div className="flex h-48 items-center justify-center">
-                <Loader2 className="h-6 w-6 animate-spin text-emerald-600" />
+                <Loader2 className="h-6 w-6 animate-spin text-forest" />
               </div>
             ) : chartData.length === 0 ? (
               <div className="flex min-h-48 flex-col items-center justify-center rounded-xl bg-gray-50 px-4 text-center">
@@ -287,7 +320,7 @@ export default function DashboardPage() {
                 </p>
                 <Link
                   href="/kalkulator"
-                  className="mt-4 text-sm font-semibold text-emerald-700 hover:underline"
+                  className="mt-4 text-sm font-semibold text-forest hover:underline"
                 >
                   Mulai menghitung <span aria-hidden="true">→</span>
                 </Link>
@@ -296,7 +329,7 @@ export default function DashboardPage() {
               <div>
                 <div className="flex h-48 items-end gap-3 border-b border-gray-100 pb-2 sm:gap-5">
                   {chartData.map((item, index) => {
-                    const emission = Number(item.total_monthly_kg ?? 0);
+                    const emission = item.total;
                     const height = Math.max(
                       (emission / maxEmission) * 100,
                       4
@@ -304,7 +337,7 @@ export default function DashboardPage() {
 
                     return (
                       <div
-                        key={item.id}
+                        key={`${item.year}-${item.month}`}
                         className="flex h-full min-w-0 flex-1 flex-col items-center justify-end gap-2"
                       >
                         <span className="max-w-full truncate text-center text-[10px] text-gray-500 sm:text-xs">
@@ -318,17 +351,15 @@ export default function DashboardPage() {
                             title={formatEmission(emission)}
                             className={`w-full max-w-12 rounded-t-lg transition-all ${
                               index === chartData.length - 1
-                                ? "bg-emerald-700"
-                                : "bg-emerald-300"
+                                ? "bg-forest"
+                                : "bg-sage"
                             }`}
                             style={{ height: `${height}%` }}
                           />
                         </div>
 
                         <span className="max-w-full truncate text-center text-[10px] text-gray-500 sm:text-xs">
-                          {item.period_month && item.period_year
-                            ? `${MONTHS[item.period_month - 1]?.slice(0, 3) ?? ""} ${String(item.period_year).slice(-2)}`
-                            : `Data ${index + 1}`}
+                          {`${MONTHS[item.month - 1]?.slice(0, 3) ?? ""} ${String(item.year).slice(-2)}`}
                         </span>
                       </div>
                     );
@@ -336,17 +367,16 @@ export default function DashboardPage() {
                 </div>
 
                 <p className="mt-3 text-xs text-gray-500">
-                  Satuan: kg CO₂e. Grafik membandingkan hasil perhitungan
-                  tersimpan, bukan perubahan emisi yang sudah dipastikan
-                  terjadi.
+                  Satuan: kg CO₂e per bulan. Data merangkum hasil perhitungan yang
+                  tersimpan pada setiap bulan.
                 </p>
               </div>
             )}
           </div>
 
-          <div className="rounded-2xl border border-emerald-100 bg-white p-5 shadow-sm sm:p-6">
+          <div className="rounded-2xl border border-sage/30 bg-white p-5 shadow-sm sm:p-6">
             <div className="mb-5 flex items-center gap-3">
-              <div className="rounded-xl bg-emerald-50 p-3 text-emerald-700">
+              <div className="rounded-xl bg-mint p-3 text-forest">
                 <CalendarDays size={22} />
               </div>
               <div>
@@ -361,7 +391,7 @@ export default function DashboardPage() {
 
             {isLoadingData ? (
               <div className="flex h-32 items-center justify-center">
-                <Loader2 className="h-6 w-6 animate-spin text-emerald-600" />
+                <Loader2 className="h-6 w-6 animate-spin text-forest" />
               </div>
             ) : latestCalculation ? (
               <>
@@ -376,8 +406,8 @@ export default function DashboardPage() {
                   {formatEmission(latestCalculation.total_monthly_kg)}
                 </p>
 
-                <div className="mt-4 rounded-xl bg-emerald-50 p-3">
-                  <p className="text-xs text-emerald-800">
+                <div className="mt-4 rounded-xl bg-mint p-3">
+                  <p className="text-xs text-forest">
                     Kategori emisi tertinggi
                   </p>
                   <p className="mt-1 font-semibold text-emerald-950">
@@ -387,7 +417,7 @@ export default function DashboardPage() {
 
                 <Link
                   href="/riwayat"
-                  className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-emerald-700 hover:underline"
+                  className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-forest hover:underline"
                 >
                   Lihat seluruh riwayat
                   <ArrowRight size={16} />
@@ -402,7 +432,7 @@ export default function DashboardPage() {
                 </p>
                 <Link
                   href="/kalkulator"
-                  className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-emerald-700 hover:underline"
+                  className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-forest hover:underline"
                 >
                   Mulai menghitung <ArrowRight size={16} />
                 </Link>
@@ -412,10 +442,10 @@ export default function DashboardPage() {
         </section>
 
         {/* Green Action banner */}
-        <section className="overflow-hidden rounded-2xl bg-emerald-900 p-6 text-white sm:p-8">
+        <section className="overflow-hidden rounded-2xl bg-forest p-6 text-white sm:p-8">
           <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
             <div className="max-w-2xl">
-              <div className="mb-3 flex items-center gap-2 text-emerald-200">
+              <div className="mb-3 flex items-center gap-2 text-sage">
                 <Sparkles size={20} />
                 <span className="text-sm font-semibold">
                   Langkah Kecil, Dampak Berarti
@@ -426,7 +456,7 @@ export default function DashboardPage() {
                 Yuk, mulai kebiasaan yang lebih ramah lingkungan!
               </h2>
 
-              <p className="mt-3 text-sm leading-6 text-emerald-100 sm:text-base">
+              <p className="mt-3 text-sm leading-6 text-cream sm:text-base">
                 Coba pilih aksi sederhana yang bisa kamu lakukan sebagai
                 mahasiswa, mulai dari mengurangi plastik sekali pakai,
                 menghemat listrik di kos, hingga memilih transportasi yang
@@ -436,7 +466,7 @@ export default function DashboardPage() {
 
             <Link
               href="/green-action"
-              className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 self-start rounded-xl bg-white px-5 py-3 text-sm font-semibold text-emerald-900 transition hover:bg-emerald-50"
+              className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 self-start rounded-xl bg-white px-5 py-3 text-sm font-semibold text-forest transition hover:bg-mint"
             >
               Lihat Green Action
               <ArrowRight size={16} />

@@ -21,7 +21,7 @@ export function calculateWasteEmissions(data: WasteData): CategoryResult {
   const burnedKg = totalMonthlyWasteKg * burnedProportion;
   const burnedEmissions = burnedKg * burningFactor.value;
 
-  // Sisa sampah padat yang diangkut ke sistem TPA kota
+  // Sisa sampah yang diangkut ke sistem TPA kota
   const remainingWasteKg = totalMonthlyWasteKg - burnedKg;
 
   // Efek pemilahan sampah ke Bank Sampah / Kompos
@@ -84,7 +84,7 @@ export function calculateWasteEmissions(data: WasteData): CategoryResult {
 
   return {
     category: "sampah",
-    label: "Pengelolaan Sampah Padat",
+    label: "Pengelolaan Sampah",
     monthlyKgCO2e: totalMonthlyKgCO2e,
     yearlyKgCO2e: totalYearlyKgCO2e,
     percentage: 0,

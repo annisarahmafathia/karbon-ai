@@ -427,7 +427,7 @@ export const EMISSION_FACTORS: Record<string, EmissionFactorMeta> = {
     category: "sampah",
     value: 0.58,
     unit: "kg CO₂e / kg sampah",
-    activityUnit: "kg sampah padat",
+    activityUnit: "kg sampah",
     source: "IPCC Guidelines 2006 Vol 5 (Waste Generation & Methane)",
     year: 2006,
     scope: "Nasional (Indonesia)",
