@@ -25,14 +25,9 @@ export const metadata: Metadata = {
     "green action",
   ],
   icons: {
-    icon: [
-      {
-        url: "/icon.png",
-        type: "image/png",
-      },
-    ],
-    shortcut: "/icon.png",
-    apple: "/icon.png",
+    icon: "/karbon-favicon.png",
+    shortcut: "/karbon-favicon.png",
+    apple: "/karbon-favicon.png",
   },
 };
 
