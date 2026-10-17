@@ -457,9 +457,9 @@ export default function DashboardPage() {
               </h2>
 
               <p className="mt-3 text-sm leading-6 text-cream sm:text-base">
-                Coba pilih aksi sederhana yang bisa kamu lakukan sebagai
-                mahasiswa, mulai dari mengurangi plastik sekali pakai,
-                menghemat listrik di kos, hingga memilih transportasi yang
+                Coba pilih aksi sederhana yang bisa kamu lakukan, 
+                mulai dari mengurangi plastik sekali pakai,
+                menghemat listrik, hingga memilih transportasi yang
                 lebih efisien.
               </p>
             </div>
