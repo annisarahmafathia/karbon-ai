@@ -18,7 +18,7 @@ export function StepWaste() {
     {
       value: "selalu_pilah",
       label: "Selalu Memilah Sampah",
-      desc: "Menyetor botol/kardus ke Bank Sampah USK / pengepul & organik dikompos",
+      desc: "Menyetor botol/kardus ke Bank Sampah / pengepul & organik dikompos",
     },
     {
       value: "tidak_pernah_campur",
@@ -30,8 +30,8 @@ export function StepWaste() {
   const burningOptions: { value: OpenBurningHabit; label: string; desc: string }[] = [
     {
       value: "tidak_pernah",
-      label: "Tidak Pernah (Diangkut Truk Kebersihan)",
-      desc: "Dibuang ke tong resmi gampong dan diangkut armada DLHK3 ke TPA",
+      label: "Tidak Pernah",
+      desc: "Dibuang ke tong resmi gampong atau diangkut oleh truk sampah",
     },
     {
       value: "kadang_pekarangan_kos",
@@ -41,7 +41,7 @@ export function StepWaste() {
     {
       value: "sering",
       label: "Sering Dibakar Terbuka",
-      desc: "Rutin membakar sampah di lahan kosong belakang kos atau gampong",
+      desc: "Rutin membakar sampah di pekarangan",
     },
   ];
 
@@ -119,7 +119,7 @@ export function StepWaste() {
         <div className="flex items-center justify-between text-xs">
           <span className="font-semibold text-charcoal flex items-center gap-2">
             <ShoppingBag className="w-4 h-4 text-forest" />
-            Penggunaan Kantong Kresek Belanja (Pasar / Minimarket):
+            Penggunaan Kantong Kresek Belanja (Pasar / Minimarket)
           </span>
           <span className="font-bold text-forest bg-mint px-2.5 py-0.5 rounded-full">
             {waste.singleUsePlasticBagsPerWeek} kantong / minggu
@@ -136,7 +136,7 @@ export function StepWaste() {
           className="w-full accent-forest cursor-pointer"
         />
         <span className="text-[11px] text-muted block">
-          Gunakan tas kain / tote bag kuliah saat berbelanja ke pasar Peunayong atau swalayan.
+          Gunakan tas kain / tote bag kuliah saat berbelanja ke pasar atau swalayan
         </span>
       </div>
 
