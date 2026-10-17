@@ -124,7 +124,7 @@ export default function ResultsPage() {
               Jejak Karbon
             </h1>
             <p className="text-xs sm:text-sm text-muted mt-1">
-              Dihitung berdasarkan profil aktivitas harianmu di wilayah Aceh
+              Dihitung berdasarkan profil aktivitas harianmu
             </p>
             {saveMessage && (
               <div
@@ -178,15 +178,6 @@ export default function ResultsPage() {
               <Edit3 className="w-4 h-4 text-forest" />
               <span>Sesuaikan Data</span>
             </Link>
-
-            <button
-              type="button"
-              onClick={handleShare}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl border border-sage/40 bg-white hover:bg-mint/40 text-charcoal text-xs sm:text-sm font-bold shadow-sm transition-all active:scale-95 cursor-pointer"
-            >
-              <Share2 className="w-4 h-4 text-forest" />
-              <span>{copied ? "Tersalin!" : "Bagikan"}</span>
-            </button>
           </div>
         </div>
 
@@ -281,7 +272,7 @@ export default function ResultsPage() {
               Ekuivalensi Lingkungan Nyata
             </h2>
             <p className="text-xs sm:text-sm text-muted">
-              Menerjemahkan angka kg CO₂e ke dalam analogi nyata yang mudah dipahami
+              Menerjemahkan angka kg CO₂e ke dalam analogi nyata
             </p>
           </div>
 
@@ -329,10 +320,12 @@ export default function ResultsPage() {
                   Rute Banda Aceh — Medan
                 </span>
                 <div className="text-2xl font-black text-charcoal">
-                  {result.equivalencies.roundTripBandaAcehMedan}x PP
+                  {Math.floor(result.equivalencies.roundTripBandaAcehMedan)} kali PP
                 </div>
                 <p className="text-xs text-muted leading-relaxed">
-                  Setara berapa kali perjalanan pulang-pergi dari Banda Aceh ke Medan (~1.200 km pulang-pergi).
+                  Setara dengan emisi dari sekitar{" "}
+                  {Math.floor(result.equivalencies.roundTripBandaAcehMedan)} kali perjalanan
+                  pulang-pergi Banda Aceh–Medan, dengan jarak acuan sekitar 1.200 km per PP.
                 </p>
               </div>
             </div>
@@ -522,7 +515,7 @@ export default function ResultsPage() {
               Ingin Menurunkan Jejak Karbonmu?
             </h2>
             <p className="text-sage-light text-sm max-w-xl leading-relaxed">
-              Kami telah menyiapkan rencana aksi nyata (Green Action) yang dipersonalisasi berdasarkan sektor penyumbang emisi terbesarmu di kampus Aceh.
+              Kami telah menyiapkan rencana aksi nyata (Green Action) yang dipersonalisasi berdasarkan sektor penyumbang emisi terbesarmu.
             </p>
           </div>
 

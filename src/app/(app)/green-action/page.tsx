@@ -55,9 +55,9 @@ export default function GreenActionPage() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto space-y-3">
-          <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-forest px-3 py-1 rounded-full bg-mint">
+          <div className="flex items-center gap-2 overflow-x-auto w-full sm:w-auto min-w-0 pb-2 sm:pb-1 scrollbar-thin scrollbar-thumb-sage scrollbar-track-cream">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>Rekomendasi Aksi Iklim Mahasiswa Aceh</span>
+            <span>Rekomendasi Aksi Iklim</span>
           </div>
 
           <h1 className="text-2xl sm:text-4xl font-extrabold text-charcoal">
@@ -71,12 +71,6 @@ export default function GreenActionPage() {
               {result.highestCategory.label}
             </strong>
             ) dan dihitung dari data input aktivitasmu.
-          </p>
-
-          <p className="text-xs sm:text-sm text-muted leading-relaxed">
-            Temukan langkah sederhana yang bisa kamu terapkan sehari-hari
-            untuk mengurangi jejak karbon, mulai dari transportasi, penggunaan
-            energi, pola konsumsi, hingga pengelolaan sampah.
           </p>
         </div>
 
@@ -111,6 +105,9 @@ export default function GreenActionPage() {
                 {f.label}
               </button>
             ))}
+            <span className="text-[10px] text-muted whitespace-nowrap sm:hidden">
+            Geser →
+          </span>
           </div>
 
           {/* Impact Level Filter */}
