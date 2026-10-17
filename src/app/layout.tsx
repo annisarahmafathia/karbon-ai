@@ -24,6 +24,16 @@ export const metadata: Metadata = {
     "emisi sumatera aceh",
     "green action",
   ],
+  icons: {
+    icon: [
+      {
+        url: "/icon.png",
+        type: "image/png",
+      },
+    ],
+    shortcut: "/icon.png",
+    apple: "/icon.png",
+  },
 };
 
 export default function RootLayout({
@@ -38,9 +48,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col font-sans bg-cream text-charcoal">
         <AuthProvider>
-          <CalculatorProvider>
-            {children}
-          </CalculatorProvider>
+          <CalculatorProvider>{children}</CalculatorProvider>
         </AuthProvider>
       </body>
     </html>
