@@ -203,7 +203,7 @@ export default function ProfilPage() {
               </h3>
 
               <p className="mt-1 text-sm text-muted">
-                Kamu perlu login kembali untuk mengakses Karbon AI
+                Kamu perlu login kembali untuk mengakses KarbonAI
               </p>
             </div>
 
