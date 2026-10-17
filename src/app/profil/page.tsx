@@ -13,6 +13,7 @@ import {
   ArrowRight,
   Leaf,
   Clock,
+  LayoutDashboard,
 } from "lucide-react";
 
 import { useAuth } from "@/context/AuthContext";
@@ -60,7 +61,7 @@ export default function ProfilPage() {
     profile?.full_name ||
     user.user_metadata?.full_name ||
     user.email?.split("@")[0] ||
-    "Pengguna CarbonAceh";
+    "Pengguna KarbonAI";
 
   const initial = displayName.charAt(0).toUpperCase();
 
@@ -78,7 +79,7 @@ export default function ProfilPage() {
           </h1>
 
           <p className="mt-2 text-sm leading-6 text-muted sm:text-base">
-            Kelola akses akun dan lihat informasi akunmu di CarbonAceh.
+            Kelola akses akun dan lihat informasi akunmu di KarbonAI.
           </p>
         </div>
 
@@ -158,17 +159,14 @@ export default function ProfilPage() {
           >
             <div className="flex items-center gap-3">
               <div className="rounded-xl bg-mint p-3 text-forest">
-                <Leaf className="h-5 w-5" />
+                <LayoutDashboard className="h-5 w-5" />
               </div>
 
               <div>
                 <p className="font-bold text-charcoal">
-                  Dashboard Saya
+                  Dashboard
                 </p>
 
-                <p className="mt-1 text-xs text-muted">
-                  Lihat ringkasan jejak karbon
-                </p>
               </div>
             </div>
 
@@ -189,9 +187,6 @@ export default function ProfilPage() {
                   Riwayat Perhitungan
                 </p>
 
-                <p className="mt-1 text-xs text-muted">
-                  Lihat data emisi yang tersimpan
-                </p>
               </div>
             </div>
 
@@ -208,7 +203,7 @@ export default function ProfilPage() {
               </h3>
 
               <p className="mt-1 text-sm text-muted">
-                Kamu perlu login kembali untuk mengakses akun CarbonAceh.
+                Kamu perlu login kembali untuk mengakses Karbon AI
               </p>
             </div>
 
