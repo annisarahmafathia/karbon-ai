@@ -1,7 +1,7 @@
-
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -10,7 +10,6 @@ import {
   Mail,
   Lock,
   ArrowRight,
-  Leaf,
   CheckCircle2,
   AlertCircle,
   Loader2,
@@ -129,10 +128,17 @@ export default function RegisterPage() {
         <div className="space-y-2 text-center">
           <Link
             href="/"
-            className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-forest text-cream shadow-sm transition-transform hover:scale-105"
+            className="mx-auto inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-forest p-2.5 text-cream shadow-sm transition-transform hover:scale-105"
             aria-label="Kembali ke Beranda"
           >
-            <Leaf className="h-6 w-6 text-sage" />
+            <Image
+              src="/logokarbonai.png"
+              alt="Logo KarbonAI"
+              width={56}
+              height={56}
+              priority
+              className="h-full w-full object-contain"
+            />
           </Link>
 
           <h1 className="text-2xl font-extrabold tracking-tight text-charcoal sm:text-3xl">

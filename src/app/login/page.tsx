@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, Suspense } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -8,7 +9,6 @@ import {
   Mail,
   Lock,
   ArrowRight,
-  Leaf,
   AlertCircle,
   Loader2,
   Eye,
@@ -28,10 +28,10 @@ function LoginForm() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(
-  errorCode === "auth-code-error"
-    ? "Tautan konfirmasi tidak valid atau telah kedaluwarsa. Silakan masuk kembali."
-    : null
-);
+    errorCode === "auth-code-error"
+      ? "Tautan konfirmasi tidak valid atau telah kedaluwarsa. Silakan masuk kembali."
+      : null
+  );
 
   const supabase = createClient();
 
@@ -40,6 +40,7 @@ function LoginForm() {
     setErrorMessage(null);
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
     if (!emailRegex.test(email.trim())) {
       setErrorMessage("Format alamat email tidak valid.");
       return;
@@ -85,12 +86,15 @@ function LoginForm() {
           redirectTarget !== "/register"
             ? redirectTarget
             : "/dashboard";
+
         router.push(safeDestination);
         router.refresh();
       }
     } catch (err: unknown) {
       console.error("Kesalahan proses masuk:", err);
-      setErrorMessage("Terjadi gangguan jaringan atau server. Silakan coba kembali.");
+      setErrorMessage(
+        "Terjadi gangguan jaringan atau server. Silakan coba kembali."
+      );
     } finally {
       setIsLoading(false);
     }
@@ -102,13 +106,23 @@ function LoginForm() {
       <div className="text-center space-y-2">
         <Link
           href="/"
-          className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-forest text-cream shadow-sm hover:scale-105 transition-transform"
+          aria-label="KarbonAI Beranda"
+          className="mx-auto inline-flex w-14 h-14 items-center justify-center rounded-2xl bg-forest text-cream p-2.5 shadow-sm hover:scale-105 transition-transform"
         >
-          <Leaf className="w-6 h-6 text-sage" />
+          <Image
+            src="/logokarbonai.png"
+            alt="Logo KarbonAI"
+            width={56}
+            height={56}
+            priority
+            className="w-full h-full object-contain"
+          />
         </Link>
+
         <h1 className="text-2xl sm:text-3xl font-extrabold text-charcoal tracking-tight">
           Masuk ke KarbonAI
         </h1>
+
         <p className="text-xs sm:text-sm text-muted">
           Akses akun email Anda untuk melihat riwayat jejak karbon
         </p>
@@ -126,12 +140,16 @@ function LoginForm() {
           </div>
         )}
 
-        {redirectTarget && redirectTarget !== "/dashboard" && !errorMessage && (
-          <div className="p-3.5 rounded-2xl bg-mint/60 border border-sage/30 text-forest text-xs flex items-center gap-2">
-            <Info className="w-4 h-4 shrink-0 text-forest" />
-            <span>Silakan masuk untuk mulai menghitung jejak karbonmu.</span>
-          </div>
-        )}
+        {redirectTarget &&
+          redirectTarget !== "/dashboard" &&
+          !errorMessage && (
+            <div className="p-3.5 rounded-2xl bg-mint/60 border border-sage/30 text-forest text-xs flex items-center gap-2">
+              <Info className="w-4 h-4 shrink-0 text-forest" />
+              <span>
+                Silakan masuk untuk mulai menghitung jejak karbonmu.
+              </span>
+            </div>
+          )}
 
         <form onSubmit={handleLogin} className="space-y-4">
           {/* Email */}
@@ -142,14 +160,17 @@ function LoginForm() {
             >
               Alamat Email
             </label>
+
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-muted">
                 <Mail className="w-4 h-4" />
               </div>
+
               <input
                 id="login_email"
                 name="email"
                 type="email"
+                autoComplete="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -161,35 +182,43 @@ function LoginForm() {
 
           {/* Password */}
           <div className="space-y-1.5">
-            <div className="flex items-center justify-between">
-              <label
-                htmlFor="login_password"
-                className="block text-xs font-bold uppercase tracking-wider text-charcoal"
-              >
-                Kata Sandi
-              </label>
-            </div>
+            <label
+              htmlFor="login_password"
+              className="block text-xs font-bold uppercase tracking-wider text-charcoal"
+            >
+              Kata Sandi
+            </label>
+
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-muted">
                 <Lock className="w-4 h-4" />
               </div>
+
               <input
                 id="login_password"
                 name="password"
                 type={showPassword ? "text" : "password"}
+                autoComplete="current-password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Masukkan kata sandi"
                 className="w-full pl-10 pr-11 py-3 rounded-xl border border-sage/40 bg-cream/40 focus:bg-white text-sm text-charcoal placeholder:text-muted/60 focus:outline-none focus:ring-2 focus:ring-forest focus:border-transparent transition-all"
               />
+
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-muted hover:text-charcoal focus:outline-none"
-                aria-label={showPassword ? "Sembunyikan kata sandi" : "Lihat kata sandi"}
+                aria-label={
+                  showPassword ? "Sembunyikan kata sandi" : "Lihat kata sandi"
+                }
               >
-                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                {showPassword ? (
+                  <EyeOff className="w-4 h-4" />
+                ) : (
+                  <Eye className="w-4 h-4" />
+                )}
               </button>
             </div>
           </div>
@@ -236,7 +265,9 @@ export default function LoginPage() {
         fallback={
           <div className="max-w-md w-full p-8 bg-white rounded-3xl border border-sage/30 flex items-center justify-center gap-3 text-muted">
             <Loader2 className="w-5 h-5 animate-spin text-forest" />
-            <span className="text-sm font-medium">Memuat halaman masuk...</span>
+            <span className="text-sm font-medium">
+              Memuat halaman masuk...
+            </span>
           </div>
         }
       >
