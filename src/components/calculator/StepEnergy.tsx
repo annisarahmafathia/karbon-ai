@@ -32,8 +32,8 @@ export function StepEnergy() {
     },
     {
       value: "rumah_keluarga",
-      label: "Tinggal Bersama Keluarga",
-      desc: "Rumah orang tua di wilayah Banda Aceh / Aceh Besar",
+      label: "Rumah Keluarga",
+      desc: "Tinggal bersama keluarga (tidak menyewa)",
     },
   ];
 

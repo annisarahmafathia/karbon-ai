@@ -12,23 +12,23 @@ export function StepFood() {
   const dietOptions: { value: DietType; label: string; desc: string }[] = [
     {
       value: "mayoritas_ayam_ikan",
-      label: "Ayam & Ikan Laut (Favorit Mahasiswa)",
-      desc: "Sering makan ayam geprek/penyet dan ikan tongkol/dencis khas Aceh",
+      label: "Ayam & Ikan Laut",
+      desc: "Sering mengonsumsi ayam dan ikan laut, seperti ayam geprek, ikan tongkol, atau dencis",
     },
     {
       value: "campuran_daging",
-      label: "Sering Daging Merah (Sapi / Kambing)",
-      desc: "Rutin makan Sie Reuboh, Kuah Beulangong, atau gulai kambing",
+      label: "Daging Merah (Sapi / Kambing)",
+      desc: "Rutin mengonsumsi daging sapi atau kambing, seperti Sie Reuboh, Kuah Beulangong, atau gulai kambing",
     },
     {
       value: "pescetarian",
-      label: "Pescetarian",
-      desc: "Hanya makan ikan laut pesisir dan protein nabati (tanpa unggas & sapi)",
+      label: "Nabati + Ikan",
+      desc: "Mengonsumsi ikan laut dan protein nabati, tanpa ayam, sapi, atau kambing",
     },
     {
       value: "vegetarian_vegan",
-      label: "Vegetarian / Fleksitarian Nabati",
-      desc: "Mayoritas tahu, tempe, telur, dan aneka sayuran",
+      label: "Vegetarian",
+      desc: "Mengutamakan protein nabati seperti tahu dan tempe, serta sayuran; konsumsi telur dan susu diperbolehkan",
     },
   ];
 
@@ -80,7 +80,7 @@ export function StepFood() {
         <div className="space-y-2">
           <div className="flex items-center justify-between text-xs">
             <span className="font-semibold text-charcoal">
-              Daging Sapi / Kambing (Sie Reuboh, Kuah Beulangong, Rendang):
+              Daging Sapi / Kambing
             </span>
             <span className="font-bold text-forest bg-mint px-2.5 py-0.5 rounded-full">
               {food.beefMuttonMealsPerWeek} porsi / minggu
@@ -105,7 +105,7 @@ export function StepFood() {
         <div className="space-y-2">
           <div className="flex items-center justify-between text-xs">
             <span className="font-semibold text-charcoal">
-              Daging Ayam / Unggas (Ayam Geprek, Ayam Tangkap, Penyet):
+              Daging Ayam / Unggas
             </span>
             <span className="font-bold text-forest bg-mint px-2.5 py-0.5 rounded-full">
               {food.chickenMealsPerWeek} porsi / minggu
@@ -127,7 +127,7 @@ export function StepFood() {
         <div className="space-y-2">
           <div className="flex items-center justify-between text-xs">
             <span className="font-semibold text-charcoal">
-              Ikan Laut Pesisir Aceh (Tongkol / Keumamah, Dencis, Kakap):
+              Ikan Laut
             </span>
             <span className="font-bold text-forest bg-mint px-2.5 py-0.5 rounded-full">
               {food.fishMealsPerWeek} porsi / minggu
@@ -144,7 +144,7 @@ export function StepFood() {
             className="w-full accent-forest cursor-pointer"
           />
           <span className="text-[11px] text-muted block">
-            Ikan laut tangkapan nelayan pesisir Aceh memiliki jejak emisi 4x lebih rendah dibandingkan daging sapi.
+            Ikan laut tangkapan nelayan memiliki jejak emisi 4x lebih rendah dibandingkan daging sapi.
           </span>
         </div>
       </div>
@@ -160,7 +160,7 @@ export function StepFood() {
         <div className="space-y-2">
           <div className="flex items-center justify-between text-xs">
             <span className="font-semibold text-charcoal">
-              Minuman Es Dingin / Kopi Cup Plastik Sekali Pakai:
+              Cup Plastik Sekali Pakai
             </span>
             <span className="font-bold text-forest bg-mint px-2.5 py-0.5 rounded-full">
               {food.singleUseCoffeeCupsPerWeek} cup / minggu
@@ -185,10 +185,10 @@ export function StepFood() {
         <div className="flex items-center justify-between p-4 rounded-xl border border-sage/20 bg-cream/40">
           <div className="space-y-0.5">
             <span className="text-xs font-bold text-charcoal block">
-              Bawa Tumbler Sendiri / Minum di Warkop Pakai Cangkir Keramik
+              Bawa Tumbler Sendiri
             </span>
             <span className="text-[11px] text-muted block">
-              Menghindari penumpukan limbah plastik sekali pakai saat nongkrong
+              Menghindari penumpukan limbah plastik sekali pakai
             </span>
           </div>
           <label className="relative inline-flex items-center cursor-pointer">
@@ -209,7 +209,7 @@ export function StepFood() {
           <div className="flex items-center justify-between text-xs">
             <span className="font-semibold text-charcoal flex items-center gap-1.5">
               <Package className="w-4 h-4 text-forest" />
-              Beli Makanan Bungkus / Pesan Antar (bungkus / minggu):
+              Beli Makanan Bungkus / Pesan Antar
             </span>
             <span className="font-bold text-forest bg-mint px-2.5 py-0.5 rounded-full">
               {food.takeawayFoodPackagingPerWeek} kali / minggu
