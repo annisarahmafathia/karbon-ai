@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCalculator } from "@/context/CalculatorContext";
-import { CalculatorArchetypes } from "@/components/calculator/CalculatorArchetypes";
 import { StepTransport } from "@/components/calculator/StepTransport";
 import { StepEnergy } from "@/components/calculator/StepEnergy";
 import { StepFood } from "@/components/calculator/StepFood";
@@ -67,9 +66,6 @@ export default function CalculatorPage() {
             Isi estimasi kebiasaan harianmu. Data tersimpan aman di browsermu dan dihitung secara langsung secara real-time.
           </p>
         </div>
-
-        {/* Quick Presets */}
-        <CalculatorArchetypes />
 
         {/* Step Navigation Tabs */}
         <div className="bg-white rounded-2xl p-2 sm:p-3 border border-sage/30 shadow-sm mb-8 overflow-x-auto">

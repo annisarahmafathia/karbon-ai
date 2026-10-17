@@ -25,7 +25,6 @@ interface CalculatorContextType {
   updateFood: (data: Partial<FoodData>) => void;
   updateConsumption: (data: Partial<ConsumptionData>) => void;
   updateWaste: (data: Partial<WasteData>) => void;
-  loadArchetype: (preset: UserCalculatorInput) => void;
   resetToDefault: () => void;
 }
 
@@ -111,12 +110,6 @@ export function CalculatorProvider({ children }: { children: React.ReactNode }) 
     }));
   };
 
-  const loadArchetype = (preset: UserCalculatorInput) => {
-    const sanitized = sanitizeCalculatorInput(preset);
-    setInput(sanitized);
-    setHasCustomized(true);
-  };
-
   const resetToDefault = () => {
     setInput(DEFAULT_CALCULATOR_INPUT);
     setHasCustomized(false);
@@ -143,7 +136,6 @@ export function CalculatorProvider({ children }: { children: React.ReactNode }) 
         updateFood,
         updateConsumption,
         updateWaste,
-        loadArchetype,
         resetToDefault,
       }}
     >
