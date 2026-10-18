@@ -70,6 +70,7 @@ export function CalculatorProvider({ children }: { children: React.ReactNode }) 
     }
   }, [input, isHydrated]);
 
+
   const updateTransport = (data: Partial<TransportData>) => {
     setHasCustomized(true);
     setInput((prev) => ({
@@ -82,7 +83,11 @@ export function CalculatorProvider({ children }: { children: React.ReactNode }) 
     setHasCustomized(true);
     setInput((prev) => ({
       ...prev,
-      energy: { ...prev.energy, ...data },
+      energy: {
+        ...prev.energy,
+        ...data,
+        calculationMethod: "token_kwh",
+      },
     }));
   };
 

@@ -1,17 +1,18 @@
+
 import { UserCalculatorInput } from "../../types/carbon";
 
 export const DEFAULT_CALCULATOR_INPUT: UserCalculatorInput = {
   transport: {
     primaryVehicle: "motor_matic_bebek",
-    campusDistanceKm: 3.5, // Rata-rata jarak kos di Syiah Kuala/Darussalam ke kampus
+    campusDistanceKm: 3.5,
     daysPerWeekToCampus: 5,
-    otherDailyKm: 4, // Nongkrong warkop, cari makan, belanja
-    weekendTripKmPerMonth: 25, // Jalan-jalan akhir pekan sekitar Banda Aceh / Aceh Besar
+    otherDailyKm: 4,
+    weekendTripKmPerMonth: 25,
     weekendTripVehicle: "motor_matic_bebek",
   },
   energy: {
     housingType: "kos_sendiri",
-    calculationMethod: "peralatan",
+    calculationMethod: "token_kwh",
     monthlyKwh: 45,
     housematesCount: 1,
     hasAirConditioner: false,
@@ -20,26 +21,30 @@ export const DEFAULT_CALCULATOR_INPUT: UserCalculatorInput = {
     laptopDailyHours: 5,
     hasMiniFridge: false,
     lightDailyHours: 6,
+    riceCookerDailyHours: 0,
+    electricStoveDailyHours: 0,
+    electricThermosDailyHours: 0,
+    clothesIronDailyHours: 0,
   },
   food: {
     dietType: "mayoritas_ayam_ikan",
-    beefMuttonMealsPerWeek: 1, // Kari kambing / sie reuboh sekali seminggu
-    chickenMealsPerWeek: 5, // Ayam geprek/penyet favorit mahasiswa
-    fishMealsPerWeek: 4, // Ikan tongkol/dencis pesisir
-    singleUseCoffeeCupsPerWeek: 3, // Es kopi cup plastik
+    beefMuttonMealsPerWeek: 1,
+    chickenMealsPerWeek: 5,
+    fishMealsPerWeek: 4,
+    singleUseCoffeeCupsPerWeek: 3,
     usesReusableTumbler: true,
-    takeawayFoodPackagingPerWeek: 4, // Nasi bungkus / bungkus makanan
+    takeawayFoodPackagingPerWeek: 4,
   },
   consumption: {
-    newClothesPerMonth: 1, // Beli 1 baju baru per bulan
-    onlinePackagesPerMonth: 2, // 2 paket Shopee/Tokopedia dikirim dari Jakarta
-    photocopySheetsPerMonth: 30, // Lembar fotokopi materi & tugas kuliah
+    newClothesPerMonth: 1,
+    onlinePackagesPerMonth: 2,
+    photocopySheetsPerMonth: 30,
     purchasedSmartphoneThisYear: false,
     purchasedLaptopThisYear: false,
   },
   waste: {
     sortingHabit: "kadang_pilah",
-    singleUsePlasticBagsPerWeek: 5, // Kantong kresek belanjaan
+    singleUsePlasticBagsPerWeek: 5,
     openBurningHabit: "tidak_pernah",
   },
 };
@@ -56,15 +61,19 @@ export const ARCHETYPE_KOS_AC: UserCalculatorInput = {
   },
   energy: {
     housingType: "kos_sendiri",
-    calculationMethod: "peralatan",
+    calculationMethod: "token_kwh",
     monthlyKwh: 120,
     housematesCount: 1,
     hasAirConditioner: true,
-    acDailyHours: 7, // AC menyala saat tidur malam & siang hari
+    acDailyHours: 7,
     fanDailyHours: 4,
     laptopDailyHours: 6,
     hasMiniFridge: true,
     lightDailyHours: 7,
+    riceCookerDailyHours: 0,
+    electricStoveDailyHours: 0,
+    electricThermosDailyHours: 0,
+    clothesIronDailyHours: 0,
   },
   food: {
     dietType: "campuran_daging",
@@ -101,7 +110,7 @@ export const ARCHETYPE_ASRAMA_HIJAU: UserCalculatorInput = {
   },
   energy: {
     housingType: "asrama_kampus",
-    calculationMethod: "peralatan",
+    calculationMethod: "token_kwh",
     monthlyKwh: 30,
     housematesCount: 2,
     hasAirConditioner: false,
@@ -110,6 +119,10 @@ export const ARCHETYPE_ASRAMA_HIJAU: UserCalculatorInput = {
     laptopDailyHours: 4,
     hasMiniFridge: false,
     lightDailyHours: 5,
+    riceCookerDailyHours: 0,
+    electricStoveDailyHours: 0,
+    electricThermosDailyHours: 0,
+    clothesIronDailyHours: 0,
   },
   food: {
     dietType: "pescetarian",
@@ -134,47 +147,137 @@ export const ARCHETYPE_ASRAMA_HIJAU: UserCalculatorInput = {
   },
 };
 
-export function sanitizeCalculatorInput(input: Partial<UserCalculatorInput>): UserCalculatorInput {
+function clampNumber(value: unknown, fallback: number, max: number): number {
+  const parsed = Number(value ?? fallback);
+  if (!Number.isFinite(parsed)) return fallback;
+  return Math.max(0, Math.min(max, parsed));
+}
+
+export function sanitizeCalculatorInput(
+  input: Partial<UserCalculatorInput>
+): UserCalculatorInput {
   return {
     transport: {
-      primaryVehicle: input.transport?.primaryVehicle || "motor_matic_bebek",
-      campusDistanceKm: Math.max(0, Math.min(100, Number(input.transport?.campusDistanceKm ?? 3.5))),
-      daysPerWeekToCampus: Math.max(0, Math.min(7, Number(input.transport?.daysPerWeekToCampus ?? 5))),
-      otherDailyKm: Math.max(0, Math.min(100, Number(input.transport?.otherDailyKm ?? 4))),
-      weekendTripKmPerMonth: Math.max(0, Math.min(1000, Number(input.transport?.weekendTripKmPerMonth ?? 25))),
-      weekendTripVehicle: input.transport?.weekendTripVehicle || "motor_matic_bebek",
+      primaryVehicle:
+        input.transport?.primaryVehicle || "motor_matic_bebek",
+      campusDistanceKm: clampNumber(
+        input.transport?.campusDistanceKm,
+        3.5,
+        100
+      ),
+      daysPerWeekToCampus: clampNumber(
+        input.transport?.daysPerWeekToCampus,
+        5,
+        7
+      ),
+      otherDailyKm: clampNumber(input.transport?.otherDailyKm, 4, 100),
+      weekendTripKmPerMonth: clampNumber(
+        input.transport?.weekendTripKmPerMonth,
+        25,
+        1000
+      ),
+      weekendTripVehicle:
+        input.transport?.weekendTripVehicle || "motor_matic_bebek",
     },
+
     energy: {
       housingType: input.energy?.housingType || "kos_sendiri",
-      calculationMethod: input.energy?.calculationMethod || "peralatan",
-      monthlyKwh: Math.max(0, Math.min(1500, Number(input.energy?.monthlyKwh ?? 45))),
-      housematesCount: Math.max(1, Math.min(20, Number(input.energy?.housematesCount ?? 1))),
+      calculationMethod: "token_kwh",
+      monthlyKwh: clampNumber(input.energy?.monthlyKwh, 45, 1500),
+      housematesCount: Math.max(
+        1,
+        Math.min(20, Number(input.energy?.housematesCount ?? 1))
+      ),
       hasAirConditioner: Boolean(input.energy?.hasAirConditioner),
-      acDailyHours: Math.max(0, Math.min(24, Number(input.energy?.acDailyHours ?? 0))),
-      fanDailyHours: Math.max(0, Math.min(24, Number(input.energy?.fanDailyHours ?? 8))),
-      laptopDailyHours: Math.max(0, Math.min(24, Number(input.energy?.laptopDailyHours ?? 5))),
+      acDailyHours: clampNumber(input.energy?.acDailyHours, 0, 24),
+      fanDailyHours: clampNumber(input.energy?.fanDailyHours, 8, 24),
+      laptopDailyHours: clampNumber(input.energy?.laptopDailyHours, 5, 24),
       hasMiniFridge: Boolean(input.energy?.hasMiniFridge),
-      lightDailyHours: Math.max(0, Math.min(24, Number(input.energy?.lightDailyHours ?? 6))),
+      lightDailyHours: clampNumber(input.energy?.lightDailyHours, 6, 24),
+
+      riceCookerDailyHours: clampNumber(
+        input.energy?.riceCookerDailyHours,
+        0,
+        24
+      ),
+      electricStoveDailyHours: clampNumber(
+        input.energy?.electricStoveDailyHours,
+        0,
+        24
+      ),
+      electricThermosDailyHours: clampNumber(
+        input.energy?.electricThermosDailyHours,
+        0,
+        24
+      ),
+      clothesIronDailyHours: clampNumber(
+        input.energy?.clothesIronDailyHours,
+        0,
+        24
+      ),
     },
+
     food: {
       dietType: input.food?.dietType || "mayoritas_ayam_ikan",
-      beefMuttonMealsPerWeek: Math.max(0, Math.min(21, Number(input.food?.beefMuttonMealsPerWeek ?? 1))),
-      chickenMealsPerWeek: Math.max(0, Math.min(21, Number(input.food?.chickenMealsPerWeek ?? 5))),
-      fishMealsPerWeek: Math.max(0, Math.min(21, Number(input.food?.fishMealsPerWeek ?? 4))),
-      singleUseCoffeeCupsPerWeek: Math.max(0, Math.min(30, Number(input.food?.singleUseCoffeeCupsPerWeek ?? 3))),
+      beefMuttonMealsPerWeek: clampNumber(
+        input.food?.beefMuttonMealsPerWeek,
+        1,
+        21
+      ),
+      chickenMealsPerWeek: clampNumber(
+        input.food?.chickenMealsPerWeek,
+        5,
+        21
+      ),
+      fishMealsPerWeek: clampNumber(
+        input.food?.fishMealsPerWeek,
+        4,
+        21
+      ),
+      singleUseCoffeeCupsPerWeek: clampNumber(
+        input.food?.singleUseCoffeeCupsPerWeek,
+        3,
+        30
+      ),
       usesReusableTumbler: Boolean(input.food?.usesReusableTumbler),
-      takeawayFoodPackagingPerWeek: Math.max(0, Math.min(30, Number(input.food?.takeawayFoodPackagingPerWeek ?? 4))),
+      takeawayFoodPackagingPerWeek: clampNumber(
+        input.food?.takeawayFoodPackagingPerWeek,
+        4,
+        30
+      ),
     },
+
     consumption: {
-      newClothesPerMonth: Math.max(0, Math.min(50, Number(input.consumption?.newClothesPerMonth ?? 1))),
-      onlinePackagesPerMonth: Math.max(0, Math.min(50, Number(input.consumption?.onlinePackagesPerMonth ?? 2))),
-      photocopySheetsPerMonth: Math.max(0, Math.min(1000, Number(input.consumption?.photocopySheetsPerMonth ?? 30))),
-      purchasedSmartphoneThisYear: Boolean(input.consumption?.purchasedSmartphoneThisYear),
-      purchasedLaptopThisYear: Boolean(input.consumption?.purchasedLaptopThisYear),
+      newClothesPerMonth: clampNumber(
+        input.consumption?.newClothesPerMonth,
+        1,
+        50
+      ),
+      onlinePackagesPerMonth: clampNumber(
+        input.consumption?.onlinePackagesPerMonth,
+        2,
+        50
+      ),
+      photocopySheetsPerMonth: clampNumber(
+        input.consumption?.photocopySheetsPerMonth,
+        30,
+        1000
+      ),
+      purchasedSmartphoneThisYear: Boolean(
+        input.consumption?.purchasedSmartphoneThisYear
+      ),
+      purchasedLaptopThisYear: Boolean(
+        input.consumption?.purchasedLaptopThisYear
+      ),
     },
+
     waste: {
       sortingHabit: input.waste?.sortingHabit || "kadang_pilah",
-      singleUsePlasticBagsPerWeek: Math.max(0, Math.min(50, Number(input.waste?.singleUsePlasticBagsPerWeek ?? 5))),
+      singleUsePlasticBagsPerWeek: clampNumber(
+        input.waste?.singleUsePlasticBagsPerWeek,
+        5,
+        50
+      ),
       openBurningHabit: input.waste?.openBurningHabit || "tidak_pernah",
     },
   };

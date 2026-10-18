@@ -36,7 +36,10 @@ test("parseResultSnapshot rejects a nonexistent breakdown shape", () => {
 });
 
 test("Riwayat list loads each carbon_calculations row newest-first without monthly grouping", async () => {
-  const pagePath = path.resolve(process.cwd(), "src/app/riwayat/page.tsx");
+  const pagePath = path.resolve(
+    process.cwd(),
+    "src/app/(app)/riwayat/page.tsx"
+  );
   const content = await fs.readFile(pagePath, "utf-8");
 
   assert.ok(content.includes('.from("carbon_calculations")'));
@@ -49,7 +52,10 @@ test("Riwayat list loads each carbon_calculations row newest-first without month
 });
 
 test("Riwayat detail renders saved result_snapshot and does not recalculate", async () => {
-  const pagePath = path.resolve(process.cwd(), "src/app/riwayat/[id]/page.tsx");
+  const pagePath = path.resolve(
+    process.cwd(),
+    "src/app/(app)/riwayat/[id]/page.tsx"
+  );
   const content = await fs.readFile(pagePath, "utf-8");
 
   assert.ok(content.includes("parseResultSnapshot(calculation.result_snapshot)"));

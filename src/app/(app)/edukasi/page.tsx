@@ -26,7 +26,20 @@ export default function EdukasiPage() {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
-  const factorList = Object.values(EMISSION_FACTORS);
+  const factorList = Object.values(EMISSION_FACTORS).filter(
+    (factor) =>
+      ![
+        "ac_power",
+        "fan_power",
+        "laptop_power",
+        "mini_fridge_power",
+        "led_light_power",
+        "rice_cooker_power",
+        "electric_stove_power",
+        "electric_thermos_power",
+        "clothes_iron_power",
+      ].includes(factor.id)
+  );
 
   const verifiedCount = factorList.filter(
     (f) => f.verificationStatus === "Terverifikasi Resmi"
@@ -160,7 +173,7 @@ export default function EdukasiPage() {
             </div>
             <div>
               <div className="text-2xl font-black text-amber-900">{provisionalCount} Faktor</div>
-              <div className="text-xs font-bold text-charcoal">Provisional (Perlu Riset Lokal)</div>
+              <div className="text-xs font-bold text-charcoal">Masih membutuhkan penelitian lebih lanjut</div>
               <p className="text-[11px] text-muted mt-1">
                 Estimasi berbasis survei perkotaan Aceh yang ditandai untuk pengumpulan data primer lanjutan.
               </p>
@@ -240,8 +253,7 @@ export default function EdukasiPage() {
                 </h2>
               </div>
               <p className="text-xs text-muted mt-1">
-                Seluruh 19 faktor emisi dalam basis data Karbon AI lengkap dengan satuan aktivitas, sumber resmi, tahun rilis, dan batasan ruang lingkup.
-              </p>
+                Faktor emisi yang ditampilkan mencakup kategori transportasi, energi, pangan, konsumsi, dan sampah, lengkap dengan satuan aktivitas, sumber, tahun rilis, serta batasan ruang lingkup.              </p>
             </div>
 
             {/* Filter and Search */}

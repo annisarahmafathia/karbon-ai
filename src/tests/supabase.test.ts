@@ -5,7 +5,10 @@ import path from "node:path";
 import { isSupabaseConfigured, createClient } from "../lib/supabase/client";
 
 test("Hasil save mapping uses CalculationResult.categories and highestCategory.category", async () => {
-  const hasilPagePath = path.resolve(process.cwd(), "src/app/hasil/page.tsx");
+  const hasilPagePath = path.resolve(
+    process.cwd(),
+    "src/app/(app)/hasil/page.tsx"
+  );
   const content = await fs.readFile(hasilPagePath, "utf-8");
 
   assert.ok(content.includes("result.categories.transportasi.monthlyKgCO2e"));

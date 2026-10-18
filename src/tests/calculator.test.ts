@@ -73,6 +73,10 @@ test("Energy calculation applies Sumatera grid factor correctly", () => {
     laptopDailyHours: 0,
     hasMiniFridge: false,
     lightDailyHours: 0,
+    riceCookerDailyHours: 0,
+    electricStoveDailyHours: 0,
+    electricThermosDailyHours: 0,
+    clothesIronDailyHours: 0,
   });
 
   // 100 kWh * 0.761 = 76.1 kg CO2e
@@ -92,6 +96,10 @@ test("Energy token divided by housemates splits the carbon burden", () => {
     laptopDailyHours: 0,
     hasMiniFridge: false,
     lightDailyHours: 0,
+    riceCookerDailyHours: 0,
+    electricStoveDailyHours: 0,
+    electricThermosDailyHours: 0,
+    clothesIronDailyHours: 0,
   });
 
   const shared = calculateEnergyEmissions({
@@ -105,6 +113,10 @@ test("Energy token divided by housemates splits the carbon burden", () => {
     laptopDailyHours: 0,
     hasMiniFridge: false,
     lightDailyHours: 0,
+    riceCookerDailyHours: 0,
+    electricStoveDailyHours: 0,
+    electricThermosDailyHours: 0,
+    clothesIronDailyHours: 0,
   });
 
   assert.equal(shared.monthlyKgCO2e, Math.round((single.monthlyKgCO2e / 2) * 100) / 100);
@@ -221,6 +233,10 @@ test("Energy housing divisor accurately splits shared room appliances for kos_be
     laptopDailyHours: 6,
     hasMiniFridge: true,
     lightDailyHours: 8,
+    riceCookerDailyHours: 0,
+    electricStoveDailyHours: 0,
+    electricThermosDailyHours: 0,
+    clothesIronDailyHours: 0,     
   });
 
   const sharedKos = calculateEnergyEmissions({
@@ -234,6 +250,10 @@ test("Energy housing divisor accurately splits shared room appliances for kos_be
     laptopDailyHours: 6,
     hasMiniFridge: true,
     lightDailyHours: 8,
+    riceCookerDailyHours: 0,
+    electricStoveDailyHours: 0,
+    electricThermosDailyHours: 0,
+    clothesIronDailyHours: 0,
   });
 
   // Shared kos should have lower emissions because AC, fridge, and lights are split by 2 roommates
@@ -355,6 +375,10 @@ test("Sanitization cleans invalid inputs and applies safe boundaries", () => {
       laptopDailyHours: 10,
       hasMiniFridge: false,
       lightDailyHours: 5,
+      riceCookerDailyHours: 0,
+      electricStoveDailyHours: 0,
+      electricThermosDailyHours: 0,
+      clothesIronDailyHours: 0,
     },
   });
 

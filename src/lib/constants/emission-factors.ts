@@ -105,6 +105,79 @@ export const EMISSION_FACTORS: Record<string, EmissionFactorMeta> = {
     isAvailable: true,
   },
 
+  rice_cooker_power: {
+    id: "rice_cooker_power",
+    name: "Konsumsi Daya Magicom / Rice Cooker",
+    category: "energi",
+    value: 0.3,
+    unit: "kWh / jam ekuivalen",
+    activityUnit: "jam penggunaan / hari",
+    source: "Estimasi awal konsumsi peralatan rumah tangga",
+    year: 2026,
+    scope: "Nasional (Indonesia)",
+    uncertainty: "Tinggi (>30%)",
+    verificationStatus: "Provisional (Perlu Riset Lokal)",
+    limitations:
+      "Estimasi awal. Konsumsi aktual bergantung pada daya memasak, mode menghangatkan, dan durasi penggunaan.",
+    notes:
+      "Perlu validasi menggunakan spesifikasi perangkat atau pengukuran aktual.",
+    isAvailable: true,
+  },
+  electric_stove_power: {
+    id: "electric_stove_power",
+    name: "Konsumsi Daya Kompor Listrik",
+    category: "energi",
+    value: 1.0,
+    unit: "kWh / jam ekuivalen",
+    activityUnit: "jam penggunaan / hari",
+    source: "Estimasi awal konsumsi peralatan rumah tangga",
+    year: 2026,
+    scope: "Nasional (Indonesia)",
+    uncertainty: "Tinggi (>30%)",
+    verificationStatus: "Provisional (Perlu Riset Lokal)",
+    limitations:
+      "Estimasi awal. Konsumsi aktual bergantung pada jenis kompor dan pengaturan daya.",
+    notes:
+      "Perlu validasi menggunakan spesifikasi perangkat atau pengukuran aktual.",
+    isAvailable: true,
+  },
+  electric_thermos_power: {
+    id: "electric_thermos_power",
+    name: "Konsumsi Daya Termos Listrik",
+    category: "energi",
+    value: 0.1,
+    unit: "kWh / jam ekuivalen",
+    activityUnit: "jam penggunaan / hari",
+    source: "Estimasi awal konsumsi peralatan rumah tangga",
+    year: 2026,
+    scope: "Nasional (Indonesia)",
+    uncertainty: "Tinggi (>30%)",
+    verificationStatus: "Provisional (Perlu Riset Lokal)",
+    limitations:
+      "Estimasi awal. Konsumsi aktual bergantung pada daya pemanas dan mode mempertahankan suhu.",
+    notes:
+      "Perlu validasi menggunakan spesifikasi perangkat atau pengukuran aktual.",
+    isAvailable: true,
+  },
+  clothes_iron_power: {
+    id: "clothes_iron_power",
+    name: "Konsumsi Daya Setrika Listrik",
+    category: "energi",
+    value: 0.3,
+    unit: "kWh / jam ekuivalen",
+    activityUnit: "jam penggunaan / hari",
+    source: "Estimasi awal konsumsi peralatan rumah tangga",
+    year: 2026,
+    scope: "Nasional (Indonesia)",
+    uncertainty: "Tinggi (>30%)",
+    verificationStatus: "Provisional (Perlu Riset Lokal)",
+    limitations:
+      "Estimasi awal. Konsumsi aktual bergantung pada daya setrika dan siklus termostat.",
+    notes:
+      "Perlu validasi menggunakan spesifikasi perangkat atau pengukuran aktual.",
+    isAvailable: true,
+  },
+
   // --- TRANSPORTASI ---
   motor_matic_bebek: {
     id: "motor_matic_bebek",
