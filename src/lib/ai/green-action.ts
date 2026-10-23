@@ -141,7 +141,7 @@ export function generateRuleBasedGreenActions(
             "Mencegah sumbatan drainase kota dan mengurangi sampah kantong plastik di TPA.",
         },
         difficulty: "Mudah",
-        financialBenefit: "Bebas biaya kantong plastik berbayar di swalayan dan minimarket.",
+        financialBenefit: "Bebas biaya kantong plastik berbayar di supermarket dan minimarket.",
         localContext:
           "Pedagang di Pasar Rukoh, Peunayong, dan minimarket sekitar kampus sangat terbiasa dengan pembeli yang membawa tas belanja sendiri.",
       });

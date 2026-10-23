@@ -47,13 +47,13 @@ const ACTION_DEFINITIONS: ActionDefinition[] = [
   // 1. KANTONG PLASTIK
   {
     id: "action_kantong_kain",
-    title: "Gunakan Tas Belanja Kain (Tote Bag) untuk Belanja Pasar / Swalayan",
+    title: "Gunakan Tas Belanja Kain (Tote Bag) untuk belanja",
     category: "kantong_plastik",
     categoryLabel: "Kantong Plastik",
     difficulty: "Mudah",
     financialBenefit: "Menghindari biaya kantong kresek berbayar di minimarket",
     description:
-      "Selalu simpan satu atau dua kantong belanja kain lipat di dalam tas ransel kuliahmu untuk digunakan saat belanja di pasar tradisional atau swalayan.",
+      "Selalu simpan satu atau dua kantong belanja kain lipat di dalam tas ransel kuliahmu untuk digunakan saat belanja di pasar tradisional atau supermarket.",
     localContextAceh:
       "Pasar Peunayong, Pasar Rukoh Darussalam, dan minimarket sekitar kampus USK/UIN siap melayani pembeli yang membawa tas belanja kain sendiri.",
     evaluate: (input) => {

@@ -29,8 +29,8 @@ export default function CalculatorPage() {
 
   const steps = [
     { id: 1, label: "Kantong Plastik", icon: ShoppingBag },
-    { id: 2, label: "Wadah Makanan", icon: Package },
-    { id: 3, label: "Botol Minum", icon: GlassWater },
+    { id: 2, label: "Wadah Plastik", icon: Package },
+    { id: 3, label: "Botol dan Cup Plastik", icon: GlassWater },
     { id: 4, label: "Wadah Styrofoam", icon: Box },
   ];
 

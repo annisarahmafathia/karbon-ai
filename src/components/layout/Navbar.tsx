@@ -30,8 +30,8 @@ export function Navbar() {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const navLinks = [
-    { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/kalkulator", label: "Kalkulator", icon: Calculator },
+    { href: "/dashboard", label: "Beranda", icon: LayoutDashboard },
+    { href: "/kalkulator", label: "Kalkulator Limbah", icon: Calculator },
     { href: "/hasil", label: "Hasil Analisis", icon: BarChart3 },
     { href: "/riwayat", label: "Riwayat", icon: Clock },
     { href: "/green-action", label: "Green Action", icon: Sparkles },

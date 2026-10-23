@@ -394,7 +394,7 @@ export default function ProfilPage() {
 
               <div>
                 <p className="font-bold text-charcoal">
-                  Dashboard
+                  Beranda 
                 </p>
               </div>
             </div>
@@ -413,7 +413,7 @@ export default function ProfilPage() {
 
               <div>
                 <p className="font-bold text-charcoal">
-                  Riwayat Perhitungan
+                  Riwayat
                 </p>
               </div>
             </div>
