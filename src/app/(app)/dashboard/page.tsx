@@ -307,10 +307,6 @@ export default function DashboardPage() {
         {/* Header */}
         <section className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-forest px-3 py-1 rounded-full bg-mint mb-2">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Dashboard KarbonAI · Plastik Sekali Pakai</span>
-            </div>
 
             <h1 className="text-3xl font-bold tracking-tight text-charcoal sm:text-4xl">
               Halo, {displayName}!
