@@ -1,129 +1,192 @@
-import { CalculationResult, UserCalculatorInput } from "../../types/carbon";
-import { calculateTransportEmissions } from "./transport";
-import { calculateEnergyEmissions } from "./energy";
-import { calculateFoodEmissions } from "./food";
-import { calculateConsumptionEmissions } from "./consumption";
-import { calculateWasteEmissions } from "./waste";
+import {
+  CalculationResult,
+  PlasticCalculatorInput,
+  PlasticCategory,
+} from "../../types/carbon";
+import { calculateCategoryEmission } from "./plastic";
+import { NATIONAL_AVG_PLASTIC_WEEKLY_KG } from "../constants/emission-factors";
 
-export function calculateCarbonFootprint(input: UserCalculatorInput): CalculationResult {
-  const transportasi = calculateTransportEmissions(input.transport);
-  const energi = calculateEnergyEmissions(input.energy);
-  const pangan = calculateFoodEmissions(input.food);
-  const konsumsi = calculateConsumptionEmissions(input.consumption);
-  const sampah = calculateWasteEmissions(input.waste);
+/**
+ * Mesin Kalkulasi Utama Jejak Karbon Plastik Sekali Pakai KarbonAI
+ *
+ * Mengagregasi 4 kategori utama:
+ * 1. Kantong plastik (buah/minggu)
+ * 2. Wadah makanan plastik (buah/minggu)
+ * 3. Botol minum plastik (buah/minggu)
+ * 4. Wadah styrofoam (buah/minggu)
+ *
+ * Rumus dasar:
+ * Emisi kategori (kg CO₂e/minggu) = jumlah barang baru per minggu × faktor emisi per barang.
+ * Total emisi mingguan = penjumlahan emisi dari keempat kategori.
+ */
+export function calculateCarbonFootprint(
+  input: Partial<PlasticCalculatorInput> | null | undefined
+): CalculationResult {
+  const safeInput: PlasticCalculatorInput = {
+    kantongPlastik: input?.kantongPlastik ?? 0,
+    wadahMakanan: input?.wadahMakanan ?? 0,
+    botolMinum: input?.botolMinum ?? 0,
+    wadahStyrofoam: input?.wadahStyrofoam ?? 0,
+  };
 
-  const rawMonthlyTotal =
-    transportasi.monthlyKgCO2e +
-    energi.monthlyKgCO2e +
-    pangan.monthlyKgCO2e +
-    konsumsi.monthlyKgCO2e +
-    sampah.monthlyKgCO2e;
+  const kantong_plastik = calculateCategoryEmission(
+    "kantong_plastik",
+    safeInput.kantongPlastik
+  );
+  const wadah_makanan = calculateCategoryEmission(
+    "wadah_makanan",
+    safeInput.wadahMakanan
+  );
+  const botol_minum = calculateCategoryEmission(
+    "botol_minum",
+    safeInput.botolMinum
+  );
+  const wadah_styrofoam = calculateCategoryEmission(
+    "wadah_styrofoam",
+    safeInput.wadahStyrofoam
+  );
 
-  const totalMonthlyKgCO2e = Math.round(rawMonthlyTotal * 100) / 100;
-  const totalYearlyKgCO2e = Math.round(totalMonthlyKgCO2e * 12 * 100) / 100;
+  const rawWeeklyTotal =
+    kantong_plastik.weeklyKgCO2e +
+    wadah_makanan.weeklyKgCO2e +
+    botol_minum.weeklyKgCO2e +
+    wadah_styrofoam.weeklyKgCO2e;
 
-  // Hitung persentase kontribusi setiap kategori
-  const safeTotal = totalMonthlyKgCO2e > 0 ? totalMonthlyKgCO2e : 1;
-  transportasi.percentage = Math.round((transportasi.monthlyKgCO2e / safeTotal) * 1000) / 10;
-  energi.percentage = Math.round((energi.monthlyKgCO2e / safeTotal) * 1000) / 10;
-  pangan.percentage = Math.round((pangan.monthlyKgCO2e / safeTotal) * 1000) / 10;
-  konsumsi.percentage = Math.round((konsumsi.monthlyKgCO2e / safeTotal) * 1000) / 10;
-  sampah.percentage = Math.round((sampah.monthlyKgCO2e / safeTotal) * 1000) / 10;
+  // Dibulatkan ke 3 desimal untuk skala mingguan
+  const totalWeeklyKgCO2e = Math.round(rawWeeklyTotal * 1000) / 1000;
+
+  // Konversi periode dengan asumsi standar:
+  // - 1 tahun = 52 minggu
+  // - 1 bulan = 52 / 12 minggu (~4.333 minggu)
+  const totalYearlyKgCO2e = Math.round(totalWeeklyKgCO2e * 52 * 100) / 100;
+  const totalMonthlyKgCO2e = Math.round((totalYearlyKgCO2e / 12) * 100) / 100;
+
+  const totalItemsPerWeek =
+    kantong_plastik.itemCountPerWeek +
+    wadah_makanan.itemCountPerWeek +
+    botol_minum.itemCountPerWeek +
+    wadah_styrofoam.itemCountPerWeek;
+
+  // Hitung persentase kontribusi setiap kategori secara konsisten
+  if (totalWeeklyKgCO2e > 0) {
+    kantong_plastik.percentage =
+      Math.round((kantong_plastik.weeklyKgCO2e / totalWeeklyKgCO2e) * 1000) / 10;
+    wadah_makanan.percentage =
+      Math.round((wadah_makanan.weeklyKgCO2e / totalWeeklyKgCO2e) * 1000) / 10;
+    botol_minum.percentage =
+      Math.round((botol_minum.weeklyKgCO2e / totalWeeklyKgCO2e) * 1000) / 10;
+    wadah_styrofoam.percentage =
+      Math.round((wadah_styrofoam.weeklyKgCO2e / totalWeeklyKgCO2e) * 1000) / 10;
+  } else {
+    kantong_plastik.percentage = 0;
+    wadah_makanan.percentage = 0;
+    botol_minum.percentage = 0;
+    wadah_styrofoam.percentage = 0;
+  }
 
   // Tentukan kategori dengan emisi tertinggi
-  const categoryList = [
-    { cat: "transportasi" as const, res: transportasi },
-    { cat: "energi" as const, res: energi },
-    { cat: "pangan" as const, res: pangan },
-    { cat: "konsumsi" as const, res: konsumsi },
-    { cat: "sampah" as const, res: sampah },
+  const categoryList: {
+    cat: PlasticCategory;
+    res: typeof kantong_plastik;
+  }[] = [
+    { cat: "kantong_plastik", res: kantong_plastik },
+    { cat: "wadah_makanan", res: wadah_makanan },
+    { cat: "botol_minum", res: botol_minum },
+    { cat: "wadah_styrofoam", res: wadah_styrofoam },
   ];
 
-  categoryList.sort((a, b) => b.res.monthlyKgCO2e - a.res.monthlyKgCO2e);
-  const highest = categoryList[0];
+  // Urutkan berdasarkan emisi tertinggi, jika seri urutkan berdasarkan jumlah barang
+  categoryList.sort((a, b) => {
+    if (b.res.weeklyKgCO2e !== a.res.weeklyKgCO2e) {
+      return b.res.weeklyKgCO2e - a.res.weeklyKgCO2e;
+    }
+    return b.res.itemCountPerWeek - a.res.itemCountPerWeek;
+  });
 
+  const highest = categoryList[0];
   const highestCategory = {
     category: highest.cat,
     label: highest.res.label,
     percentage: highest.res.percentage,
-    monthlyKgCO2e: highest.res.monthlyKgCO2e,
+    weeklyKgCO2e: highest.res.weeklyKgCO2e,
+    itemCountPerWeek: highest.res.itemCountPerWeek,
   };
 
-  // Benchmark per kapita:
-  // 1. Rata-rata emisi per kapita Indonesia: ~2.140 kg CO2e / thn (~178 kg/bln)
-  //    Sumber: Our World in Data / Global Carbon Project (2022) & KLHK Third Biennial Update Report (BUR 3).
-  // 2. Batas target iklim Perjanjian Paris 2030 (Skenario 1.5°C per kapita global): ~2.000 kg CO2e / thn (~167 kg/bln)
-  //    Sumber: IPCC 6th Assessment Report (AR6 WG3 Chapter 3).
-  const indonesiaAvgYearlyKg = 2140;
-  const indonesiaAvgMonthlyKg = 178;
-  const parisAgreementTargetYearlyKg = 2000;
-
-  const differenceFromNationalPercent =
-    Math.round(((totalYearlyKgCO2e - indonesiaAvgYearlyKg) / indonesiaAvgYearlyKg) * 1000) / 10;
-
-  const differenceFromParisTargetPercent =
-    Math.round(((totalYearlyKgCO2e - parisAgreementTargetYearlyKg) / parisAgreementTargetYearlyKg) * 1000) / 10;
+  // Benchmark komparatif: Rata-rata emisi plastik sekali pakai mingguan per kapita di Indonesia
+  const nationalAvgWeeklyKg = NATIONAL_AVG_PLASTIC_WEEKLY_KG; // 0.85 kg CO2e / minggu
+  const differenceFromBenchmarkPercent =
+    nationalAvgWeeklyKg > 0
+      ? Math.round(
+          ((totalWeeklyKgCO2e - nationalAvgWeeklyKg) / nationalAvgWeeklyKg) * 1000
+        ) / 10
+      : 0;
 
   let status: "rendah" | "sedang" | "tinggi" = "sedang";
-  if (totalYearlyKgCO2e < 1500) {
+  if (totalWeeklyKgCO2e === 0 || totalWeeklyKgCO2e < 0.4) {
     status = "rendah";
-  } else if (totalYearlyKgCO2e > 2300) {
+  } else if (totalWeeklyKgCO2e > 1.2) {
     status = "tinggi";
   }
 
-  // Ekuivalensi lingkungan nyata:
-  // 1 pohon peneduh kota/mangrove dewasa menyerap ~22 kg CO2e / tahun (USDA Forest Service & IPCC Guidelines)
-  const treesNeededYearly = Math.max(1, Math.ceil(totalYearlyKgCO2e / 22));
-  
-  // Setara km perjalanan motor matic (0.043 kg CO2e/km, efisiensi ~45 km/L Pertalite)
+  // Ekuivalensi lingkungan nyata
+  // 1. Proyeksi akumulasi barang plastik per tahun
+  const plasticItemsYearly = totalItemsPerWeek * 52;
+  // 2. Pohon peneduh dewasa menyerap ~22 kg CO2e / tahun (IPCC/USDA Forest Service)
+  const treesNeededYearly =
+    totalYearlyKgCO2e > 0 ? Math.max(1, Math.ceil(totalYearlyKgCO2e / 22)) : 0;
+  // 3. Ekuivalen km perjalanan motor matic (faktor 0.043 kg CO2e/km, konsumsi bensin ~45 km/L)
   const motorKilometersEquivalent = Math.round(totalYearlyKgCO2e / 0.043);
-  
-  // Perjalanan PP Banda Aceh - Medan (~1.200 km PP via Lintas Sumatera, emisi motor ~51.6 kg CO2e per PP)
-  const roundTripBandaAcehMedan = Math.round((totalYearlyKgCO2e / 51.6) * 10) / 10;
 
-  // Analisis kualitas data faktor emisi yang aktif
+  // Analisis kualitas data faktor emisi
   const allDetails = [
-    ...transportasi.details,
-    ...energi.details,
-    ...pangan.details,
-    ...konsumsi.details,
-    ...sampah.details,
+    ...kantong_plastik.details,
+    ...wadah_makanan.details,
+    ...botol_minum.details,
+    ...wadah_styrofoam.details,
   ];
 
-  const verifiedFactorsCount = allDetails.filter((d) => d.verificationStatus === "Terverifikasi Resmi").length;
-  const literatureFactorsCount = allDetails.filter((d) => d.verificationStatus === "Estimasi Literatur Ilmiah").length;
-  const provisionalFactorsCount = allDetails.filter((d) => d.verificationStatus === "Provisional (Perlu Riset Lokal)").length;
+  const verifiedFactorsCount = allDetails.filter(
+    (d) => d.verificationStatus === "Terverifikasi Resmi"
+  ).length;
+  const literatureFactorsCount = allDetails.filter(
+    (d) => d.verificationStatus === "Estimasi Literatur Ilmiah"
+  ).length;
+  const provisionalFactorsCount = allDetails.filter(
+    (d) => d.verificationStatus === "Provisional (Perlu Riset Lokal)"
+  ).length;
 
   const totalFactorsUsed = allDetails.length || 1;
   const confidenceScore = Math.round(
-    ((verifiedFactorsCount * 1.0 + literatureFactorsCount * 0.85 + provisionalFactorsCount * 0.6) /
+    ((verifiedFactorsCount * 1.0 +
+      literatureFactorsCount * 0.85 +
+      provisionalFactorsCount * 0.6) /
       totalFactorsUsed) *
       100
   );
 
   return {
+    methodology: "v2_plastik_mingguan",
+    unit: "kg CO₂e/minggu",
+    totalWeeklyKgCO2e,
     totalMonthlyKgCO2e,
     totalYearlyKgCO2e,
+    totalItemsPerWeek,
     categories: {
-      transportasi,
-      energi,
-      pangan,
-      konsumsi,
-      sampah,
+      kantong_plastik,
+      wadah_makanan,
+      botol_minum,
+      wadah_styrofoam,
     },
     highestCategory,
     benchmark: {
-      indonesiaAvgYearlyKg,
-      indonesiaAvgMonthlyKg,
-      parisAgreementTargetYearlyKg,
-      differenceFromNationalPercent,
-      differenceFromParisTargetPercent,
+      nationalAvgWeeklyKg,
+      differenceFromBenchmarkPercent,
       status,
     },
     equivalencies: {
+      plasticItemsYearly,
       treesNeededYearly,
       motorKilometersEquivalent,
-      roundTripBandaAcehMedan,
     },
     dataQuality: {
       verifiedFactorsCount,

@@ -12,11 +12,17 @@ import {
   Loader2,
   Sparkles,
   TrendingUp,
+  ShoppingBag,
 } from "lucide-react";
 
 import { useAuth } from "@/context/AuthContext";
 import { createClient } from "@/lib/supabase/client";
 import type { CarbonCalculation } from "@/types/database";
+import {
+  CATEGORY_LABELS,
+  parseResultSnapshot,
+  isPlasticCalculationResult,
+} from "@/lib/history/snapshot";
 
 const MONTHS = [
   "Januari",
@@ -33,18 +39,24 @@ const MONTHS = [
   "Desember",
 ];
 
-function formatEmission(value: number | null | undefined) {
+function formatEmission(value: number | null | undefined, unit = "kg CO₂e / minggu") {
   return `${Number(value ?? 0).toLocaleString("id-ID", {
-    maximumFractionDigits: 2,
-  })} kg CO₂e`;
+    maximumFractionDigits: 3,
+  })} ${unit}`;
 }
 
-function formatPeriod(month: number | null, year: number | null) {
-  if (month && year) {
-    return `${MONTHS[month - 1] ?? "Periode"} ${year}`;
+function formatPeriod(calculation: CarbonCalculation | undefined) {
+  if (!calculation) return "Belum ada periode";
+
+  if (calculation.period_week) {
+    return `Minggu ke-${calculation.period_week}, ${calculation.period_year ?? new Date().getFullYear()}`;
   }
 
-  return "Periode tidak tersedia";
+  if (calculation.period_month && calculation.period_year) {
+    return `${MONTHS[calculation.period_month - 1] ?? "Periode"} ${calculation.period_year}`;
+  }
+
+  return "Periode mingguan";
 }
 
 export default function DashboardPage() {
@@ -109,90 +121,89 @@ export default function DashboardPage() {
     "Mahasiswa Aceh";
 
   const latestCalculation = calculations[0];
+  const latestSnapshot = latestCalculation
+    ? parseResultSnapshot(latestCalculation.result_snapshot)
+    : null;
 
-  // Selalu tampilkan enam bulan kalender terakhir.
-  // Data diambil dari hasil terbaru untuk setiap bulan.
+  const isWeeklyPlastic =
+    latestCalculation?.methodology_version === "v2_plastik_mingguan" ||
+    (latestCalculation?.total_weekly_kg != null && latestCalculation.total_weekly_kg > 0) ||
+    (latestSnapshot != null && isPlasticCalculationResult(latestSnapshot));
+
+  const latestEmissionValue = isWeeklyPlastic
+    ? latestCalculation?.total_weekly_kg ??
+      (latestSnapshot && isPlasticCalculationResult(latestSnapshot)
+        ? latestSnapshot.totalWeeklyKgCO2e
+        : latestCalculation?.total_monthly_kg)
+    : latestCalculation?.total_monthly_kg;
+
+  const latestHotspot =
+    latestSnapshot && isPlasticCalculationResult(latestSnapshot)
+      ? latestSnapshot.highestCategory.label
+      : latestCalculation?.highest_category
+      ? CATEGORY_LABELS[latestCalculation.highest_category] ?? latestCalculation.highest_category
+      : "Belum ada";
+
+  // Rekap hingga 6 minggu perhitungan terbaru untuk grafik tren mingguan
   const chartData = useMemo(() => {
-    const monthlyData = new Map<
-      string,
-      {
-        month: number;
-        year: number;
-        total: number;
+    // Kelompokkan perhitungan mingguan yang sudah tersimpan di database.
+    // Karena calculations diurutkan created_at DESC, catatan pertama yang ditemukan untuk tiap minggu adalah hasil simpan terakhir.
+    const weeklyMap = new Map<string, CarbonCalculation>();
+    for (const calc of calculations) {
+      const year = calc.period_year ?? new Date(calc.created_at).getFullYear();
+      const weekKey = calc.period_week
+        ? `Y${year}-W${calc.period_week}`
+        : `Y${year}-M${calc.period_month ?? new Date(calc.created_at).getMonth() + 1}`;
+      if (!weeklyMap.has(weekKey)) {
+        weeklyMap.set(weekKey, calc);
       }
-    >();
-
-    // Query Supabase mengurutkan hasil dari terbaru ke terlama.
-    // Karena itu, data pertama untuk setiap bulan adalah hasil terbaru.
-    for (const calculation of calculations) {
-      const month = calculation.period_month;
-      const year = calculation.period_year;
-
-      if (
-        month == null ||
-        year == null ||
-        month < 1 ||
-        month > 12
-      ) {
-        continue;
-      }
-
-      const key = `${year}-${String(month).padStart(2, "0")}`;
-
-      if (monthlyData.has(key)) continue;
-
-      monthlyData.set(key, {
-        month,
-        year,
-        total: Number(calculation.total_monthly_kg ?? 0),
-      });
     }
 
-    const now = new Date();
-    const lastSixMonths: {
-      month: number;
-      year: number;
-      total: number;
-    }[] = [];
+    // Ambil maksimal 6 minggu terbaru, urutkan dari terlama ke terbaru (kiri ke kanan)
+    const recent = Array.from(weeklyMap.values()).slice(0, 6).reverse();
 
-    // Mulai dari lima bulan sebelum bulan ini sampai bulan ini.
-    // Urutan hasil otomatis dari kiri ke kanan.
-    for (let offset = 5; offset >= 0; offset--) {
-      const date = new Date(
-        now.getFullYear(),
-        now.getMonth() - offset,
-        1
-      );
-
-      const month = date.getMonth() + 1;
-      const year = date.getFullYear();
-      const key = `${year}-${String(month).padStart(2, "0")}`;
-
-      lastSixMonths.push(
-        monthlyData.get(key) ?? {
-          month,
-          year,
-          total: 0,
-        }
-      );
+    if (recent.length === 0) {
+      return [
+        { label: "Mgg 1", total: 0 },
+        { label: "Mgg 2", total: 0 },
+        { label: "Mgg 3", total: 0 },
+        { label: "Mgg 4", total: 0 },
+        { label: "Mgg 5", total: 0 },
+        { label: "Terbaru", total: 0 },
+      ];
     }
 
-    return lastSixMonths;
+    return recent.map((item, idx) => {
+      const snap = parseResultSnapshot(item.result_snapshot);
+      const isPlastic =
+        item.methodology_version === "v2_plastik_mingguan" ||
+        (item.total_weekly_kg != null && item.total_weekly_kg > 0) ||
+        (snap != null && isPlasticCalculationResult(snap));
+
+      const val = isPlastic
+        ? Number(
+            item.total_weekly_kg ??
+              (snap && isPlasticCalculationResult(snap)
+                ? snap.totalWeeklyKgCO2e
+                : item.total_monthly_kg ?? 0)
+          )
+        : Number(item.total_monthly_kg ?? 0);
+
+      const label = item.period_week
+        ? `W${item.period_week}`
+        : item.period_month
+        ? `${MONTHS[item.period_month - 1]?.slice(0, 3)}`
+        : `#${idx + 1}`;
+
+      return {
+        label,
+        total: val,
+        isPlastic,
+      };
+    });
   }, [calculations]);
 
-  const highestEmission = useMemo(() => {
-    return calculations.reduce((highest, calculation) => {
-      return Number(calculation.total_monthly_kg ?? 0) >
-        Number(highest?.total_monthly_kg ?? 0)
-        ? calculation
-        : highest;
-    }, calculations[0]);
-  }, [calculations]);
-
-  const maxEmission = Math.max(
-    ...chartData.map((item) => item.total),
-    1
-  );
+  const maxEmission = Math.max(...chartData.map((item) => item.total), 0.5);
 
   if (isAuthLoading || (!user && !isAuthLoading)) {
     return (
@@ -208,26 +219,26 @@ export default function DashboardPage() {
         {/* Header */}
         <section className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="mb-2 text-sm font-medium text-forest">
-              Dashboard KarbonAI
-            </p>
+            <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-forest px-3 py-1 rounded-full bg-mint mb-2">
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Dashboard KarbonAI · Plastik Sekali Pakai</span>
+            </div>
 
             <h1 className="text-3xl font-bold tracking-tight text-charcoal sm:text-4xl">
               Halo, {displayName}!
             </h1>
 
             <p className="mt-2 max-w-2xl text-sm leading-6 text-gray-600 sm:text-base">
-              Pantau jejak karbonmu dan temukan langkah sederhana untuk
-              menjaga lingkungan, mulai dari kebiasaan sehari-hari.
+              Pantau penggunaan plastik sekali pakai harianmu dan temukan langkah sederhana untuk mengurangi timbulan sampah plastik dari kehidupan sehari-hari.
             </p>
           </div>
 
           <Link
             href="/kalkulator"
-            className="inline-flex min-h-11 items-center justify-center gap-2 self-start rounded-xl bg-forest px-5 py-3 text-sm font-semibold text-white transition hover:bg-forest"
+            className="inline-flex min-h-11 items-center justify-center gap-2 self-start rounded-xl bg-forest px-5 py-3 text-sm font-semibold text-white transition hover:bg-forest-dark shadow-sm"
           >
             <Calculator size={18} />
-            Hitung Jejak Karbon
+            Hitung Jejak Plastik
             <ArrowRight size={16} />
           </Link>
         </section>
@@ -257,7 +268,7 @@ export default function DashboardPage() {
                   {isLoadingData ? "—" : calculations.length}
                 </p>
                 <p className="mt-1 text-xs text-gray-500">
-                  Seluruh riwayat tersimpan
+                  Riwayat perhitungan tersimpan
                 </p>
               </div>
               <div className="rounded-xl bg-mint p-3 text-forest">
@@ -276,16 +287,16 @@ export default function DashboardPage() {
                   {isLoadingData
                     ? "—"
                     : latestCalculation
-                      ? formatEmission(latestCalculation.total_monthly_kg)
+                      ? formatEmission(
+                          latestEmissionValue,
+                          isWeeklyPlastic ? "kg CO₂e/minggu" : "kg CO₂e/bln"
+                        )
                       : "Belum ada"}
                 </p>
                 <p className="mt-1 text-xs text-gray-500">
                   {latestCalculation
-                    ? formatPeriod(
-                        latestCalculation.period_month,
-                        latestCalculation.period_year
-                      )
-                    : "Mulai hitung jejak karbonmu"}
+                    ? formatPeriod(latestCalculation)
+                    : "Mulai hitung jejak plastikmu"}
                 </p>
               </div>
               <div className="rounded-xl bg-amber-50 p-3 text-amber-600">
@@ -298,21 +309,19 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between">
               <div className="min-w-0">
                 <p className="text-sm text-gray-500">
-                  Emisi Tertinggi Tersimpan
+                  Hotspot Emisi Plastik
                 </p>
                 <p className="mt-2 truncate text-xl font-bold text-charcoal">
                   {isLoadingData
                     ? "—"
-                    : highestEmission
-                      ? formatEmission(highestEmission.total_monthly_kg)
-                      : "Belum ada"}
+                    : latestHotspot}
                 </p>
                 <p className="mt-1 truncate text-xs text-gray-500">
-                  {highestEmission?.highest_category || "Belum ada kategori"}
+                  {latestCalculation ? "Kategori penyumbang emisi tertinggi" : "Belum ada data"}
                 </p>
               </div>
               <div className="rounded-xl bg-orange-50 p-3 text-orange-600">
-                <TrendingUp size={24} />
+                <ShoppingBag size={24} />
               </div>
             </div>
           </div>
@@ -324,10 +333,10 @@ export default function DashboardPage() {
             <div className="mb-6 flex items-start justify-between gap-3">
               <div>
                 <h2 className="text-lg font-bold text-charcoal">
-                  Tren Jejak Karbon
+                  Tren Emisi Plastik Sekali Pakai
                 </h2>
                 <p className="mt-1 text-sm text-gray-500">
-                  Rekap emisi bulanan selama 6 bulan terakhir
+                  Perkembangan emisi mingguan dari catatan perhitungan terbarumu
                 </p>
               </div>
               <div className="rounded-xl bg-mint p-2 text-forest">
@@ -351,18 +360,18 @@ export default function DashboardPage() {
 
                     return (
                       <div
-                        key={`${item.year}-${item.month}`}
+                        key={index}
                         className="flex h-full min-w-0 flex-1 flex-col items-center justify-end gap-2"
                       >
-                        <span className="max-w-full truncate text-center text-[10px] text-gray-500 sm:text-xs">
+                        <span className="max-w-full truncate text-center text-[10px] text-gray-500 sm:text-xs font-semibold">
                           {emission.toLocaleString("id-ID", {
-                            maximumFractionDigits: 1,
+                            maximumFractionDigits: 2,
                           })}
                         </span>
 
                         <div className="flex h-[65%] w-full items-end justify-center">
                           <div
-                            title={formatEmission(emission)}
+                            title={`${item.label}: ${emission} kg CO₂e`}
                             className={`w-full max-w-12 rounded-t-lg transition-all ${
                               index === chartData.length - 1
                                 ? "bg-forest"
@@ -373,7 +382,7 @@ export default function DashboardPage() {
                         </div>
 
                         <span className="max-w-full truncate text-center text-[10px] text-gray-500 sm:text-xs">
-                          {`${MONTHS[item.month - 1]?.slice(0, 3) ?? ""} ${String(item.year).slice(-2)}`}
+                          {item.label}
                         </span>
                       </div>
                     );
@@ -381,9 +390,7 @@ export default function DashboardPage() {
                 </div>
 
                 <p className="mt-3 text-xs text-gray-500">
-                  Satuan: kg CO₂e per bulan. Data merangkum hasil perhitungan
-                  yang tersimpan pada setiap bulan. Bulan tanpa data
-                  ditampilkan dengan nilai 0.
+                  Satuan: kg CO₂e per minggu (metodologi plastik sekali pakai baru). Nilai 0 menunjukkan minggu tanpa penggunaan plastik baru.
                 </p>
               </div>
             )}
@@ -396,7 +403,7 @@ export default function DashboardPage() {
               </div>
               <div>
                 <h2 className="font-bold text-charcoal">
-                  Perhitungan Terbaru
+                  Perhitungan Terakhir
                 </h2>
                 <p className="text-sm text-gray-500">
                   Ringkasan hasilmu
@@ -411,14 +418,13 @@ export default function DashboardPage() {
             ) : latestCalculation ? (
               <>
                 <p className="text-sm text-gray-500">
-                  {formatPeriod(
-                    latestCalculation.period_month,
-                    latestCalculation.period_year
-                  )}
+                  {formatPeriod(latestCalculation)}
                 </p>
 
                 <p className="mt-2 text-2xl font-bold text-charcoal">
-                  {formatEmission(latestCalculation.total_monthly_kg)}
+                  {isWeeklyPlastic
+                    ? formatEmission(latestCalculation.total_weekly_kg, "kg CO₂e/minggu")
+                    : formatEmission(latestCalculation.total_monthly_kg, "kg CO₂e/bln")}
                 </p>
 
                 <div className="mt-4 rounded-xl bg-mint p-3">
@@ -426,7 +432,7 @@ export default function DashboardPage() {
                     Kategori emisi tertinggi
                   </p>
                   <p className="mt-1 font-semibold text-emerald-950">
-                    {latestCalculation.highest_category || "Belum tersedia"}
+                    {CATEGORY_LABELS[latestCalculation.highest_category] ?? latestCalculation.highest_category}
                   </p>
                 </div>
 
@@ -441,9 +447,7 @@ export default function DashboardPage() {
             ) : (
               <div className="rounded-xl bg-gray-50 p-4">
                 <p className="text-sm text-gray-600">
-                  Kamu belum menyimpan hasil perhitungan. Mulai dari
-                  aktivitas sehari-harimu untuk mengetahui perkiraan jejak
-                  karbon.
+                  Kamu belum menyimpan hasil perhitungan. Hitung penggunaan kantong plastik, wadah makanan, botol minum, dan styrofoam untuk melihat jejak karbonmu.
                 </p>
                 <Link
                   href="/kalkulator"
@@ -463,18 +467,16 @@ export default function DashboardPage() {
               <div className="mb-3 flex items-center gap-2 text-sage">
                 <Sparkles size={20} />
                 <span className="text-sm font-semibold">
-                  Langkah Kecil, Dampak Berarti
+                  Aksi Nyata Kurangi Plastik
                 </span>
               </div>
 
               <h2 className="text-2xl font-bold sm:text-3xl">
-                Yuk, mulai kebiasaan yang lebih ramah lingkungan!
+                Kurangi plastik sekali pakai, mulai dari hari ini!
               </h2>
 
               <p className="mt-3 text-sm leading-6 text-cream sm:text-base">
-                Coba pilih aksi sederhana yang bisa kamu lakukan, mulai dari
-                mengurangi plastik sekali pakai, menghemat listrik, hingga
-                memilih transportasi yang lebih efisien.
+                Bawa tas kain sendiri, pilih botol tumbler isi ulang, bawa wadah makanan sendiri saat membeli makanan bungkus, dan tolak kemasan styrofoam.
               </p>
             </div>
 

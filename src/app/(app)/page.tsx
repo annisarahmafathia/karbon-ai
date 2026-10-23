@@ -1,4 +1,3 @@
-
 import Link from "next/link";
 import {
   Leaf,
@@ -13,9 +12,9 @@ import {
 const features = [
   {
     icon: Calculator,
-    title: "Kalkulator Jejak Karbon",
+    title: "Kalkulator Jejak Plastik",
     description:
-      "Hitung perkiraan emisi dari transportasi, makanan, energi, dan aktivitas sehari-hari.",
+      "Hitung emisi mingguan dari kantong kresek, wadah makanan, botol minum, dan wadah styrofoam.",
     href: "/kalkulator",
     action: "Mulai menghitung",
   },
@@ -23,7 +22,7 @@ const features = [
     icon: Sparkles,
     title: "Green Action",
     description:
-      "Temukan rekomendasi sederhana untuk membantu mengurangi jejak karbonmu.",
+      "Temukan langkah praktis dan alternatif ramah lingkungan untuk memangkas plastik sekali pakai.",
     href: "/green-action",
     action: "Lihat rekomendasi",
   },
@@ -31,7 +30,7 @@ const features = [
     icon: BookOpen,
     title: "Metodologi & Edukasi",
     description:
-      "Pelajari cara perhitungan emisi dan kebiasaan yang lebih ramah lingkungan.",
+      "Pelajari faktor emisi ilmiah, data massa per barang, dan batas sistem daur hidup plastik.",
     href: "/edukasi",
     action: "Mulai belajar",
   },
@@ -51,13 +50,12 @@ export default function HomePage() {
 
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight text-charcoal">
                 Kenali Jejak Karbonmu,
-                <span className="text-forest"> Mulai dari Aceh.</span>
+                <span className="text-forest"> Kurangi Plastik Sekali Pakai.</span>
               </h1>
 
               <p className="text-base sm:text-lg text-muted leading-relaxed max-w-xl">
-                Pahami dampak aktivitas sehari-harimu terhadap lingkungan.
-                Hitung perkiraan emisi karbon, kenali sumber terbesarnya, dan
-                temukan langkah sederhana untuk hidup lebih berkelanjutan.
+                Ketahui dampak emisi dari penggunaan plastik sekali pakai dalam kehidupan sehari-hari.
+                Hitung jumlah kantong kresek, kotak makanan, botol minum, dan wadah styrofoam barumu selama satu minggu.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-3 pt-2">
@@ -74,13 +72,12 @@ export default function HomePage() {
                   href="/edukasi"
                   className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl border border-sage/40 bg-white hover:bg-mint/40 text-forest font-bold transition-all"
                 >
-                  Pelajari Lebih Lanjut
+                  Pelajari Metodologi
                 </Link>
               </div>
 
               <p className="text-xs text-muted">
-                Dirancang untuk membantu mahasiswa memahami emisi dari
-                aktivitas sehari-hari.
+                Dirancang untuk membantu mahasiswa dan masyarakat memahami jejak karbon plastik dari kebiasaan sehari-hari.
               </p>
             </div>
 
@@ -97,20 +94,18 @@ export default function HomePage() {
                     Mulai dari kebiasaanmu
                   </p>
                   <h2 className="text-2xl sm:text-3xl font-black text-charcoal">
-                    Setiap aktivitas punya dampak.
+                    4 Kategori Plastik Sekali Pakai.
                   </h2>
                   <p className="text-sm text-muted leading-relaxed">
-                    Perjalanan ke kampus, pilihan makanan, pemakaian listrik,
-                    hingga kebiasaan berbelanja dapat berkontribusi terhadap
-                    jejak karbon.
+                    Kantong kresek belanja, wadah makanan plastik thinwall, botol air mineral PET, dan wadah makanan styrofoam.
                   </p>
                 </div>
 
                 <div className="space-y-3">
                   {[
-                    "Kenali sumber emisi pribadi",
-                    "Pahami hasil perhitungan",
-                    "Pilih aksi yang bisa dilakukan",
+                    "Hitung jumlah barang baru per minggu",
+                    "Pahami prinsip penggunaan ulang",
+                    "Terapkan aksi pengurangan nyata",
                   ].map((item, index) => (
                     <div key={item} className="flex items-center gap-3">
                       <span className="w-8 h-8 rounded-xl bg-mint text-forest flex items-center justify-center text-sm font-black shrink-0">
@@ -132,13 +127,13 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
           <div className="max-w-2xl space-y-3">
             <p className="text-sm font-bold uppercase tracking-widest text-forest">
-              Jelajahi CarbonAceh
+              Jelajahi KarbonAI
             </p>
             <h2 className="text-2xl sm:text-3xl font-black text-charcoal">
               Mulai dari memahami, lanjutkan dengan bertindak.
             </h2>
             <p className="text-sm sm:text-base text-muted leading-relaxed">
-              Gunakan fitur yang tersedia untuk mengenali jejak karbon dan
+              Gunakan fitur yang tersedia untuk mengenali emisi plastik sekali pakai dan
               menemukan cara mengurangi dampaknya dalam kehidupan sehari-hari.
             </p>
           </div>
@@ -185,7 +180,7 @@ export default function HomePage() {
               <div className="flex items-center gap-2 text-sage-light">
                 <MapPin className="w-5 h-5" />
                 <span className="text-sm font-bold">
-                  Mulai dari lingkungan sekitar
+                  Mulai dari kebiasaan harian
                 </span>
               </div>
 
@@ -194,8 +189,7 @@ export default function HomePage() {
               </h2>
 
               <p className="text-sm text-cream/80 leading-relaxed">
-                Kenali kebiasaanmu terlebih dahulu, lalu tentukan langkah
-                yang paling realistis untuk dilakukan.
+                Bawa tas kain saat belanja, bawa tumbler minum isi ulang, bawa kotak bekal saat membeli makanan, dan tolak wadah styrofoam.
               </p>
             </div>
 

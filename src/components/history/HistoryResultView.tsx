@@ -1,13 +1,36 @@
 "use client";
 
 import React from "react";
-import { Bike, ShoppingBag, Trash2, Utensils, Zap } from "lucide-react";
+import {
+  ShoppingBag,
+  Package,
+  GlassWater,
+  Box,
+  Bike,
+  Zap,
+  Utensils,
+  Trash2,
+  Info,
+} from "lucide-react";
 import { EmissionsCharts } from "@/components/results/EmissionsCharts";
-import { CalculationResult } from "@/types/carbon";
+import {
+  CalculationResult,
+  LegacyCalculationResult,
+  CarbonCategoryType,
+} from "@/types/carbon";
 import { CarbonCalculation } from "@/types/database";
-import { CATEGORY_LABELS } from "@/lib/history/snapshot";
+import {
+  CATEGORY_LABELS,
+  isPlasticCalculationResult,
+} from "@/lib/history/snapshot";
 
-const categoryIcons = {
+const categoryIcons: Record<CarbonCategoryType, React.ElementType> = {
+  // 4 Kategori Baru
+  kantong_plastik: ShoppingBag,
+  wadah_makanan: Package,
+  botol_minum: GlassWater,
+  wadah_styrofoam: Box,
+  // 5 Kategori Historis
   transportasi: Bike,
   energi: Zap,
   pangan: Utensils,
@@ -17,86 +40,153 @@ const categoryIcons = {
 
 interface HistoryResultViewProps {
   calculation: CarbonCalculation;
-  snapshot: CalculationResult | null;
+  snapshot: CalculationResult | LegacyCalculationResult | null;
 }
 
 export function HistoryResultView({
   calculation,
   snapshot,
 }: HistoryResultViewProps) {
-  const fallbackCategories = [
-    {
-      key: "transportasi" as const,
-      monthlyKgCO2e: calculation.transport_monthly_kg,
-    },
-    { key: "energi" as const, monthlyKgCO2e: calculation.energy_monthly_kg },
-    { key: "pangan" as const, monthlyKgCO2e: calculation.food_monthly_kg },
-    {
-      key: "konsumsi" as const,
-      monthlyKgCO2e: calculation.consumption_monthly_kg,
-    },
-    { key: "sampah" as const, monthlyKgCO2e: calculation.waste_monthly_kg },
-  ];
+  const isPlastic = isPlasticCalculationResult(snapshot);
+  const isLegacy = !isPlastic;
 
   return (
     <div className="space-y-6">
+      {/* Methodology Banner */}
+      {isLegacy && (
+        <div className="bg-amber-50 rounded-2xl p-4 border border-amber-200 text-xs text-amber-900 flex items-start gap-3">
+          <Info className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+          <div className="space-y-0.5">
+            <span className="font-bold">Data Historis (Metodologi Versi Lama)</span>
+            <p className="text-amber-800/90 leading-relaxed">
+              Catatan ini dihitung menggunakan metodologi lama (5 kategori gaya hidup bulanan).
+              Data historis dipertahankan dan tidak dicampur dengan perhitungan mingguan plastik sekali pakai yang baru.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Main Score Card */}
       <div className="bg-white rounded-3xl p-6 sm:p-8 border border-sage/30 shadow-sm space-y-2">
-        <p className="text-xs font-bold uppercase tracking-wider text-muted">
-          Total
-        </p>
+        <div className="flex items-center justify-between">
+          <p className="text-xs font-bold uppercase tracking-wider text-muted">
+            {isPlastic ? "Total Emisi Plastik Sekali Pakai" : "Total Emisi Historis"}
+          </p>
+          <span
+            className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full ${
+              isPlastic
+                ? "bg-mint text-forest border border-forest/30"
+                : "bg-amber-100 text-amber-900 border border-amber-300"
+            }`}
+          >
+            {isPlastic ? "Metodologi Mingguan (Plastik)" : "Metodologi Bulanan (Legacy)"}
+          </span>
+        </div>
+
         <p className="text-4xl font-black text-forest tracking-tight">
-          {snapshot?.totalMonthlyKgCO2e ?? calculation.total_monthly_kg}
+          {isPlastic
+            ? (snapshot as CalculationResult)?.totalWeeklyKgCO2e ??
+              calculation.total_weekly_kg ??
+              0
+            : (snapshot as LegacyCalculationResult)?.totalMonthlyKgCO2e ??
+              calculation.total_monthly_kg}
           <span className="ml-2 text-sm font-bold text-charcoal">
-            kg CO₂e / bln
+            {isPlastic ? "kg CO₂e / minggu" : "kg CO₂e / bln"}
           </span>
         </p>
+
         <p className="text-sm text-muted">
-          {Math.round(snapshot?.totalYearlyKgCO2e ?? calculation.total_yearly_kg)}{" "}
-          kg / tahun · {CATEGORY_LABELS[calculation.highest_category]}
+          {isPlastic
+            ? `Proyeksi: ~${(snapshot as CalculationResult)?.totalMonthlyKgCO2e ?? calculation.total_monthly_kg} kg/bulan · ~${Math.round((snapshot as CalculationResult)?.totalYearlyKgCO2e ?? calculation.total_yearly_kg)} kg/tahun`
+            : `Proyeksi: ~${Math.round((snapshot as LegacyCalculationResult)?.totalYearlyKgCO2e ?? calculation.total_yearly_kg)} kg/tahun`}{" "}
+          · Hotspot: <strong>{CATEGORY_LABELS[calculation.highest_category] ?? calculation.highest_category}</strong>
         </p>
       </div>
 
+      {/* Visual Chart */}
       {snapshot ? <EmissionsCharts result={snapshot} /> : null}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {(snapshot
-          ? (Object.keys(snapshot.categories) as Array<
-              keyof typeof snapshot.categories
-            >).map((key) => ({
-              key,
-              label: snapshot.categories[key].label,
-              monthlyKgCO2e: snapshot.categories[key].monthlyKgCO2e,
-              percentage: snapshot.categories[key].percentage,
-            }))
-          : fallbackCategories.map((item) => ({
-              key: item.key,
-              label: CATEGORY_LABELS[item.key],
-              monthlyKgCO2e: item.monthlyKgCO2e,
-              percentage: null as number | null,
-            }))
-        ).map((cat) => {
-          const Icon = categoryIcons[cat.key];
-          return (
-            <div
-              key={cat.key}
-              className="bg-white rounded-2xl p-5 border border-sage/30 shadow-sm space-y-3"
-            >
-              <div className="w-10 h-10 rounded-xl bg-mint text-forest flex items-center justify-center">
-                <Icon className="w-5 h-5" />
-              </div>
-              <div>
-                <h2 className="text-sm font-bold text-charcoal">{cat.label}</h2>
-                <p className="text-xl font-black text-forest">
-                  {cat.monthlyKgCO2e}{" "}
-                  <span className="text-xs font-bold text-muted">kg</span>
-                </p>
-                {cat.percentage != null ? (
-                  <p className="text-xs text-muted">{cat.percentage}%</p>
-                ) : null}
-              </div>
+      {/* Breakdown per category */}
+      <div className="space-y-3">
+        <h2 className="text-base font-bold text-charcoal">
+          Rincian per Kategori
+        </h2>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {isPlastic && snapshot ? (
+            (
+              Object.keys(
+                (snapshot as CalculationResult).categories
+              ) as Array<keyof (CalculationResult)["categories"]>
+            ).map((key) => {
+              const cat = (snapshot as CalculationResult).categories[key];
+              const Icon = categoryIcons[key] || ShoppingBag;
+
+              return (
+                <div
+                  key={key}
+                  className="bg-white rounded-2xl p-5 border border-sage/30 shadow-sm space-y-3"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="w-10 h-10 rounded-xl bg-mint text-forest flex items-center justify-center">
+                      <Icon className="w-5 h-5" />
+                    </div>
+                    <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-cream text-charcoal border border-sage/30">
+                      {cat.percentage}%
+                    </span>
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-bold text-charcoal">{cat.label}</h3>
+                    <p className="text-xl font-black text-forest">
+                      {cat.weeklyKgCO2e}{" "}
+                      <span className="text-xs font-bold text-muted">kg CO₂e/minggu</span>
+                    </p>
+                    <p className="text-xs text-muted mt-0.5">
+                      {cat.itemCountPerWeek} barang baru / minggu
+                    </p>
+                  </div>
+                </div>
+              );
+            })
+          ) : isLegacy && snapshot ? (
+            (
+              Object.keys(
+                (snapshot as LegacyCalculationResult).categories
+              ) as Array<keyof (LegacyCalculationResult)["categories"]>
+            ).map((key) => {
+              const cat = (snapshot as LegacyCalculationResult).categories[key];
+              const Icon = categoryIcons[key] || Bike;
+
+              return (
+                <div
+                  key={key}
+                  className="bg-white rounded-2xl p-5 border border-sage/30 shadow-sm space-y-3"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="w-10 h-10 rounded-xl bg-mint text-forest flex items-center justify-center">
+                      <Icon className="w-5 h-5" />
+                    </div>
+                    <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-cream text-charcoal border border-sage/30">
+                      {cat.percentage}%
+                    </span>
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-bold text-charcoal">{cat.label}</h3>
+                    <p className="text-xl font-black text-forest">
+                      {cat.monthlyKgCO2e}{" "}
+                      <span className="text-xs font-bold text-muted">kg CO₂e/bln</span>
+                    </p>
+                  </div>
+                </div>
+              );
+            })
+          ) : (
+            // Fallback jika snapshot tidak terbaca
+            <div className="col-span-2 bg-white rounded-2xl p-5 border border-sage/30 text-xs text-muted">
+              Rincian snapshot kategori tidak tersedia untuk catatan ini.
             </div>
-          );
-        })}
+          )}
+        </div>
       </div>
     </div>
   );

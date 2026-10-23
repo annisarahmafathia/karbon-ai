@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { Leaf, ShieldCheck, MapPin } from "lucide-react";
+import { Leaf, ShieldCheck } from "lucide-react";
 
 export function Footer() {
   return (

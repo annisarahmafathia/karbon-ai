@@ -1,7 +1,18 @@
-import { CalculationResult, CategoryResult } from "@/types/carbon";
-import { CarbonCategoryType } from "@/types/database";
+import {
+  CalculationResult,
+  CategoryResult,
+  LegacyCalculationResult,
+  LegacyCategoryResult,
+  CarbonCategoryType,
+} from "@/types/carbon";
 
 export const CATEGORY_LABELS: Record<CarbonCategoryType, string> = {
+  // Empat Kategori Baru (Plastik Sekali Pakai)
+  kantong_plastik: "Kantong Plastik",
+  wadah_makanan: "Wadah Makanan Plastik",
+  botol_minum: "Botol Minum Plastik",
+  wadah_styrofoam: "Wadah Styrofoam",
+  // Kategori Historis Lama (v1_bulanan)
   transportasi: "Transportasi",
   energi: "Energi",
   pangan: "Pangan",
@@ -22,27 +33,72 @@ export function formatCalculationDate(iso: string) {
   }).format(date);
 }
 
-function isCategoryResult(value: unknown): value is CategoryResult {
+function isPlasticCategoryResult(value: unknown): value is CategoryResult {
   if (!value || typeof value !== "object") return false;
   const category = value as CategoryResult;
-  return typeof category.monthlyKgCO2e === "number" && typeof category.label === "string";
+  return (
+    typeof category.weeklyKgCO2e === "number" &&
+    typeof category.label === "string" &&
+    typeof category.itemCountPerWeek === "number"
+  );
 }
 
-export function parseResultSnapshot(value: unknown): CalculationResult | null {
+function isLegacyCategoryResult(value: unknown): value is LegacyCategoryResult {
+  if (!value || typeof value !== "object") return false;
+  const category = value as LegacyCategoryResult;
+  return (
+    typeof category.monthlyKgCO2e === "number" &&
+    typeof category.label === "string"
+  );
+}
+
+export function isPlasticCalculationResult(
+  result: unknown
+): result is CalculationResult {
+  if (!result || typeof result !== "object") return false;
+  const res = result as CalculationResult;
+  return (
+    (res.methodology === "v2_plastik_mingguan" || typeof res.totalWeeklyKgCO2e === "number") &&
+    Boolean(res.categories) &&
+    isPlasticCategoryResult(res.categories?.kantong_plastik) &&
+    isPlasticCategoryResult(res.categories?.wadah_makanan) &&
+    isPlasticCategoryResult(res.categories?.botol_minum) &&
+    isPlasticCategoryResult(res.categories?.wadah_styrofoam)
+  );
+}
+
+export function isLegacyCalculationResult(
+  result: unknown
+): result is LegacyCalculationResult {
+  if (!result || typeof result !== "object") return false;
+  const res = result as LegacyCalculationResult;
+  return (
+    typeof res.totalMonthlyKgCO2e === "number" &&
+    Boolean(res.categories) &&
+    isLegacyCategoryResult(res.categories?.transportasi) &&
+    isLegacyCategoryResult(res.categories?.energi) &&
+    isLegacyCategoryResult(res.categories?.pangan) &&
+    isLegacyCategoryResult(res.categories?.konsumsi) &&
+    isLegacyCategoryResult(res.categories?.sampah)
+  );
+}
+
+/**
+ * Membaca snapshot hasil kalkulasi secara aman:
+ * Mendukung format baru (v2_plastik_mingguan) maupun format historis lama (v1_bulanan).
+ */
+export function parseResultSnapshot(
+  value: unknown
+): CalculationResult | LegacyCalculationResult | null {
   if (!value || typeof value !== "object") return null;
 
-  const result = value as CalculationResult;
-  if (
-    typeof result.totalMonthlyKgCO2e !== "number" ||
-    !result.categories ||
-    !isCategoryResult(result.categories.transportasi) ||
-    !isCategoryResult(result.categories.energi) ||
-    !isCategoryResult(result.categories.pangan) ||
-    !isCategoryResult(result.categories.konsumsi) ||
-    !isCategoryResult(result.categories.sampah)
-  ) {
-    return null;
+  if (isPlasticCalculationResult(value)) {
+    return value;
   }
 
-  return result;
+  if (isLegacyCalculationResult(value)) {
+    return value;
+  }
+
+  return null;
 }

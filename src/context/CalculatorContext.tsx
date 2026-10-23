@@ -3,12 +3,7 @@
 import React, { createContext, useContext, useEffect, useState, useMemo } from "react";
 import {
   CalculationResult,
-  ConsumptionData,
-  EnergyData,
-  FoodData,
-  TransportData,
-  UserCalculatorInput,
-  WasteData,
+  PlasticCalculatorInput,
 } from "../types/carbon";
 import { calculateCarbonFootprint } from "../lib/calculator/engine";
 import {
@@ -17,27 +12,27 @@ import {
 } from "../lib/validation";
 
 interface CalculatorContextType {
-  input: UserCalculatorInput;
+  input: PlasticCalculatorInput;
   result: CalculationResult;
   hasCustomized: boolean;
-  updateTransport: (data: Partial<TransportData>) => void;
-  updateEnergy: (data: Partial<EnergyData>) => void;
-  updateFood: (data: Partial<FoodData>) => void;
-  updateConsumption: (data: Partial<ConsumptionData>) => void;
-  updateWaste: (data: Partial<WasteData>) => void;
+  updateKantongPlastik: (count: number) => void;
+  updateWadahMakanan: (count: number) => void;
+  updateBotolMinum: (count: number) => void;
+  updateWadahStyrofoam: (count: number) => void;
+  updateInput: (data: Partial<PlasticCalculatorInput>) => void;
   resetToDefault: () => void;
 }
 
-const LOCAL_STORAGE_KEY = "karbon_ai_user_input_v1";
+const LOCAL_STORAGE_KEY = "karbon_ai_user_input_plastic_v2";
 
 const CalculatorContext = createContext<CalculatorContextType | undefined>(undefined);
 
 export function CalculatorProvider({ children }: { children: React.ReactNode }) {
-  const [input, setInput] = useState<UserCalculatorInput>(DEFAULT_CALCULATOR_INPUT);
+  const [input, setInput] = useState<PlasticCalculatorInput>(DEFAULT_CALCULATOR_INPUT);
   const [hasCustomized, setHasCustomized] = useState<boolean>(false);
   const [isHydrated, setIsHydrated] = useState<boolean>(false);
 
-  // Load from localStorage on client mount asynchronously
+  // Muat dari localStorage saat client mount
   useEffect(() => {
     const timer = setTimeout(() => {
       try {
@@ -49,7 +44,7 @@ export function CalculatorProvider({ children }: { children: React.ReactNode }) 
           setHasCustomized(true);
         }
       } catch {
-        // Fallback to default
+        // Fallback ke default
       } finally {
         setIsHydrated(true);
       }
@@ -58,61 +53,52 @@ export function CalculatorProvider({ children }: { children: React.ReactNode }) 
     return () => clearTimeout(timer);
   }, []);
 
-
-  // Save to localStorage whenever input changes (only after hydration)
+  // Simpan ke localStorage setiap ada perubahan input setelah hidrasi
   useEffect(() => {
     if (isHydrated) {
       try {
         localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(input));
       } catch {
-        // Ignore quota errors
+        // Abaikan jika quota error
       }
     }
   }, [input, isHydrated]);
 
-
-  const updateTransport = (data: Partial<TransportData>) => {
+  const updateKantongPlastik = (count: number) => {
     setHasCustomized(true);
     setInput((prev) => ({
       ...prev,
-      transport: { ...prev.transport, ...data },
+      kantongPlastik: Math.max(0, Math.floor(Number(count) || 0)),
     }));
   };
 
-  const updateEnergy = (data: Partial<EnergyData>) => {
+  const updateWadahMakanan = (count: number) => {
     setHasCustomized(true);
     setInput((prev) => ({
       ...prev,
-      energy: {
-        ...prev.energy,
-        ...data,
-        calculationMethod: "token_kwh",
-      },
+      wadahMakanan: Math.max(0, Math.floor(Number(count) || 0)),
     }));
   };
 
-  const updateFood = (data: Partial<FoodData>) => {
+  const updateBotolMinum = (count: number) => {
     setHasCustomized(true);
     setInput((prev) => ({
       ...prev,
-      food: { ...prev.food, ...data },
+      botolMinum: Math.max(0, Math.floor(Number(count) || 0)),
     }));
   };
 
-  const updateConsumption = (data: Partial<ConsumptionData>) => {
+  const updateWadahStyrofoam = (count: number) => {
     setHasCustomized(true);
     setInput((prev) => ({
       ...prev,
-      consumption: { ...prev.consumption, ...data },
+      wadahStyrofoam: Math.max(0, Math.floor(Number(count) || 0)),
     }));
   };
 
-  const updateWaste = (data: Partial<WasteData>) => {
+  const updateInput = (data: Partial<PlasticCalculatorInput>) => {
     setHasCustomized(true);
-    setInput((prev) => ({
-      ...prev,
-      waste: { ...prev.waste, ...data },
-    }));
+    setInput((prev) => sanitizeCalculatorInput({ ...prev, ...data }));
   };
 
   const resetToDefault = () => {
@@ -121,11 +107,11 @@ export function CalculatorProvider({ children }: { children: React.ReactNode }) 
     try {
       localStorage.removeItem(LOCAL_STORAGE_KEY);
     } catch {
-      // Ignore
+      // Abaikan
     }
   };
 
-  // Re-calculate results reactively whenever input changes
+  // Kalkulasi jejak karbon secara reaktif setiap input berubah
   const result = useMemo(() => {
     return calculateCarbonFootprint(input);
   }, [input]);
@@ -136,11 +122,11 @@ export function CalculatorProvider({ children }: { children: React.ReactNode }) 
         input,
         result,
         hasCustomized,
-        updateTransport,
-        updateEnergy,
-        updateFood,
-        updateConsumption,
-        updateWaste,
+        updateKantongPlastik,
+        updateWadahMakanan,
+        updateBotolMinum,
+        updateWadahStyrofoam,
+        updateInput,
         resetToDefault,
       }}
     >

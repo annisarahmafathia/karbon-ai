@@ -11,11 +11,11 @@ test("Hasil save mapping uses CalculationResult.categories and highestCategory.c
   );
   const content = await fs.readFile(hasilPagePath, "utf-8");
 
-  assert.ok(content.includes("result.categories.transportasi.monthlyKgCO2e"));
-  assert.ok(content.includes("result.categories.energi.monthlyKgCO2e"));
-  assert.ok(content.includes("result.categories.pangan.monthlyKgCO2e"));
-  assert.ok(content.includes("result.categories.konsumsi.monthlyKgCO2e"));
-  assert.ok(content.includes("result.categories.sampah.monthlyKgCO2e"));
+  assert.ok(content.includes("result.categories.kantong_plastik.weeklyKgCO2e"));
+  assert.ok(content.includes("result.categories.wadah_makanan.weeklyKgCO2e"));
+  assert.ok(content.includes("result.categories.botol_minum.weeklyKgCO2e"));
+  assert.ok(content.includes("result.categories.wadah_styrofoam.weeklyKgCO2e"));
+  assert.ok(content.includes("result.totalWeeklyKgCO2e"));
   assert.ok(content.includes("result.highestCategory.category"));
   assert.ok(
     !content.includes("result.breakdown"),
@@ -27,6 +27,37 @@ test("Hasil save mapping uses CalculationResult.categories and highestCategory.c
   );
   assert.ok(content.includes("Gagal menyimpan kalkulasi ke Supabase:"));
   assert.ok(content.includes("Kesalahan JavaScript saat menyimpan kalkulasi (bukan error Supabase):"));
+});
+
+test("Single-use plastics SQL migration enforces non-destructive schema additions and category compatibility", async () => {
+  const migrationPath = path.resolve(
+    process.cwd(),
+    "supabase/migrations/20261022000000_single_use_plastics_methodology.sql"
+  );
+  const sqlContent = await fs.readFile(migrationPath, "utf-8");
+
+  // Verifikasi penambahan kolom mingguan baru secara non-destruktif
+  assert.ok(sqlContent.includes("ADD COLUMN IF NOT EXISTS methodology_version"));
+  assert.ok(sqlContent.includes("ADD COLUMN IF NOT EXISTS total_weekly_kg"));
+  assert.ok(sqlContent.includes("ADD COLUMN IF NOT EXISTS period_week"));
+  assert.ok(sqlContent.includes("ADD COLUMN IF NOT EXISTS kantong_plastik_weekly_kg"));
+  assert.ok(sqlContent.includes("ADD COLUMN IF NOT EXISTS wadah_makanan_weekly_kg"));
+  assert.ok(sqlContent.includes("ADD COLUMN IF NOT EXISTS botol_minum_weekly_kg"));
+  assert.ok(sqlContent.includes("ADD COLUMN IF NOT EXISTS wadah_styrofoam_weekly_kg"));
+  assert.ok(sqlContent.includes("ADD COLUMN IF NOT EXISTS total_items_per_week"));
+
+  // Verifikasi kompatibilitas non-destruktif untuk highest_category (mendukung kategori lama & baru)
+  assert.ok(sqlContent.includes("'kantong_plastik'"));
+  assert.ok(sqlContent.includes("'wadah_makanan'"));
+  assert.ok(sqlContent.includes("'botol_minum'"));
+  assert.ok(sqlContent.includes("'wadah_styrofoam'"));
+  assert.ok(sqlContent.includes("'transportasi'"));
+  assert.ok(sqlContent.includes("'energi'"));
+
+  // Verifikasi perlindungan data lama agar tidak hilang
+  assert.ok(sqlContent.includes("UPDATE public.carbon_calculations"));
+  assert.ok(sqlContent.includes("methodology_version = 'v1_bulanan'"));
+  assert.ok(!sqlContent.includes("DROP TABLE"));
 });
 
 test("Supabase isSupabaseConfigured returns boolean based on environment", () => {

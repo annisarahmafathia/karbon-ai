@@ -1,99 +1,27 @@
+export type PlasticCategory =
+  | "kantong_plastik"
+  | "wadah_makanan"
+  | "botol_minum"
+  | "wadah_styrofoam";
 
-export type VehicleType =
-  | "motor_matic_bebek"
-  | "motor_sport"
-  | "mobil_bensin"
-  | "mobil_diesel"
-  | "labi_labi"
-  | "trans_koetaradja"
-  | "jalan_sepeda";
+export type LegacyCategory =
+  | "transportasi"
+  | "energi"
+  | "pangan"
+  | "konsumsi"
+  | "sampah";
 
-export interface TransportData {
-  primaryVehicle: VehicleType;
-  campusDistanceKm: number; // Jarak satu arah ke kampus (km)
-  daysPerWeekToCampus: number; // Hari ke kampus per minggu (1 - 7)
-  otherDailyKm: number; // Jarak aktivitas lain harian (km/hari)
-  weekendTripKmPerMonth: number; // Perjalanan akhir pekan / pulang kampung (km/bulan)
-  weekendTripVehicle: VehicleType;
+export type CarbonCategoryType = PlasticCategory | LegacyCategory;
+
+export interface PlasticCalculatorInput {
+  kantongPlastik: number; // buah kantong plastik sekali pakai baru per minggu
+  wadahMakanan: number; // buah wadah makanan plastik sekali pakai baru per minggu
+  botolMinum: number; // buah botol minuman plastik sekali pakai baru per minggu
+  wadahStyrofoam: number; // buah wadah styrofoam sekali pakai baru per minggu
 }
 
-export type HousingType =
-  | "kos_sendiri"
-  | "kos_berbagi"
-  | "rumah_sewa"
-  | "asrama_kampus"
-  | "rumah_keluarga";
-
-export interface EnergyData {
-  housingType: HousingType;
-  calculationMethod: "token_kwh" | "peralatan";
-
-  // Jika metode token listrik
-  monthlyKwh: number; // Total kWh bulanan yang dialokasikan untuk pengguna
-  housematesCount: number; // Jumlah penghuni untuk membagi beban bersama
-
-  // Jika metode estimasi peralatan
-  hasAirConditioner: boolean;
-  acDailyHours: number; // Jam penggunaan AC per hari
-  fanDailyHours: number; // Jam penggunaan kipas angin per hari
-  laptopDailyHours: number; // Jam penggunaan laptop per hari
-  hasMiniFridge: boolean; // Kulkas di kamar/kos
-  lightDailyHours: number; // Jam lampu menyala per hari
-
-  // Peralatan listrik tambahan
-  riceCookerDailyHours: number; // Jam penggunaan magicom per hari
-  electricStoveDailyHours: number; // Jam penggunaan kompor listrik per hari
-  electricThermosDailyHours: number; // Jam penggunaan termos listrik per hari
-  clothesIronDailyHours: number; // Jam penggunaan setrika per hari
-}
-
-export type DietType =
-  | "campuran_daging" // Sering makan daging sapi/kambing
-  | "mayoritas_ayam_ikan" // Daging ayam atau ikan laut Aceh
-  | "pescetarian" // Ikan dan nabati saja
-  | "vegetarian_vegan"; // Nabati, tahu, tempe, sayur
-
-export interface FoodData {
-  dietType: DietType;
-  beefMuttonMealsPerWeek: number; // Frekuensi porsi daging sapi/kambing per minggu
-  chickenMealsPerWeek: number; // Frekuensi porsi ayam per minggu
-  fishMealsPerWeek: number; // Frekuensi porsi ikan per minggu
-  singleUseCoffeeCupsPerWeek: number; // Gelas plastik es kopi/minuman kemasan take-away per minggu
-  usesReusableTumbler: boolean; // Kebiasaan membawa tumbler/cangkir keramik warkop
-  takeawayFoodPackagingPerWeek: number; // Porsi makanan bungkus styrofoam/plastik per minggu
-}
-
-export interface ConsumptionData {
-  newClothesPerMonth: number; // Pembelian pakaian baru per bulan
-  onlinePackagesPerMonth: number; // Paket kiriman belanja online per bulan
-  photocopySheetsPerMonth: number; // Lembar fotokopi modul dan kertas tugas per bulan
-  purchasedSmartphoneThisYear: boolean; // Membeli HP baru dalam 12 bulan terakhir
-  purchasedLaptopThisYear: boolean; // Membeli laptop baru dalam 12 bulan terakhir
-}
-
-export type WasteSortingHabit =
-  | "selalu_pilah"
-  | "kadang_pilah"
-  | "tidak_pernah_campur";
-
-export type OpenBurningHabit =
-  | "tidak_pernah"
-  | "kadang_pekarangan_kos"
-  | "sering";
-
-export interface WasteData {
-  sortingHabit: WasteSortingHabit;
-  singleUsePlasticBagsPerWeek: number; // Kantong kresek belanja per minggu
-  openBurningHabit: OpenBurningHabit; // Praktik bakar sampah terbuka di pekarangan
-}
-
-export interface UserCalculatorInput {
-  transport: TransportData;
-  energy: EnergyData;
-  food: FoodData;
-  consumption: ConsumptionData;
-  waste: WasteData;
-}
+// UserCalculatorInput sekarang menggunakan PlasticCalculatorInput untuk metodologi baru
+export type UserCalculatorInput = PlasticCalculatorInput;
 
 export type VerificationTier =
   | "Terverifikasi Resmi"
@@ -103,32 +31,88 @@ export type VerificationTier =
 export interface EmissionFactorMeta {
   id: string;
   name: string;
-  category:
-    | "transportasi"
-    | "energi"
-    | "pangan"
-    | "konsumsi"
-    | "sampah";
-  value: number; // Nilai numerik
-  unit: string; // Satuan faktor emisi
-  activityUnit: string; // Satuan input aktivitas
-  source: string; // Sumber rujukan
-  year: number;
-  scope: "Sumatera / Aceh" | "Nasional (Indonesia)" | "Global LCA";
+  category: CarbonCategoryType;
+  value: number; // Nilai numerik faktor emisi (kg CO₂e / unit)
+  unit: string; // Satuan faktor emisi (e.g. "kg CO₂e / buah")
+  activityUnit: string; // Satuan aktivitas (e.g. "buah / minggu")
+  materialMassGrams?: number; // Asumsi massa per unit barang (gram)
+  systemBoundary: string; // Batas sistem perhitungan (e.g. Cradle-to-grave)
+  source: string; // Sumber rujukan ilmiah / resmi
+  year: number; // Tahun publikasi
+  scope: string; // Cakupan geografis / standar
   uncertainty: "Rendah (<10%)" | "Sedang (10-30%)" | "Tinggi (>30%)";
   verificationStatus: VerificationTier;
   limitations: string; // Batasan model dan asumsi
-  notes: string;
-  isAvailable: boolean; // Transparansi jika data belum terverifikasi
+  notes: string; // Keterangan metodologis
+  isAvailable: boolean;
 }
 
 export interface CategoryResult {
-  category:
-    | "transportasi"
-    | "energi"
-    | "pangan"
-    | "konsumsi"
-    | "sampah";
+  category: PlasticCategory;
+  label: string;
+  itemCountPerWeek: number; // buah / minggu (barang baru)
+  emissionFactor: number; // kg CO₂e / buah
+  weeklyKgCO2e: number; // kg CO₂e / minggu (satuan utama)
+  monthlyKgCO2e: number; // kg CO₂e / bulan (proyeksi konversi: weekly * 52 / 12)
+  yearlyKgCO2e: number; // kg CO₂e / tahun (proyeksi konversi: weekly * 52)
+  percentage: number; // % kontribusi terhadap total emisi mingguan
+  details: {
+    item: string;
+    activityValue: string;
+    factorUsed: string;
+    subtotalKgCO2e: number; // kg CO₂e / minggu
+    source: string;
+    uncertainty: string;
+    verificationStatus: VerificationTier;
+    activityUnit?: string;
+    materialMassGrams?: number;
+    systemBoundary?: string;
+    limitations?: string;
+  }[];
+  explanation: string;
+}
+
+export interface CalculationResult {
+  methodology: "v2_plastik_mingguan";
+  unit: "kg CO₂e/minggu";
+  totalWeeklyKgCO2e: number; // Satuan utama hasil perhitungan
+  totalMonthlyKgCO2e: number; // Proyeksi bulanan (~4.33 minggu/bulan)
+  totalYearlyKgCO2e: number; // Proyeksi tahunan (52 minggu/tahun)
+  totalItemsPerWeek: number; // Total jumlah barang plastik baru per minggu
+  categories: {
+    kantong_plastik: CategoryResult;
+    wadah_makanan: CategoryResult;
+    botol_minum: CategoryResult;
+    wadah_styrofoam: CategoryResult;
+  };
+  highestCategory: {
+    category: PlasticCategory;
+    label: string;
+    percentage: number;
+    weeklyKgCO2e: number;
+    itemCountPerWeek: number;
+  };
+  benchmark: {
+    nationalAvgWeeklyKg: number; // Tolok ukur rata-rata emisi plastik sekali pakai per kapita mingguan
+    differenceFromBenchmarkPercent: number;
+    status: "rendah" | "sedang" | "tinggi";
+  };
+  equivalencies: {
+    plasticItemsYearly: number; // Proyeksi akumulasi barang plastik sekali pakai per tahun
+    treesNeededYearly: number; // Estimasi pohon dewasa yang dibutuhkan untuk menyerap emisi
+    motorKilometersEquivalent: number; // Ekuivalen km perjalanan motor matic
+  };
+  dataQuality: {
+    verifiedFactorsCount: number;
+    literatureFactorsCount: number;
+    provisionalFactorsCount: number;
+    confidenceScore: number; // 0 - 100%
+  };
+}
+
+// Tipe pendukung untuk membaca data historis snapshot versi lama (v1_bulanan)
+export interface LegacyCategoryResult {
+  category: LegacyCategory;
   label: string;
   monthlyKgCO2e: number;
   yearlyKgCO2e: number;
@@ -147,31 +131,26 @@ export interface CategoryResult {
   explanation: string;
 }
 
-export interface CalculationResult {
+export interface LegacyCalculationResult {
   totalMonthlyKgCO2e: number;
   totalYearlyKgCO2e: number;
   categories: {
-    transportasi: CategoryResult;
-    energi: CategoryResult;
-    pangan: CategoryResult;
-    konsumsi: CategoryResult;
-    sampah: CategoryResult;
+    transportasi: LegacyCategoryResult;
+    energi: LegacyCategoryResult;
+    pangan: LegacyCategoryResult;
+    konsumsi: LegacyCategoryResult;
+    sampah: LegacyCategoryResult;
   };
   highestCategory: {
-    category:
-      | "transportasi"
-      | "energi"
-      | "pangan"
-      | "konsumsi"
-      | "sampah";
+    category: LegacyCategory;
     label: string;
     percentage: number;
     monthlyKgCO2e: number;
   };
   benchmark: {
-    indonesiaAvgYearlyKg: number; // Rata-rata nasional tahunan
-    indonesiaAvgMonthlyKg: number; // Rata-rata nasional bulanan
-    parisAgreementTargetYearlyKg: number; // Target pembanding tahunan
+    indonesiaAvgYearlyKg: number;
+    indonesiaAvgMonthlyKg: number;
+    parisAgreementTargetYearlyKg: number;
     differenceFromNationalPercent: number;
     differenceFromParisTargetPercent: number;
     status: "rendah" | "sedang" | "tinggi";
@@ -179,12 +158,12 @@ export interface CalculationResult {
   equivalencies: {
     treesNeededYearly: number;
     motorKilometersEquivalent: number;
-    roundTripBandaAcehMedan: number;
+    roundTripBandaAcehMedan?: number;
   };
   dataQuality: {
     verifiedFactorsCount: number;
     literatureFactorsCount: number;
     provisionalFactorsCount: number;
-    confidenceScore: number; // 0 - 100%
+    confidenceScore: number;
   };
 }

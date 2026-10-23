@@ -4,22 +4,22 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCalculator } from "@/context/CalculatorContext";
-import { StepTransport } from "@/components/calculator/StepTransport";
-import { StepEnergy } from "@/components/calculator/StepEnergy";
-import { StepFood } from "@/components/calculator/StepFood";
-import { StepConsumption } from "@/components/calculator/StepConsumption";
-import { StepWaste } from "@/components/calculator/StepWaste";
+import { StepPlasticBags } from "@/components/calculator/StepPlasticBags";
+import { StepFoodContainers } from "@/components/calculator/StepFoodContainers";
+import { StepPlasticBottles } from "@/components/calculator/StepPlasticBottles";
+import { StepStyrofoam } from "@/components/calculator/StepStyrofoam";
 import {
-  Bike,
-  Zap,
-  Utensils,
   ShoppingBag,
-  Trash2,
+  Package,
+  GlassWater,
+  Box,
   ArrowRight,
   ArrowLeft,
   RotateCcw,
   BarChart3,
   CheckCircle2,
+  Sparkles,
+  Info,
 } from "lucide-react";
 
 export default function CalculatorPage() {
@@ -28,15 +28,14 @@ export default function CalculatorPage() {
   const [currentStep, setCurrentStep] = useState<number>(1);
 
   const steps = [
-    { id: 1, label: "Transportasi", icon: Bike },
-    { id: 2, label: "Energi", icon: Zap },
-    { id: 3, label: "Pangan", icon: Utensils },
-    { id: 4, label: "Belanja", icon: ShoppingBag },
-    { id: 5, label: "Sampah", icon: Trash2 },
+    { id: 1, label: "Kantong Plastik", icon: ShoppingBag },
+    { id: 2, label: "Wadah Makanan", icon: Package },
+    { id: 3, label: "Botol Minum", icon: GlassWater },
+    { id: 4, label: "Wadah Styrofoam", icon: Box },
   ];
 
   const handleNext = () => {
-    if (currentStep < 5) {
+    if (currentStep < 4) {
       setCurrentStep(currentStep + 1);
       window.scrollTo({ top: 120, behavior: "smooth" });
     } else {
@@ -53,18 +52,34 @@ export default function CalculatorPage() {
 
   return (
     <div className="w-full bg-cream py-10 md:py-16">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-28">
         {/* Header */}
         <div className="text-center max-w-2xl mx-auto space-y-3 mb-8">
           <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-forest px-3 py-1 rounded-full bg-mint">
-            <span>Kalkulator 5 Kategori</span>
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>Kalkulator 4 Kategori Plastik Sekali Pakai</span>
           </div>
           <h1 className="text-2xl sm:text-4xl font-extrabold text-charcoal">
-            Formulir Jejak Karbon
+            Hitung Jejak Karbon Plastikmu
           </h1>
-          <p className="text-muted text-sm sm:text-base">
-            Isi estimasi kebiasaan harianmu. Data tersimpan aman di browsermu dan dihitung secara langsung secara real-time.
+          <p className="text-muted text-xs sm:text-base leading-relaxed">
+            Perhitungan didasarkan pada jumlah <strong>barang plastik baru</strong> yang kamu gunakan selama <strong>satu minggu</strong> (satuan: buah/minggu). Penggunaan ulang barang yang sama tidak menambah hitungan barang baru.
           </p>
+        </div>
+
+        {/* Global Reuse Guideline Alert */}
+        <div className="mb-8 bg-white/90 rounded-2xl p-4 sm:p-5 border border-sage/40 shadow-sm flex items-start gap-3 text-xs">
+          <Info className="w-5 h-5 text-forest shrink-0 mt-0.5" />
+          <div className="space-y-1 text-charcoal/80">
+            <p className="font-bold text-forest-dark">
+              Aturan Penghitungan: Jumlah Barang Baru vs Penggunaan Ulang
+            </p>
+            <p className="leading-relaxed">
+              Kalkulator ini menghitung jumlah barang plastik baru, bukan berapa kali barang dipakai.
+              Contoh: satu botol yang diisi ulang 5 kali dalam seminggu tetap dihitung <strong>1 botol</strong>.
+              Barang dari minggu lalu yang kamu gunakan kembali tidak dihitung lagi.
+            </p>
+          </div>
         </div>
 
         {/* Step Navigation Tabs */}
@@ -98,11 +113,10 @@ export default function CalculatorPage() {
 
         {/* Step Content */}
         <div className="bg-cream-card rounded-3xl p-6 sm:p-10 border border-sage/30 shadow-sm">
-          {currentStep === 1 && <StepTransport />}
-          {currentStep === 2 && <StepEnergy />}
-          {currentStep === 3 && <StepFood />}
-          {currentStep === 4 && <StepConsumption />}
-          {currentStep === 5 && <StepWaste />}
+          {currentStep === 1 && <StepPlasticBags />}
+          {currentStep === 2 && <StepFoodContainers />}
+          {currentStep === 3 && <StepPlasticBottles />}
+          {currentStep === 4 && <StepStyrofoam />}
 
           {/* Stepper Navigation Buttons */}
           <div className="mt-10 pt-6 border-t border-sage/20 flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -121,10 +135,10 @@ export default function CalculatorPage() {
                 type="button"
                 onClick={resetToDefault}
                 className="inline-flex items-center justify-center gap-1.5 px-4 py-3 rounded-xl text-xs font-semibold text-muted hover:text-red-700 transition-colors"
-                title="Kembalikan semua nilai ke awal"
+                title="Kembalikan semua nilai ke 0"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
-                <span>Reset Nilai</span>
+                <span>Reset ke 0</span>
               </button>
             </div>
 
@@ -134,7 +148,7 @@ export default function CalculatorPage() {
                 onClick={handleNext}
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3 rounded-xl bg-forest hover:bg-forest-dark text-cream font-bold text-sm shadow-md transition-all active:scale-95"
               >
-                {currentStep === 5 ? (
+                {currentStep === 4 ? (
                   <>
                     <span>Lihat Hasil Analisis Lengkap</span>
                     <BarChart3 className="w-4 h-4 text-sage" />
@@ -155,20 +169,20 @@ export default function CalculatorPage() {
       <aside aria-label="Ringkasan Emisi Real-time" className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-sage/30 py-3 shadow-lg">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-mint text-forest flex items-center justify-center font-bold text-sm shrink-0">
-              CO₂
+            <div className="w-10 h-10 rounded-xl bg-mint text-forest flex items-center justify-center font-bold text-xs shrink-0">
+              CO₂e
             </div>
             <div>
               <div className="text-[11px] text-muted uppercase font-bold tracking-wider">
-                Estimasi Emisi Berjalan:
+                Total Emisi Mingguan:
               </div>
               <div className="flex items-baseline gap-1.5">
                 <span className="text-xl sm:text-2xl font-black text-forest">
-                  {result.totalMonthlyKgCO2e}
+                  {result.totalWeeklyKgCO2e}
                 </span>
-                <span className="text-xs font-bold text-muted">kg CO₂e / bln</span>
+                <span className="text-xs font-bold text-muted">kg CO₂e / minggu</span>
                 <span className="hidden sm:inline text-xs text-muted">
-                  (~{Math.round(result.totalYearlyKgCO2e)} kg / thn)
+                  ({result.totalItemsPerWeek} barang baru/minggu · ~{Math.round(result.totalYearlyKgCO2e)} kg/tahun)
                 </span>
               </div>
             </div>
@@ -178,7 +192,7 @@ export default function CalculatorPage() {
             href="/hasil"
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-forest hover:bg-forest-dark text-cream text-xs sm:text-sm font-bold shadow transition-all shrink-0 active:scale-95"
           >
-            <span>Lihat Hasil Lengkap</span>
+            <span>Lihat Hasil</span>
             <ArrowRight className="w-4 h-4 text-sage" />
           </Link>
         </div>
