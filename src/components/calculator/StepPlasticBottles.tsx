@@ -22,7 +22,7 @@ export function StepPlasticBottles() {
           Botol Minum Plastik Sekali Pakai
         </h2>
         <p className="text-xs sm:text-sm text-muted mt-1">
-          Botol air mineral PET (500–600 ml), minuman isotonik, kopi kemasan botol, atau teh botol plastik per minggu.
+          Botol air mineral, cup plastik, atau wadah minuman sekali pakai lainnya per minggu.
         </p>
       </div>
 
@@ -84,11 +84,10 @@ export function StepPlasticBottles() {
                 type="button"
                 key={opt}
                 onClick={() => updateBotolMinum(opt)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                  count === opt
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${count === opt
                     ? "bg-forest text-cream shadow-sm"
                     : "bg-cream text-charcoal hover:bg-mint/60 border border-sage/30"
-                }`}
+                  }`}
               >
                 {opt === 0 ? "0 (Bebas Botol Plastik)" : `${opt} buah`}
               </button>
