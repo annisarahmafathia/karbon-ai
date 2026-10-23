@@ -614,9 +614,6 @@ export default function DashboardPage() {
                     <span className="font-semibold text-charcoal">Sumbu Y:</span> Emisi karbon (kg CO₂e/minggu) ·{" "}
                     <span className="font-semibold text-charcoal">Sumbu X:</span> Rentang tanggal per minggu
                   </p>
-                  <p className="text-[11px] text-gray-400">
-                    Batang hijau tua adalah minggu kalkulasi terbaru.
-                  </p>
                 </div>
               </div>
             )}
