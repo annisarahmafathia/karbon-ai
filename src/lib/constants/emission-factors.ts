@@ -15,8 +15,7 @@ export const PLASTIC_EMISSION_FACTORS: Record<PlasticCategory, EmissionFactorMet
     unit: "kg CO₂e / buah",
     activityUnit: "buah kantong / minggu",
     materialMassGrams: 10,
-    systemBoundary:
-      "Cradle-to-grave: ekstraksi minyak/gas fosil, polimerisasi resin HDPE, ekstrusi blown film kantong belanja, transportasi distribusi, serta pengelolaan akhir di TPA/insinerasi (berdasarkan skenario rata-rata UK/Eropa)",
+    systemBoundary: "Cradle-to-grave",
     source:
       "UK Environment Agency (2011) Life Cycle Assessment of Supermarket Carrier Bags (SC030148) & DEFRA GHG Conversion Factors (2022)",
     year: 2022,
@@ -27,7 +26,7 @@ export const PLASTIC_EMISSION_FACTORS: Record<PlasticCategory, EmissionFactorMet
     limitations:
       "Estimasi turunan berdasarkan kantong kresek ritel standar berbobot 10 gram menggunakan koefisien DEFRA 2022 (HDPE incl. forming, 3.27 kg CO₂e/kg). Dalam laporan UK Environment Agency 2011 (SC030148), massa sampel kantong adalah 8.12 gram dengan emisi 0.025 kg CO₂e (tanpa secondary reuse) atau 0.019 kg CO₂e (dengan 40.3% reuse sebagai bin liner).",
     notes:
-      "Berdasarkan UK Environment Agency (2011) SC030148, alternatif tas katun konvensional memerlukan minimal 131 kali penggunaan ulang agar jejak karbon per pemakaiannya lebih rendah dari kresek HDPE sekali pakai, sedangkan tas belanja non-woven PP (spunbond) memerlukan minimal 11 kali penggunaan.",
+      "Dihitung dari perkiraan berat kantong kresek sekitar 10 gram dan faktor emisi material polimer HDPE sebesar 3,27 kg CO₂e/kg.",
     isAvailable: true,
   },
 
@@ -40,8 +39,7 @@ export const PLASTIC_EMISSION_FACTORS: Record<PlasticCategory, EmissionFactorMet
     unit: "kg CO₂e / buah",
     activityUnit: "buah wadah / minggu",
     materialMassGrams: 30,
-    systemBoundary:
-      "Cradle-to-grave: ekstraksi propilena petrokimia, polimerisasi polipropilena/PP, thermoforming/injection molding wadah makanan dan penutup, distribusi takeaway, serta penanganan akhir sampah",
+    systemBoundary: "Cradle-to-grave",
     source:
       "Gallego-Schmid et al. (2019) University of Manchester (Journal of Cleaner Production 211: 417-427) & Prevent Waste Alliance (2021)",
     year: 2021,
@@ -52,7 +50,7 @@ export const PLASTIC_EMISSION_FACTORS: Record<PlasticCategory, EmissionFactorMet
     limitations:
       "Estimasi turunan dari studi kemasan takeaway PP kapasitas 650–750 ml dengan massa wadah dan tutup rata-rata 30 gram (rentang studi: 25–35 gram, rentang emisi: 0.12–0.19 kg CO₂e/wadah). Nilai 5.17 kg CO₂e/kg mencakup intensitas rantai pasok kemasan takeaway siap pakai, bukan sekadar koefisien resin polimer curah murni (DEFRA PP forming = 3.10 kg CO₂e/kg).",
     notes:
-      "Studi Gallego-Schmid et al. (2019) menunjukkan bahwa titik impas wadah guna ulang sangat dipengaruhi metode pencucian dan jenis dampak: wadah bekal tebal (Tupperware-style) membutuhkan 16–39 kali penggunaan untuk impas pada emisi gas rumah kaca (skenario mesin cuci piring efisien ~18 kali, pencucian manual air panas ~39 kali), dan dapat mencapai 208 kali untuk dampak ekotoksisitas terestrial. Wadah thinwall sekali pakai jika dicuci kembali mencapai titik impas pada 4–5 kali.",
+      "Dihitung dari perkiraan berat wadah beserta tutup sekitar 30 gram dan faktor emisi material kemasan polipropilena sebesar 5,17 kg CO₂e/kg.",
     isAvailable: true,
   },
 
@@ -65,8 +63,7 @@ export const PLASTIC_EMISSION_FACTORS: Record<PlasticCategory, EmissionFactorMet
     unit: "kg CO₂e / buah",
     activityUnit: "buah botol / minggu",
     materialMassGrams: 20,
-    systemBoundary:
-      "Cradle-to-grave: produksi bahan baku kimia PTA & MEG, polimerisasi resin virgin PET, injection stretch blow molding, penutup botol HDPE (~2g), label botol, serta penanganan akhir kemasan",
+    systemBoundary: "Cradle-to-grave",
     source:
       "PlasticsEurope Eco-profiles (2020) & DEFRA UK GHG Conversion Factors for Packaging (PET, 2022)",
     year: 2022,
@@ -77,7 +74,7 @@ export const PLASTIC_EMISSION_FACTORS: Record<PlasticCategory, EmissionFactorMet
     limitations:
       "Estimasi turunan untuk botol air mineral ukuran 500–600 ml berbobot rata-rata 18–22 gram berbahan virgin PET tanpa kandungan rPET daur ulang. LCI PlasticsEurope murni berfokus pada gerbang pabrik resin (cradle-to-gate ~2.15–2.80 kg CO₂e/kg), sedangkan angka 0.083 kg CO₂e/buah merupakan model cradle-to-grave lengkap berbasis DEFRA 2022 (4.03 kg CO₂e/kg PET forming + tutup HDPE 2g).",
     notes:
-      "Penggunaan tumbler isi ulang (reusable water bottle) memerlukan sekitar 15–50 kali pemakaian ulang (tergantung material dan volume air pencucian) untuk mencapai titik impas emisi karbon terhadap konsumsi botol air mineral PET sekali pakai secara terus-menerus.",
+      "Dihitung dari perkiraan berat botol sekitar 20 gram dan faktor emisi material kemasan plastik PET beserta tutupnya.",
     isAvailable: true,
   },
 
@@ -90,8 +87,7 @@ export const PLASTIC_EMISSION_FACTORS: Record<PlasticCategory, EmissionFactorMet
     unit: "kg CO₂e / buah",
     activityUnit: "buah wadah / minggu",
     materialMassGrams: 5,
-    systemBoundary:
-      "Cradle-to-grave: ekstraksi stirena monomerdari minyak bumi, polimerisasi, peniupan gas pentana menjadi foam EPS busa, thermoforming kotak clamshell, distribusi, dan pembuangan akhir",
+    systemBoundary: "Cradle-to-grave",
     source:
       "Zero Waste Scotland (2020) LCA of Takeaway Food Packaging & Franklin Associates / American Chemistry Council (2018)",
     year: 2020,
@@ -102,7 +98,7 @@ export const PLASTIC_EMISSION_FACTORS: Record<PlasticCategory, EmissionFactorMet
     limitations:
       "Estimasi turunan internal KarbonAI berdasarkan boks makanan ringan EPS tipis (~5 gram) dengan koefisien proses foaming ~7.0 kg CO₂e/kg. Sebagai perbandingan, laporan Zero Waste Scotland mencatat 51 g CO₂e (0.051 kg CO₂e) per wadah EPS takeaway standar UK dengan massa ~7.8 gram. Angka 0.035 kg CO₂e KarbonAI merupakan estimasi independen untuk wadah berukuran lebih kecil/ringan di Indonesia dan bukan kutipan angka langsung dari Zero Waste Scotland.",
     notes:
-      "Dampak lingkungan EPS memiliki dua aspek terpisah: (1) Emisi gas rumah kaca daur hidup (~0.035 kg CO₂e/buah untuk boks 5g); dan (2) Dampak pencemaran fisik karena strukturnya sangat lambat terdegradasi di alam, sulit didaur ulang secara ekonomis di Indonesia, dan mudah terfragmentasi menjadi mikroplastik.",
+      "Dihitung dari perkiraan berat wadah makanan sekitar 5 gram dan faktor emisi material polistirena busa (EPS) sebesar 7,00 kg CO₂e/kg.",
     isAvailable: true,
   },
 };

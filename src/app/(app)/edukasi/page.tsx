@@ -115,11 +115,11 @@ export default function EdukasiPage() {
     },
     {
       q: "Bagaimana faktor emisi per barang dihitung dari referensi berbasis berat (kg material)?",
-      a: "Sebagian besar basis data LCA menyediakan faktor emisi dalam satuan kg CO₂e per kg polimer resin murni. KarbonAI menghitung faktor emisi per barang jadi secara transparan melalui rumus estimasi turunan: [Massa Referensi Barang (kg) × Faktor Emisi Polimer (kg CO₂e/kg)]. Rincian massa acuan: (1) Kantong kresek HDPE: ~10 gram (koefisien DEFRA 2022); (2) Kotak makanan thinwall PP: ~30 gram (Gallego-Schmid et al. 2019 / Prevent Waste Alliance); (3) Botol air mineral PET 500-600ml: ~20 gram (PlasticsEurope 2020 & DEFRA 2022); (4) Kotak styrofoam EPS: ~5 gram (estimasi internal KarbonAI untuk boks ringan lokal; sebagai pembanding, laporan Zero Waste Scotland mencatat 51 g CO₂e untuk boks standar UK berbobot 7,8 gram).",
+      a: "Faktor emisi per barang dihitung dengan mengalikan perkiraan berat rata-rata barang dengan faktor emisi material dari literatur ilmiah: kantong kresek HDPE (~10 gram), kotak makanan PP (~30 gram), botol PET (~20 gram), dan wadah styrofoam EPS (~5 gram).",
     },
     {
-      q: "Apa batas sistem (system boundary) yang digunakan dan apa keterbatasan geografisnya?",
-      a: "Seluruh faktor emisi menggunakan batas sistem Cradle-to-Grave (dari ekstraksi bahan baku hidrokarbon fosil, polimerisasi resin plastik, pembentukan kemasan/botol, transportasi distribusi ritel, hingga pengangkutan dan pembuangan akhir di TPA/insinerasi). Namun demikian, data inventarisasi daur hidup (LCI) dasar yang tersedia di literatur global berasal dari Eropa dan Inggris (DEFRA/PlasticsEurope). Di Indonesia, bauran energi pembangkit listrik (grid mix) masih didominasi batu bara dan pengelolaan sampah akhir memiliki tingkat open dumping lebih tinggi, sehingga angka ini merupakan estimasi konservatif yang idealnya disempurnakan dengan LCI lokal Indonesia di masa mendatang.",
+      q: "Apa batas sistem (system boundary) yang digunakan dalam perhitungan?",
+      a: "Perhitungan menggunakan batas sistem Cradle-to-Grave yang mencakup siklus hidup barang mulai dari ekstraksi bahan baku, proses produksi, distribusi, hingga pembuangan akhir.",
     },
     {
       q: "Bagaimana asumsi konversi mingguan ke bulanan dan tahunan?",
@@ -131,11 +131,11 @@ export default function EdukasiPage() {
     },
     {
       q: "Apakah beralih ke wadah nonplastik atau tas kain selalu menghasilkan emisi karbon lebih rendah?",
-      a: "Tidak secara instan. Pembuatan material alternatif memiliki jejak energi manufaktur awal yang lebih tinggi daripada plastik sekali pakai yang sangat tipis/ringan, sehingga memerlukan frekuensi penggunaan ulang tertentu (break-even reuse threshold) untuk mencapai titik impas. Berdasarkan studi LCA primer: (1) Tas katun konvensional memerlukan minimal 131 kali penggunaan ulang untuk mengimbangi kresek HDPE sekali pakai (UK Environment Agency 2011 SC030148), sedangkan tas belanja non-woven PP memerlukan 11 kali; (2) Kotak makanan bekal guna ulang (reusable PP container) menurut Gallego-Schmid et al. (2019) memiliki rentang titik impas 16–39 kali penggunaan untuk indikator jejak karbon tergantung metode pencucian (mesin cuci piring efisien ~18 kali vs pencucian manual air panas ~39 kali) jika dibandingkan kemasan sekali pakai, dan dapat mencapai 208 kali jika mengevaluasi dampak lingkungan lain seperti ekotoksisitas; wadah thinwall sekali pakai jika dicuci kembali mencapai titik impas pada 4–5 kali; (3) Tumbler botol minum memerlukan sekitar 15–50 kali pemakaian ulang dibanding botol air mineral PET sekali pakai.",
+      a: "Tidak selalu langsung lebih rendah. Alternatif guna ulang umumnya memerlukan lebih banyak energi untuk diproduksi, sehingga perlu digunakan berulang kali agar dampak emisinya menjadi lebih hemat dibanding plastik sekali pakai.",
     },
     {
       q: "Mengapa faktor emisi wadah styrofoam per buah lebih kecil daripada kotak makanan plastik PP thinwall?",
-      a: "Perbedaan ini disebabkan oleh perbedaan massa fisik produk. Kotak styrofoam (EPS) di KarbonAI diasumsikan berbobot ~5 gram untuk boks makanan ringan lokal (emisi estimasi internal ~0.035 kg CO₂e atau 35 g CO₂e; sebagai perbandingan, Zero Waste Scotland mencatat 51 g CO₂e untuk boks standar UK berbobot 7,8 gram). Sebaliknya, kotak thinwall polipropilena (PP) memiliki struktur plastik padat (~30 gram, sekitar 6 kali lebih berat) dengan emisi produk ~0.155 kg CO₂e. Meskipun emisi gas rumah kaca styrofoam per buah tampak lebih kecil karena massanya ringan, styrofoam memiliki dampak fisik lingkungan yang sangat buruk karena hampir tidak didaur ulang di Indonesia dan mudah terfragmentasi menjadi mikroplastik di alam liar.",
+      a: "Hal ini terjadi karena perbedaan berat barang: wadah styrofoam sangat ringan (~5 gram karena strukturnya sebagian besar berupa udara), sedangkan kotak thinwall polipropilena memiliki struktur plastik padat (~30 gram, sekitar 6 kali lebih berat).",
     },
   ];
 
@@ -359,6 +359,12 @@ export default function EdukasiPage() {
               </tbody>
             </table>
           </div>
+
+          <div className="pt-2 border-t border-sage/20">
+            <p className="text-[11px] text-muted italic">
+              *Catatan metodologi: Hasil perhitungan merupakan estimasi berdasarkan literatur dan perkiraan berat barang, sehingga hasil aktual dapat berbeda.
+            </p>
+          </div>
         </div>
 
         {/* Assumptions & Limitations Box */}
@@ -370,21 +376,31 @@ export default function EdukasiPage() {
             </h2>
           </div>
 
-          <div className="text-xs text-amber-950/80 space-y-2.5 leading-relaxed">
+          <div className="text-xs text-amber-950/80 space-y-3 leading-relaxed">
             <p>
-              <strong>1. Sifat Estimasi Turunan Berbasis Massa:</strong> Faktor emisi per barang dihitung dari berat rata-rata sampel barang di pasaran (10g untuk kantong kresek HDPE, 30g untuk kotak thinwall PP, 20g untuk botol PET 500-600ml, dan 5g untuk kotak foam EPS) dikalikan faktor emisi polimer resin. Khusus wadah styrofoam, angka 0,035 kg CO₂e adalah estimasi internal KarbonAI untuk boks ringan lokal 5 gram; sebagai perbandingan, laporan Zero Waste Scotland mencatat 0,051 kg CO₂e (51 g CO₂e) untuk boks standar UK berbobot 7,8 gram. Barang dengan ketebalan ekstrem di luar rentang standar akan memiliki emisi aktual yang berbeda.
+              <strong>1. Estimasi Berbasis Massa</strong>
+              <br />
+              Faktor emisi dihitung berdasarkan perkiraan berat setiap barang dan faktor emisi material dari literatur. Berat produk yang berbeda dapat menghasilkan estimasi berbeda.
             </p>
             <p>
-              <strong>2. Pemisahan Dampak Perubahan Iklim (GWP) vs Persistensi Sampah Padat:</strong> Persistensi fisik styrofoam dan kantong plastik yang bertahan puluhan hingga ratusan tahun di alam merupakan isu pencemaran sampah padat dan fragmentasi mikroplastik, bukan berarti gas rumah kaca (CO₂e) terus berakumulasi bertambah di atmosfer selama sampah mengendap di tanah. Emisi gas rumah kaca diukur dalam potensi pemanasan global 100 tahun (GWP-100) yang terjadi selama siklus daur hidup material (manufaktur dan dekomposisi).
+              <strong>2. Emisi Karbon vs. Pencemaran Sampah</strong>
+              <br />
+              Emisi CO₂e berkaitan dengan dampak perubahan iklim, sedangkan lamanya plastik terurai merupakan persoalan pencemaran lingkungan yang berbeda.
             </p>
             <p>
-              <strong>3. Alternatif Nonplastik Memerlukan Titik Impas Kontekstual (Break-Even Reuse):</strong> Mengganti kemasan plastik dengan tas kain atau kotak bekal guna ulang tidak otomatis menghemat emisi karbon seketika. Berdasarkan studi LCA primer, setiap alternatif memerlukan titik impas pemakaian yang berbeda: tas katun memerlukan minimal 131 kali penggunaan ulang untuk mengimbangi kresek HDPE sekali pakai (UK Environment Agency 2011 SC030148), tas spunbond non-woven PP memerlukan 11 kali, kotak makanan guna ulang tebal memerlukan rentang 16–39 kali penggunaan untuk indikator gas rumah kaca tergantung metode pencucian (mesin cuci piring efisien ~18 kali vs manual air panas ~39 kali) dibanding kemasan sekali pakai, dan dapat mencapai 208 kali jika mengevaluasi dampak lingkungan lain seperti ekotoksisitas (Gallego-Schmid et al. 2019); serta tumbler botol minum memerlukan sekitar 15–50 kali pemakaian.
+              <strong>3. Penggunaan Ulang</strong>
+              <br />
+              Alternatif guna ulang tidak selalu langsung lebih rendah emisi. Dampaknya bergantung pada jumlah pemakaian dan cara perawatannya.
             </p>
             <p>
-              <strong>4. Status Tolok Ukur 0,85 kg CO₂e/minggu:</strong> Angka 0,85 kg CO₂e/minggu merupakan tolok ukur ilustratif internal KarbonAI, bukan data statistik resmi nasional per kapita untuk 4 barang ini dari pemerintah. Angka ini diestimasi dari total timbulan sampah plastik nasional per kapita (data KLHK/UNEP, ~20 kg/tahun) dikalikan rata-rata faktor polimer (~2,2 kg CO₂e/kg) dibagi 52 minggu. Timbulan sampah nasional mencakup semua jenis plastik (multilayer sachet, karung, galon, dll.), sedangkan KarbonAI berfokus secara spesifik pada 4 kemasan harian individu.
+              <strong>4. Tolok Ukur Internal</strong>
+              <br />
+              Angka 0,85 kg CO₂e/minggu merupakan tolok ukur ilustratif KarbonAI, bukan statistik resmi nasional untuk empat jenis barang yang dihitung.
             </p>
             <p>
-              <strong>5. Batasan Geografis dan Validitas Data Lokal:</strong> Seluruh faktor emisi menggunakan batas sistem Cradle-to-Grave berdasarkan data inventarisasi daur hidup (LCI) internasional (DEFRA/PlasticsEurope). Di Indonesia, bauran energi listrik masih didominasi batu bara dan tingkat penanganan TPA terbuka (open dumping) lebih tinggi, sehingga angka ini merupakan estimasi konservatif yang idealnya disempurnakan dengan studi LCI spesifik Indonesia di masa mendatang.
+              <strong>5. Keterbatasan Data</strong>
+              <br />
+              Faktor emisi berasal dari literatur internasional dan asumsi perhitungan, sehingga hasilnya merupakan estimasi yang belum tentu sepenuhnya mewakili kondisi Indonesia.
             </p>
           </div>
         </div>
