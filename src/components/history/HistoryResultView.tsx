@@ -13,6 +13,7 @@ import {
   Info,
 } from "lucide-react";
 import { EmissionsCharts } from "@/components/results/EmissionsCharts";
+import { EarthMascotCard } from "@/components/results/EarthMascotCard";
 import {
   CalculationResult,
   LegacyCalculationResult,
@@ -101,6 +102,12 @@ export function HistoryResultView({
             : `Proyeksi: ~${Math.round((snapshot as LegacyCalculationResult)?.totalYearlyKgCO2e ?? calculation.total_yearly_kg)} kg/tahun`}{" "}
           · Hotspot: <strong>{CATEGORY_LABELS[calculation.highest_category] ?? calculation.highest_category}</strong>
         </p>
+
+        {isPlastic && (snapshot as CalculationResult)?.benchmark?.status && (
+          <div className="pt-2">
+            <EarthMascotCard status={(snapshot as CalculationResult).benchmark.status} />
+          </div>
+        )}
       </div>
 
       {/* Visual Chart */}

@@ -8,6 +8,7 @@ import { useAuth } from "@/context/AuthContext";
 import { createClient } from "@/lib/supabase/client";
 import { saveCalculationHistory } from "@/lib/history/storage";
 import { EmissionsCharts } from "@/components/results/EmissionsCharts";
+import { EarthMascotCard } from "@/components/results/EarthMascotCard";
 import {
   ShoppingBag,
   Package,
@@ -219,6 +220,9 @@ export default function ResultsPage() {
               <p className="text-[11px] text-muted leading-relaxed">
                 *Satuan utama adalah <strong>kg CO₂e/minggu</strong>. Proyeksi tahunan menggunakan asumsi 52 minggu/tahun, dan proyeksi bulanan menggunakan rata-rata ~4.33 minggu/bulan.
               </p>
+
+              {/* Maskot Bumi berdasarkan Kategori Emisi */}
+              <EarthMascotCard status={result.benchmark.status} />
 
               {/* Status Comparison Badge */}
               <div className="pt-2 space-y-2">
