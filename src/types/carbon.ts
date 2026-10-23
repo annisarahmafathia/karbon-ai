@@ -24,8 +24,11 @@ export interface PlasticCalculatorInput {
 export type UserCalculatorInput = PlasticCalculatorInput;
 
 export type VerificationTier =
-  | "Terverifikasi Resmi"
+  | "Bersumber dari Referensi Resmi"
   | "Estimasi Literatur Ilmiah"
+  | "Estimasi Turunan Literatur"
+  | "Provisional (Perlu Validasi Lokal)"
+  | "Terverifikasi Resmi"
   | "Provisional (Perlu Riset Lokal)";
 
 export interface EmissionFactorMeta {
@@ -44,6 +47,7 @@ export interface EmissionFactorMeta {
   verificationStatus: VerificationTier;
   limitations: string; // Batasan model dan asumsi
   notes: string; // Keterangan metodologis
+  derivationFormula?: string; // Rumus estimasi turunan
   isAvailable: boolean;
 }
 

@@ -199,3 +199,122 @@ test("6. API Route Server-Side: Fallback graceful saat API Key tidak ada atau in
     process.env.GEMINI_API_KEY = originalKey;
   }
 });
+
+test("7. Jika beberapa faktor memiliki kontribusi emisi sama, tampilkan semuanya sebagai faktor tertinggi (Tied)", () => {
+  // Skenario: 35 kantong plastik (35 * 0.033 = 1.155 kg CO₂e) dan 33 wadah styrofoam (33 * 0.035 = 1.155 kg CO₂e)
+  // Kedua kategori memiliki nilai emisi mingguan sama persis (1.155 kg CO₂e)
+  const inputTied = {
+    kantongPlastik: 35,
+    wadahMakanan: 0,
+    botolMinum: 0,
+    wadahStyrofoam: 33,
+  };
+  const resultTied = calculateCarbonFootprint(inputTied);
+
+  assert.equal(resultTied.categories.kantong_plastik.weeklyKgCO2e, 1.155);
+  assert.equal(resultTied.categories.wadah_styrofoam.weeklyKgCO2e, 1.155);
+
+  const greenActions = generateRuleBasedGreenActions(inputTied, resultTied);
+
+  // Verifikasi deteksi faktor imbang
+  assert.equal(greenActions.primaryPriority.isTied, true);
+  assert.ok(greenActions.primaryPriority.allTopContributors);
+  assert.equal(greenActions.primaryPriority.allTopContributors.length, 2);
+
+  const topCategories = greenActions.primaryPriority.allTopContributors.map((c) => c.category);
+  assert.ok(topCategories.includes("kantong_plastik"));
+  assert.ok(topCategories.includes("wadah_styrofoam"));
+
+  // Kedua aksi yang menargetkan faktor imbang harus berstatus "Utama"
+  const primaryActions = greenActions.recommendations.filter((a) => a.priority === "Utama");
+  assert.equal(primaryActions.length, 2);
+  const primaryActionCats = primaryActions.map((a) => a.category);
+  assert.ok(primaryActionCats.includes("kantong_plastik"));
+  assert.ok(primaryActionCats.includes("wadah_styrofoam"));
+});
+
+test("8. Teks rekomendasi menyebutkan faktor yang ingin dikurangi secara eksplisit dengan format penekanan bold", () => {
+  const input = {
+    kantongPlastik: 2,
+    wadahMakanan: 5, // 5 * 0.155 = 0.775 kg CO2e (Tertinggi)
+    botolMinum: 2,
+    wadahStyrofoam: 0,
+  };
+  const result = calculateCarbonFootprint(input);
+  const greenActions = generateRuleBasedGreenActions(input, result);
+
+  // Aksi prioritas utama (wadah makanan)
+  const mainAction = greenActions.recommendations[0];
+  assert.equal(mainAction.category, "wadah_makanan");
+  assert.equal(mainAction.targetFactor, "Wadah Makanan Plastik");
+  assert.equal(mainAction.isPrimaryContributorAction, true);
+  // Alasan harus memuat nama kategori secara eksplisit dan penekanan penyumbang emisi terbesar
+  assert.ok(mainAction.reason.includes("**Wadah Makanan Plastik**"));
+  assert.ok(mainAction.reason.toLowerCase().includes("penyumbang emisi terbesar"));
+
+  // Aksi sekunder juga menyebutkan target faktornya
+  const secondaryAction = greenActions.recommendations.find((a) => a.category === "botol_minum");
+  assert.ok(secondaryAction);
+  assert.equal(secondaryAction.priority, "Tambahan");
+  assert.equal(secondaryAction.targetFactor, "Botol Minum Plastik");
+  assert.ok(secondaryAction.reason.includes("**Botol Minum Plastik**"));
+});
+
+test("9. Ketika data emisi 0 / kosong, tidak menetapkan faktor penyumbang emisi secara sembarangan", () => {
+  const zeroInput = {
+    kantongPlastik: 0,
+    wadahMakanan: 0,
+    botolMinum: 0,
+    wadahStyrofoam: 0,
+  };
+  const zeroResult = calculateCarbonFootprint(zeroInput);
+  const greenActions = generateRuleBasedGreenActions(zeroInput, zeroResult);
+
+  assert.equal(greenActions.primaryPriority.hasValidData, false);
+  assert.equal(greenActions.primaryPriority.allTopContributors?.length, 0);
+  assert.equal(greenActions.primaryPriority.weeklyKgCO2e, 0);
+  assert.ok(greenActions.primaryPriority.categoryLabel.includes("Belum Ada Emisi Terdeteksi"));
+  assert.ok(greenActions.primaryPriority.explanation.includes("tidak ada faktor penyumbang emisi terbesar"));
+});
+
+test("10. habitAnalysis dan primaryPriority.explanation memiliki fungsi terpisah dan tidak repetitif", () => {
+  const input = {
+    kantongPlastik: 5,
+    wadahMakanan: 0,
+    botolMinum: 8, // 8 * 0.083 = 0.664 kg CO2e (Tertinggi)
+    wadahStyrofoam: 0,
+  };
+  const result = calculateCarbonFootprint(input);
+  const greenActions = generateRuleBasedGreenActions(input, result);
+
+  // habitAnalysis: Fokus pada analisis pola konsumsi & emisi
+  assert.ok(greenActions.habitAnalysis.includes("13 barang plastik sekali pakai"));
+  assert.ok(greenActions.habitAnalysis.includes("Botol Minum"));
+  assert.ok(greenActions.habitAnalysis.includes("Kantong Plastik"));
+  assert.ok(greenActions.habitAnalysis.includes("ekstraksi minyak bumi"));
+
+  // primaryPriority.explanation: Fokus pada tindakan konkret (bukan mengulang data emisi)
+  assert.ok(greenActions.primaryPriority.explanation.toLowerCase().includes("tumbler"));
+  assert.ok(greenActions.primaryPriority.explanation.toLowerCase().includes("isi ulang"));
+  // Memastikan tidak ada pengulangan paragraf analisis yang kaku
+  assert.ok(!greenActions.primaryPriority.explanation.includes("Berdasarkan data kalkulasi"));
+});
+
+test("11. Rekomendasi tindakan prioritas utama berubah dinamis sesuai faktor terbesar", () => {
+  // Skenario 1: Styrofoam terbesar
+  const inputStyrofoam = { kantongPlastik: 0, wadahMakanan: 0, botolMinum: 0, wadahStyrofoam: 6 };
+  const actionsStyrofoam = generateRuleBasedGreenActions(inputStyrofoam, calculateCarbonFootprint(inputStyrofoam));
+  assert.ok(actionsStyrofoam.primaryPriority.explanation.toLowerCase().includes("mistin") || actionsStyrofoam.primaryPriority.explanation.toLowerCase().includes("kotak bekal"));
+
+  // Skenario 2: Kantong Plastik terbesar
+  const inputKantong = { kantongPlastik: 20, wadahMakanan: 0, botolMinum: 0, wadahStyrofoam: 0 };
+  const actionsKantong = generateRuleBasedGreenActions(inputKantong, calculateCarbonFootprint(inputKantong));
+  assert.ok(actionsKantong.primaryPriority.explanation.toLowerCase().includes("tas belanja kain") || actionsKantong.primaryPriority.explanation.toLowerCase().includes("tote bag"));
+
+  // Skenario 3: Wadah Makanan terbesar
+  const inputWadah = { kantongPlastik: 0, wadahMakanan: 4, botolMinum: 0, wadahStyrofoam: 0 };
+  const actionsWadah = generateRuleBasedGreenActions(inputWadah, calculateCarbonFootprint(inputWadah));
+  assert.ok(actionsWadah.primaryPriority.explanation.toLowerCase().includes("kotak bekal reusable") || actionsWadah.primaryPriority.explanation.toLowerCase().includes("food-grade"));
+});
+
+

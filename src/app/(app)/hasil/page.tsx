@@ -237,26 +237,26 @@ export default function ResultsPage() {
                   <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-300 text-emerald-800 text-xs font-bold">
                     <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                     <span>
-                      Rendah Emisi: {Math.abs(result.benchmark.differenceFromBenchmarkPercent)}% di bawah rata-rata nasional (~0.85 kg CO₂e/minggu).
+                      Rendah Emisi: {Math.abs(result.benchmark.differenceFromBenchmarkPercent)}% di bawah tolok ukur pembanding ilustratif (~0.85 kg CO₂e/minggu).
                     </span>
                   </div>
                 ) : result.benchmark.status === "sedang" ? (
                   <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-50 border border-amber-300 text-amber-900 text-xs font-bold">
                     <AlertCircle className="w-4 h-4 text-amber-600" />
                     <span>
-                      Moderat: {result.benchmark.differenceFromBenchmarkPercent >= 0 ? `${result.benchmark.differenceFromBenchmarkPercent}% di atas` : `${Math.abs(result.benchmark.differenceFromBenchmarkPercent)}% di bawah`} rata-rata nasional (~0.85 kg CO₂e/minggu).
+                      Moderat: {result.benchmark.differenceFromBenchmarkPercent >= 0 ? `${result.benchmark.differenceFromBenchmarkPercent}% di atas` : `${Math.abs(result.benchmark.differenceFromBenchmarkPercent)}% di bawah`} tolok ukur pembanding ilustratif (~0.85 kg CO₂e/minggu).
                     </span>
                   </div>
                 ) : (
                   <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-rose-50 border border-rose-300 text-rose-900 text-xs font-bold">
                     <AlertCircle className="w-4 h-4 text-rose-600" />
                     <span>
-                      Intensitas Tinggi: {result.benchmark.differenceFromBenchmarkPercent}% di atas rata-rata konsumsi plastik mingguan nasional.
+                      Intensitas Tinggi: {result.benchmark.differenceFromBenchmarkPercent}% di atas tolok ukur konsumsi mingguan ilustratif KarbonAI.
                     </span>
                   </div>
                 )}
                 <div className="text-[11px] text-muted">
-                  *Tolok ukur pembanding: Data timbulan sampah plastik per kapita nasional (KLHK & UNEP, ~20 kg plastik/kapita/tahun ekuivalen ~0.85 kg CO₂e/minggu).
+                  *Tolok ukur ilustratif internal (~0.85 kg CO₂e/minggu) diturunkan dari estimasi timbulan sampah plastik umum nasional (KLHK & UNEP, ~20 kg plastik/kapita/tahun) × rata-rata faktor emisi polimer (~2.2 kg CO₂e/kg) / 52 minggu. Timbulan sampah nasional mencakup semua jenis plastik, bukan hanya 4 kategori barang ini.
                 </div>
               </div>
             </div>
@@ -501,9 +501,13 @@ export default function ResultsPage() {
                           <td className="py-2.5 px-3">
                             <span
                               className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                                d.verificationStatus === "Terverifikasi Resmi"
+                                d.verificationStatus === "Terverifikasi Resmi" ||
+                                d.verificationStatus === "Bersumber dari Referensi Resmi"
                                   ? "bg-emerald-50 text-emerald-800 border border-emerald-300"
-                                  : "bg-blue-50 text-blue-800 border border-blue-300"
+                                  : d.verificationStatus === "Estimasi Literatur Ilmiah" ||
+                                    d.verificationStatus === "Estimasi Turunan Literatur"
+                                  ? "bg-blue-50 text-blue-800 border border-blue-300"
+                                  : "bg-amber-50 text-amber-900 border border-amber-300"
                               }`}
                             >
                               {d.verificationStatus}
@@ -520,7 +524,7 @@ export default function ResultsPage() {
               </div>
 
               <div className="text-[11px] text-muted italic">
-                *Seluruh faktor emisi menggunakan batas sistem <strong>Cradle-to-grave</strong> (ekstraksi hidrokarbon, manufaktur polimer virgin, proses pembentukan kemasan, distribusi, dan pembuangan akhir). Penggunaan ulang barang yang sama tidak dihitung sebagai barang baru.
+                *Seluruh faktor emisi menggunakan batas sistem <strong>Cradle-to-grave</strong> (ekstraksi hidrokarbon, manufaktur polimer virgin, pembentukan kemasan, distribusi, hingga pembuangan akhir) yang diturunkan dari literatur LCA internasional. Penggunaan ulang barang yang sama tidak dihitung sebagai barang baru.
               </div>
             </div>
           )}

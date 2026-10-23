@@ -16,17 +16,18 @@ export const PLASTIC_EMISSION_FACTORS: Record<PlasticCategory, EmissionFactorMet
     activityUnit: "buah kantong / minggu",
     materialMassGrams: 10,
     systemBoundary:
-      "Cradle-to-grave (ekstraksi minyak bumi/gas fosil, polimerisasi resin polietilena HDPE, ekstrusi blown film kantong belanja, transportasi distribusi ritel, serta pengelolaan sampah akhir di TPA/insinerasi)",
+      "Cradle-to-grave: ekstraksi minyak/gas fosil, polimerisasi resin HDPE, ekstrusi blown film kantong belanja, transportasi distribusi, serta pengelolaan akhir di TPA/insinerasi (berdasarkan skenario rata-rata UK/Eropa)",
     source:
       "UK Environment Agency (2011) Life Cycle Assessment of Supermarket Carrier Bags (SC030148) & DEFRA GHG Conversion Factors (2022)",
     year: 2022,
     scope: "Global LCA / Retail Packaging Standard",
     uncertainty: "Rendah (<10%)",
-    verificationStatus: "Terverifikasi Resmi",
+    verificationStatus: "Bersumber dari Referensi Resmi",
+    derivationFormula: "10 g × ~3.27 kg CO₂e/kg (DEFRA 2022) = 0.033 kg CO₂e/buah",
     limitations:
-      "Mengasumsikan kantong kresek belanjaan ritel/pasar standar berbobot rata-rata 10–12 gram. Tidak mencakup kantong non-woven polypropylene tebal (spunbond) yang membutuhkan frekuensi pemakaian ulang lebih tinggi untuk mencapai titik impas emisi.",
+      "Estimasi turunan berdasarkan kantong kresek ritel standar berbobot 10 gram menggunakan koefisien DEFRA 2022 (HDPE incl. forming, 3.27 kg CO₂e/kg). Dalam laporan UK Environment Agency 2011 (SC030148), massa sampel kantong adalah 8.12 gram dengan emisi 0.025 kg CO₂e (tanpa secondary reuse) atau 0.019 kg CO₂e (dengan 40.3% reuse sebagai bin liner).",
     notes:
-      "Dihitung dari emisi resin HDPE (~2.1 kg CO₂e/kg polimer) ditambah energi pembentukan kantong dan pembuangan akhir. Menggunakan tas belanja kain guna ulang (reusable tote bag) secara berulang mengeliminasi emisi kresek baru.",
+      "Berdasarkan UK Environment Agency (2011) SC030148, alternatif tas katun konvensional memerlukan minimal 131 kali penggunaan ulang agar jejak karbon per pemakaiannya lebih rendah dari kresek HDPE sekali pakai, sedangkan tas belanja non-woven PP (spunbond) memerlukan minimal 11 kali penggunaan.",
     isAvailable: true,
   },
 
@@ -40,17 +41,18 @@ export const PLASTIC_EMISSION_FACTORS: Record<PlasticCategory, EmissionFactorMet
     activityUnit: "buah wadah / minggu",
     materialMassGrams: 30,
     systemBoundary:
-      "Cradle-to-grave (ekstraksi propilena petrokimia, polimerisasi polipropilena/PP, thermoforming/injection molding wadah makanan dan penutup, distribusi, serta penanganan akhir sampah)",
+      "Cradle-to-grave: ekstraksi propilena petrokimia, polimerisasi polipropilena/PP, thermoforming/injection molding wadah makanan dan penutup, distribusi takeaway, serta penanganan akhir sampah",
     source:
-      "Gallego-Schmid et al. (2019) University of Manchester / Prevent Waste Alliance LCA of Takeaway Packaging (2021)",
+      "Gallego-Schmid et al. (2019) University of Manchester (Journal of Cleaner Production 211: 417-427) & Prevent Waste Alliance (2021)",
     year: 2021,
     scope: "Global LCA / Takeaway Food Packaging",
     uncertainty: "Sedang (10-30%)",
-    verificationStatus: "Estimasi Literatur Ilmiah",
+    verificationStatus: "Estimasi Turunan Literatur",
+    derivationFormula: "30 g × ~5.17 kg CO₂e/kg (emisi kemasan takeaway) = 0.155 kg CO₂e/buah",
     limitations:
-      "Berdasarkan wadah makanan bawa pulang (takeaway/thinwall) polipropilena ukuran 650–750 ml dengan massa wadah dan tutup sekitar 25–35 gram. Emisi aktual dapat berbeda untuk wadah komposit multi-layer atau wadah berdinding sangat tebal.",
+      "Estimasi turunan dari studi kemasan takeaway PP kapasitas 650–750 ml dengan massa wadah dan tutup rata-rata 30 gram (rentang studi: 25–35 gram, rentang emisi: 0.12–0.19 kg CO₂e/wadah). Nilai 5.17 kg CO₂e/kg mencakup intensitas rantai pasok kemasan takeaway siap pakai, bukan sekadar koefisien resin polimer curah murni (DEFRA PP forming = 3.10 kg CO₂e/kg).",
     notes:
-      "Wadah plastik kaku memiliki massa polimer lebih padat (~30 gram) sehingga emisinya per buah lebih besar dibanding kantong tipis. Membawa kotak bekal (reusable food container) langsung memangkas kebutuhan wadah plastik baru.",
+      "Studi Gallego-Schmid et al. (2019) menunjukkan bahwa titik impas wadah guna ulang sangat dipengaruhi metode pencucian dan jenis dampak: wadah bekal tebal (Tupperware-style) membutuhkan 16–39 kali penggunaan untuk impas pada emisi gas rumah kaca (skenario mesin cuci piring efisien ~18 kali, pencucian manual air panas ~39 kali), dan dapat mencapai 208 kali untuk dampak ekotoksisitas terestrial. Wadah thinwall sekali pakai jika dicuci kembali mencapai titik impas pada 4–5 kali.",
     isAvailable: true,
   },
 
@@ -64,17 +66,18 @@ export const PLASTIC_EMISSION_FACTORS: Record<PlasticCategory, EmissionFactorMet
     activityUnit: "buah botol / minggu",
     materialMassGrams: 20,
     systemBoundary:
-      "Cradle-to-grave (produksi bahan baku purified terephthalic acid/PTA dan monoethylene glycol/MEG, polimerisasi resin virgin PET, injection stretch blow molding, penutup botol HDPE, label, serta penanganan akhir sampah)",
+      "Cradle-to-grave: produksi bahan baku kimia PTA & MEG, polimerisasi resin virgin PET, injection stretch blow molding, penutup botol HDPE (~2g), label botol, serta penanganan akhir kemasan",
     source:
       "PlasticsEurope Eco-profiles (2020) & DEFRA UK GHG Conversion Factors for Packaging (PET, 2022)",
     year: 2022,
     scope: "Global LCA / Beverage Packaging",
     uncertainty: "Rendah (<10%)",
-    verificationStatus: "Terverifikasi Resmi",
+    verificationStatus: "Bersumber dari Referensi Resmi",
+    derivationFormula: "[18 g PET × 4.03 kg CO₂e/kg] + [2 g HDPE cap × 3.27 kg CO₂e/kg] + EoL = 0.083 kg CO₂e/buah",
     limitations:
-      "Mengasumsikan botol air mineral ukuran 500–600 ml berbobot rata-rata 18–22 gram berbahan PET virgin tanpa kandungan rPET daur ulang. Botol galon isi ulang atau botol dengan persentase rPET tinggi memiliki intensitas karbon per liter yang berbeda.",
+      "Estimasi turunan untuk botol air mineral ukuran 500–600 ml berbobot rata-rata 18–22 gram berbahan virgin PET tanpa kandungan rPET daur ulang. LCI PlasticsEurope murni berfokus pada gerbang pabrik resin (cradle-to-gate ~2.15–2.80 kg CO₂e/kg), sedangkan angka 0.083 kg CO₂e/buah merupakan model cradle-to-grave lengkap berbasis DEFRA 2022 (4.03 kg CO₂e/kg PET forming + tutup HDPE 2g).",
     notes:
-      "Emisi didorong oleh energi pemurnian petrokimia resin PET dan proses blow-molding bertekanan tinggi. Membiasakan membawa tumbler isi ulang mengeliminasi akumulasi botol plastik baru.",
+      "Penggunaan tumbler isi ulang (reusable water bottle) memerlukan sekitar 15–50 kali pemakaian ulang (tergantung material dan volume air pencucian) untuk mencapai titik impas emisi karbon terhadap konsumsi botol air mineral PET sekali pakai secara terus-menerus.",
     isAvailable: true,
   },
 
@@ -88,17 +91,18 @@ export const PLASTIC_EMISSION_FACTORS: Record<PlasticCategory, EmissionFactorMet
     activityUnit: "buah wadah / minggu",
     materialMassGrams: 5,
     systemBoundary:
-      "Cradle-to-grave (ekstraksi stirena monomerdari minyak bumi, polimerisasi, peniupan gas pentana menjadi foam EPS busa, thermoforming kotak clamshell, distribusi, dan pembuangan akhir)",
+      "Cradle-to-grave: ekstraksi stirena monomerdari minyak bumi, polimerisasi, peniupan gas pentana menjadi foam EPS busa, thermoforming kotak clamshell, distribusi, dan pembuangan akhir",
     source:
       "Zero Waste Scotland (2020) LCA of Takeaway Food Packaging & Franklin Associates / American Chemistry Council (2018)",
     year: 2020,
     scope: "Global LCA / Foodservice Packaging",
     uncertainty: "Sedang (10-30%)",
-    verificationStatus: "Estimasi Literatur Ilmiah",
+    verificationStatus: "Estimasi Turunan Literatur",
+    derivationFormula: "5 g × ~7.00 kg CO₂e/kg (estimasi internal proses foaming EPS) = 0.035 kg CO₂e/buah",
     limitations:
-      "Berdasarkan boks makanan styrofoam (clamshell) burger atau boks makan siang ringan dengan massa rata-rata 4–6 gram. Nilai tidak mencakup kerusakan ekosistem laut atau bahaya fragmentasi mikroplastik yang belum terkuantifikasi dalam GWP 100 tahun.",
+      "Estimasi turunan internal KarbonAI berdasarkan boks makanan ringan EPS tipis (~5 gram) dengan koefisien proses foaming ~7.0 kg CO₂e/kg. Sebagai perbandingan, laporan Zero Waste Scotland mencatat 51 g CO₂e (0.051 kg CO₂e) per wadah EPS takeaway standar UK dengan massa ~7.8 gram. Angka 0.035 kg CO₂e KarbonAI merupakan estimasi independen untuk wadah berukuran lebih kecil/ringan di Indonesia dan bukan kutipan angka langsung dari Zero Waste Scotland.",
     notes:
-      "Styrofoam terdiri atas 95-98% udara dan 2-5% polistirena. Walaupun massanya ringan, sifatnya sangat resisten terhadap degradasi alami, hampir tidak memiliki nilai daur ulang di Indonesia, dan menghasilkan emisi gas rumah kaca saat dibakar atau ditimbun di TPA.",
+      "Dampak lingkungan EPS memiliki dua aspek terpisah: (1) Emisi gas rumah kaca daur hidup (~0.035 kg CO₂e/buah untuk boks 5g); dan (2) Dampak pencemaran fisik karena strukturnya sangat lambat terdegradasi di alam, sulit didaur ulang secara ekonomis di Indonesia, dan mudah terfragmentasi menjadi mikroplastik.",
     isAvailable: true,
   },
 };
@@ -106,7 +110,10 @@ export const PLASTIC_EMISSION_FACTORS: Record<PlasticCategory, EmissionFactorMet
 // Aliaskan untuk kompatibilitas
 export const EMISSION_FACTORS = PLASTIC_EMISSION_FACTORS;
 
-// Tolok ukur emisi plastik sekali pakai per kapita nasional (Indonesia):
-// Berdasarkan data timbulan sampah plastik KLHK / BPS (~20 kg plastik/kapita/tahun)
-// Ekuivalen dengan ~0.85 kg CO₂e / minggu per kapita dari barang plastik sekali pakai.
+// Tolok ukur pembanding ilustratif internal KarbonAI (~0.85 kg CO₂e/minggu per orang):
+// Diturunkan sebagai simulasi kasar dari estimasi timbulan sampah plastik umum per kapita Indonesia
+// (~20 kg plastik/orang/tahun dari data umum KLHK/BPS yang mencakup seluruh jenis plastik,
+// dikalikan faktor emisi rata-rata plastik ~2.2 kg CO₂e/kg dibagi 52 minggu = ~0.85 kg CO₂e/minggu).
+// KETERBATASAN PENTING: Angka ini BUKAN data survei resmi nasional mengenai konsumsi 4 kategori
+// plastik yang dihitung KarbonAI, melainkan hanya titik referensi ilustratif internal.
 export const NATIONAL_AVG_PLASTIC_WEEKLY_KG = 0.85;

@@ -22,6 +22,17 @@ export interface PersonalizedAction {
   difficulty: ActionDifficulty;
   financialBenefit: string;
   localContext: string; // Konteks relevan kehidupan mahasiswa / lokal Aceh
+  targetFactor?: string; // Faktor emisi spesifik yang ditargetkan untuk dikurangi
+  isPrimaryContributorAction?: boolean; // Bernilai true jika menargetkan faktor emisi terbesar
+}
+
+export interface TopContributorInfo {
+  category: PlasticCategory;
+  categoryLabel: string;
+  weeklyKgCO2e: number;
+  percentage: number;
+  itemCountPerWeek: number;
+  explanation?: string;
 }
 
 export interface PrimaryPriorityInfo {
@@ -31,6 +42,9 @@ export interface PrimaryPriorityInfo {
   percentage: number;
   itemCountPerWeek: number;
   explanation: string; // Mengapa kategori ini menjadi fokus utama
+  allTopContributors?: TopContributorInfo[];
+  isTied?: boolean;
+  hasValidData?: boolean;
 }
 
 export interface GreenActionAnalysisResult {

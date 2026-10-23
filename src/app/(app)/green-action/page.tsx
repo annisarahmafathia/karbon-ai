@@ -21,12 +21,44 @@ import {
   ShieldCheck,
   CheckCircle2,
   RefreshCw,
-  Flame,
   Info,
   Award,
   Layers,
-  ChevronRight,
+  Star,
 } from "lucide-react";
+
+/**
+ * Komponen utilitas aman untuk merender teks dengan format bold (**teks**)
+ */
+function FormattedText({
+  text,
+  className,
+  isLightText = false,
+}: {
+  text: string;
+  className?: string;
+  isLightText?: boolean;
+}) {
+  if (!text) return null;
+  const parts = text.split(/(\*\*[^*]+\*\*)/g);
+  return (
+    <span className={className}>
+      {parts.map((part, index) => {
+        if (part.startsWith("**") && part.endsWith("**")) {
+          return (
+            <strong
+              key={index}
+              className={`font-black ${isLightText ? "text-white underline decoration-mint" : "text-charcoal"}`}
+            >
+              {part.slice(2, -2)}
+            </strong>
+          );
+        }
+        return part;
+      })}
+    </span>
+  );
+}
 
 export default function GreenActionPage() {
   const { input, result } = useCalculator();
@@ -150,8 +182,8 @@ export default function GreenActionPage() {
           </h1>
 
           <p className="text-xs sm:text-sm text-muted leading-relaxed">
-            AI menganalisis hasil kalkulasi jejak karbon mingguanmu, mengidentifikasi hotspot emisi
-            terbesar, dan menyusun langkah praktis yang relevan serta dapat langsung kamu terapkan
+            AI menganalisis hasil kalkulasi jejak karbon mingguanmu, mengidentifikasi faktor penyumbang
+            emisi terbesar, dan menyusun langkah praktis yang relevan serta dapat langsung kamu terapkan
             dalam kehidupan sehari-hari.
           </p>
 
@@ -159,21 +191,21 @@ export default function GreenActionPage() {
           {apiResponse && (
             <div className="pt-1 flex flex-wrap items-center justify-center gap-2">
               {apiResponse.isAiGenerated ? (
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold shadow-xs">
-                  <Sparkles className="w-3.5 h-3.5 text-emerald-600 animate-pulse" />
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-900 text-xs font-semibold shadow-xs">
+                  <Sparkles className="w-3.5 h-3.5 text-emerald-700 animate-pulse" />
                   <span>Dianalisis oleh AI KarbonAI (Personal)</span>
                   {apiResponse.modelName && (
-                    <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-emerald-100 text-emerald-900 font-mono">
+                    <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-emerald-100 text-emerald-900 font-mono font-bold">
                       {apiResponse.modelName}
                     </span>
                   )}
                 </div>
               ) : (
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs font-medium shadow-xs">
-                  <Info className="w-3.5 h-3.5 text-amber-700 shrink-0" />
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-amber-50 border border-amber-300 text-amber-950 text-xs font-medium shadow-xs">
+                  <Info className="w-3.5 h-3.5 text-amber-800 shrink-0" />
                   <span>Rekomendasi Berbasis Metodologi Ilmiah (Fallback)</span>
-                  <span className="text-[11px] text-amber-800/80 hidden sm:inline">
-                    • API AI belum dikonfigurasi / offline
+                  <span className="text-[11px] text-amber-900 hidden sm:inline">
+                    • Menggunakan faktor emisi riil terverifikasi
                   </span>
                 </div>
               )}
@@ -182,7 +214,7 @@ export default function GreenActionPage() {
                 type="button"
                 onClick={handleManualRefresh}
                 disabled={isRefreshing || isLoading}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white hover:bg-mint/40 border border-sage/40 text-xs font-bold text-forest transition-all shadow-xs disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white hover:bg-mint border border-sage text-xs font-bold text-forest transition-all shadow-xs disabled:opacity-50"
                 title="Muat ulang rekomendasi AI"
               >
                 <RefreshCw
@@ -196,7 +228,7 @@ export default function GreenActionPage() {
 
         {/* Loading Skeleton State */}
         {isLoading && (
-          <div className="bg-white rounded-3xl p-8 sm:p-12 border border-sage/30 shadow-sm text-center space-y-4">
+          <div className="bg-white rounded-3xl p-8 sm:p-12 border border-sage-light shadow-sm text-center space-y-4">
             <div className="w-12 h-12 mx-auto rounded-2xl bg-mint flex items-center justify-center text-forest animate-bounce">
               <Sparkles className="w-6 h-6" />
             </div>
@@ -204,8 +236,8 @@ export default function GreenActionPage() {
               AI KarbonAI sedang menganalisis kebiasaan plastikmu...
             </h2>
             <p className="text-xs text-muted max-w-md mx-auto">
-              Memeriksa emisi dari {result.totalItemsPerWeek} barang plastik mingguan dan menghitung
-              langkah pengurangan yang paling berdampak besar.
+              Memeriksa emisi dari {result.totalItemsPerWeek} barang plastik mingguan dan mengidentifikasi
+              faktor penyumbang emisi terbesar untuk langkah pengurangan yang paling berdampak.
             </p>
           </div>
         )}
@@ -214,30 +246,33 @@ export default function GreenActionPage() {
           <>
             {/* Zero Plastic Hero Banner */}
             {isZeroPlastic && (
-              <div className="bg-gradient-to-br from-mint/70 via-mint/40 to-cream rounded-3xl p-6 sm:p-8 border border-sage/40 shadow-sm flex flex-col sm:flex-row items-center gap-6">
+              <div className="bg-mint rounded-3xl p-6 sm:p-8 border border-sage shadow-sm flex flex-col sm:flex-row items-center gap-6">
                 <div className="w-16 h-16 rounded-2xl bg-forest text-cream flex items-center justify-center shrink-0 shadow-md">
                   <Award className="w-9 h-9 text-mint" />
                 </div>
                 <div className="space-y-1.5 text-center sm:text-left">
-                  <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-forest px-2.5 py-0.5 rounded-full bg-white/80 border border-sage/30">
+                  <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-forest px-2.5 py-0.5 rounded-full bg-white border border-sage">
                     <CheckCircle2 className="w-3.5 h-3.5 text-forest" />
                     <span>Pahlawan Bebas Plastik Sekali Pakai</span>
                   </div>
                   <h3 className="text-xl font-extrabold text-charcoal">
                     Kamu Sudah Bebas Plastik Sekali Pakai Minggu Ini!
                   </h3>
-                  <p className="text-xs sm:text-sm text-charcoal/80 leading-relaxed max-w-2xl">
+                  <p className="text-xs sm:text-sm text-charcoal leading-relaxed max-w-2xl font-normal">
                     {analysisData.habitAnalysis}
+                  </p>
+                  <p className="text-xs text-muted pt-1">
+                    *Seluruh penggunaan bernilai 0. Belum ada emisi yang dihasilkan sehingga tidak ada faktor yang ditetapkan sebagai penyumbang emisi terbesar.
                   </p>
                 </div>
               </div>
             )}
 
-            {/* Non-Zero Habit Analysis & Hotspot Overview */}
+            {/* Non-Zero Habit Analysis & Hotspot Overview (Layout Asli 3-Kolom) */}
             {!isZeroPlastic && (
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* 1. Habit Analysis Card */}
-                <div className="lg:col-span-2 bg-white rounded-3xl p-6 sm:p-8 border border-sage/30 shadow-sm flex flex-col justify-between space-y-4">
+                {/* 1. Habit Analysis Card (lg:col-span-2) */}
+                <div className="lg:col-span-2 bg-white rounded-3xl p-6 sm:p-8 border border-sage-light shadow-sm flex flex-col justify-between space-y-4">
                   <div className="space-y-3">
                     <div className="flex items-center gap-2 text-xs font-bold text-forest uppercase tracking-wider">
                       <Sparkles className="w-4 h-4 text-forest" />
@@ -248,12 +283,12 @@ export default function GreenActionPage() {
                       Gambaran Pola Konsumsi Plastik Mingguanmu
                     </h2>
 
-                    <p className="text-xs sm:text-sm text-charcoal/90 leading-relaxed bg-cream/50 p-4 rounded-2xl border border-sage/20">
-                      {analysisData.habitAnalysis}
-                    </p>
+                    <div className="text-xs sm:text-sm text-charcoal leading-relaxed bg-cream p-4 rounded-2xl border border-sage-light">
+                      <FormattedText text={analysisData.habitAnalysis} />
+                    </div>
                   </div>
 
-                  <div className="pt-2 border-t border-sage/20 flex flex-wrap items-center justify-between gap-3 text-xs text-muted">
+                  <div className="pt-2 border-t border-sage-light flex flex-wrap items-center justify-between gap-3 text-xs text-charcoal">
                     <div className="flex items-center gap-1.5">
                       <Layers className="w-4 h-4 text-forest" />
                       <span>
@@ -269,29 +304,37 @@ export default function GreenActionPage() {
                   </div>
                 </div>
 
-                {/* 2. Primary Priority Hotspot Card */}
-                <div className="bg-forest text-cream rounded-3xl p-6 sm:p-7 shadow-md flex flex-col justify-between space-y-4 relative overflow-hidden">
-                  <div className="space-y-3 relative z-10">
-                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-mint text-forest text-[11px] font-black uppercase tracking-wider">
-                      <Flame className="w-3.5 h-3.5 text-rose-600 fill-rose-600" />
+                {/* 2. Primary Priority / Faktor Penyumbang Emisi Terbesar Card (lg:col-span-1) */}
+                <div className="bg-forest text-cream rounded-3xl p-6 sm:p-7 shadow-md flex flex-col justify-between space-y-4">
+                  <div className="space-y-3">
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-mint text-forest border border-sage text-xs font-black uppercase tracking-wider">
+                      <Star className="w-3.5 h-3.5 fill-forest text-forest" />
                       <span>Prioritas Reduksi Utama</span>
                     </div>
 
                     <div>
-                      <span className="text-xs text-mint/90 block">Kategori Emisi Tertinggi</span>
-                      <h3 className="text-xl sm:text-2xl font-black text-cream">
+                      {/* Informasi Faktor Penyumbang Emisi Terbesar */}
+                      <span className="text-xs font-bold text-mint block mb-1">
+                        Faktor Penyumbang Emisi Terbesar
+                      </span>
+                      <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight">
                         {analysisData.primaryPriority.categoryLabel}
                       </h3>
+                      {analysisData.primaryPriority.isTied && (
+                        <span className="text-xs text-mint font-medium block mt-1">
+                          *Terdapat {analysisData.primaryPriority.allTopContributors?.length || 2} faktor dengan emisi tertinggi yang setara
+                        </span>
+                      )}
                     </div>
 
-                    <div className="bg-white/10 rounded-2xl p-3.5 border border-white/15 space-y-1">
+                    <div className="bg-forest-dark rounded-2xl p-3.5 border border-forest-light space-y-1.5">
                       <div className="flex items-baseline justify-between text-xs">
                         <span className="text-mint font-semibold">Emisi Mingguan</span>
-                        <span className="text-base font-extrabold text-cream">
+                        <span className="text-base font-extrabold text-white">
                           ~{analysisData.primaryPriority.weeklyKgCO2e} kg CO₂e
                         </span>
                       </div>
-                      <div className="flex items-center justify-between text-[11px] text-cream/80">
+                      <div className="flex items-center justify-between text-xs text-cream">
                         <span>Kontribusi Total</span>
                         <span className="font-bold text-mint">
                           {analysisData.primaryPriority.percentage}% dari seluruh emisi
@@ -299,26 +342,25 @@ export default function GreenActionPage() {
                       </div>
                     </div>
 
-                    <p className="text-xs text-cream/85 leading-relaxed">
-                      {analysisData.primaryPriority.explanation}
-                    </p>
+                    <div className="space-y-1">
+                      <span className="text-[11px] font-bold text-mint uppercase tracking-wider block">
+                        Tindakan yang Disarankan:
+                      </span>
+                      <div className="text-xs text-cream leading-relaxed font-normal">
+                        <FormattedText text={analysisData.primaryPriority.explanation} isLightText={true} />
+                      </div>
+                    </div>
                   </div>
 
-                  <div className="pt-2 border-t border-white/15 flex items-center justify-between text-xs text-mint/90 relative z-10">
-                    <span>{analysisData.primaryPriority.itemCountPerWeek} barang / minggu</span>
-                    <span className="font-semibold flex items-center gap-1">
-                      Fokus Utama AI <ChevronRight className="w-3.5 h-3.5" />
-                    </span>
+                  <div className="pt-3 border-t border-forest-light flex items-center justify-between text-xs text-cream">
+                    <span className="font-medium">{analysisData.primaryPriority.itemCountPerWeek} barang / minggu</span>
                   </div>
-
-                  {/* Decorative Background Blob */}
-                  <div className="absolute -bottom-10 -right-10 w-36 h-36 bg-mint/20 rounded-full blur-2xl pointer-events-none" />
                 </div>
               </div>
             )}
 
             {/* Filter Controls Bar */}
-            <div className="bg-white rounded-2xl p-4 sm:p-5 border border-sage/30 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="bg-white rounded-2xl p-4 sm:p-5 border border-sage-light shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4">
               {/* Category Filter */}
               <div className="flex items-center gap-2 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0">
                 <Filter className="w-4 h-4 text-forest shrink-0" />
@@ -338,7 +380,7 @@ export default function GreenActionPage() {
                     className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 ${
                       selectedCategory === f.id
                         ? "bg-forest text-cream shadow-xs"
-                        : "bg-cream text-charcoal hover:bg-mint/60"
+                        : "bg-cream text-charcoal border border-sage-light hover:bg-mint"
                     }`}
                   >
                     {f.label}
@@ -361,7 +403,7 @@ export default function GreenActionPage() {
                     className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
                       selectedPriority === p.id
                         ? "bg-charcoal text-white"
-                        : "bg-cream text-muted hover:text-charcoal"
+                        : "bg-cream text-charcoal border border-sage-light hover:bg-mint"
                     }`}
                   >
                     {p.label}
@@ -375,7 +417,7 @@ export default function GreenActionPage() {
               <div className="flex items-center justify-between">
                 <h3 className="text-lg sm:text-xl font-extrabold text-charcoal flex items-center gap-2">
                   <span>Daftar Tindakan Personal untuk Profilmu</span>
-                  <span className="text-xs px-2.5 py-0.5 rounded-full bg-mint text-forest font-bold">
+                  <span className="text-xs px-2.5 py-0.5 rounded-full bg-mint text-forest font-bold border border-sage">
                     {filteredActions.length} Rekomendasi
                   </span>
                 </h3>
@@ -388,49 +430,50 @@ export default function GreenActionPage() {
                   return (
                     <div
                       key={action.id}
-                      className={`rounded-3xl p-6 sm:p-7 bg-white shadow-xs hover:shadow-md transition-all flex flex-col justify-between border ${
+                      className={`rounded-3xl p-6 sm:p-7 bg-white transition-all flex flex-col justify-between border ${
                         isPrimary
-                          ? "border-forest/40 ring-1 ring-forest/20"
-                          : "border-sage/30 hover:border-sage"
+                          ? "border-2 border-forest shadow-sm"
+                          : "border border-sage-light shadow-2xs hover:border-sage hover:shadow-xs"
                       }`}
                     >
                       <div className="space-y-4">
                         {/* Badges Header */}
                         <div className="flex items-center justify-between gap-2">
                           <div className="flex items-center gap-2">
-                            <span
-                              className={`text-xs font-black px-2.5 py-1 rounded-full ${
-                                isPrimary
-                                  ? "bg-forest text-cream shadow-xs"
-                                  : "bg-cream text-charcoal border border-sage/30"
-                              }`}
-                            >
-                              {isPrimary ? "★ Prioritas Utama" : "Rekomendasi Tambahan"}
-                            </span>
+                            {isPrimary ? (
+                              <span className="inline-flex items-center gap-1.5 text-xs font-black px-3 py-1 rounded-full bg-forest text-cream shadow-xs border border-forest-dark">
+                                <Star className="w-3.5 h-3.5 fill-amber-300 text-amber-300 shrink-0" />
+                                <span>Prioritas Utama</span>
+                              </span>
+                            ) : (
+                              <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-cream text-charcoal border border-sage">
+                                Rekomendasi Tambahan
+                              </span>
+                            )}
 
-                            <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-mint/50 text-forest border border-sage/20">
+                            <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-mint text-forest border border-sage">
                               {action.categoryLabel}
                             </span>
                           </div>
 
-                          <span className="text-[11px] font-semibold text-muted">
+                          <span className="text-xs font-semibold text-charcoal bg-cream px-2 py-0.5 rounded-md border border-sage-light">
                             {action.difficulty}
                           </span>
                         </div>
 
                         {/* Title */}
-                        <h4 className="text-base sm:text-lg font-extrabold text-charcoal leading-snug">
+                        <h4 className="text-base sm:text-lg font-black text-charcoal leading-snug">
                           {action.title}
                         </h4>
 
                         {/* Alasan Rekomendasi (Why this action fits user's habit) */}
-                        <div className="bg-cream/60 rounded-2xl p-3.5 border border-sage/20 text-xs text-charcoal/90 space-y-1">
+                        <div className="bg-cream rounded-2xl p-3.5 border border-sage-light text-xs text-charcoal space-y-1">
                           <div className="font-bold text-forest flex items-center gap-1.5">
                             <Sparkles className="w-3.5 h-3.5 text-forest shrink-0" />
                             <span>Alasan Rekomendasi Personal</span>
                           </div>
-                          <p className="text-[11px] text-charcoal/80 leading-relaxed">
-                            {action.reason}
+                          <p className="text-xs text-charcoal leading-relaxed font-normal">
+                            <FormattedText text={action.reason} />
                           </p>
                         </div>
 
@@ -443,52 +486,54 @@ export default function GreenActionPage() {
                             {action.practicalSteps.map((step, idx) => (
                               <li
                                 key={idx}
-                                className="text-xs text-charcoal/85 flex items-start gap-2 bg-white p-2 rounded-xl border border-sage/20 shadow-2xs"
+                                className="text-xs text-charcoal flex items-start gap-2.5 bg-cream p-2.5 rounded-xl border border-sage-light"
                               >
-                                <CheckCircle2 className="w-3.5 h-3.5 text-forest shrink-0 mt-0.5" />
-                                <span className="leading-relaxed">{step}</span>
+                                <CheckCircle2 className="w-4 h-4 text-forest shrink-0 mt-0.5" />
+                                <span className="leading-relaxed font-medium">
+                                  <FormattedText text={step} />
+                                </span>
                               </li>
                             ))}
                           </ul>
                         </div>
 
                         {/* Potential Impact Box (Scientifically Verified) */}
-                        <div className="bg-mint/40 rounded-2xl p-3.5 border border-sage/30 space-y-2">
-                          <div className="flex items-center justify-between">
+                        <div className="bg-mint rounded-2xl p-3.5 border border-sage space-y-2">
+                          <div className="flex items-center justify-between gap-2">
                             <div className="flex items-center gap-1.5 text-xs font-bold text-forest">
-                              <ShieldCheck className="w-4 h-4 text-forest" />
+                              <ShieldCheck className="w-4 h-4 text-forest shrink-0" />
                               <span>Dampak Potensial Pengurangan Emisi</span>
                             </div>
-                            <span className="text-xs font-black text-forest-dark">
+                            <span className="text-xs font-black text-cream bg-forest px-2.5 py-1 rounded-lg">
                               {action.potentialImpact.formattedSaving}
                             </span>
                           </div>
 
-                          <p className="text-[11px] text-forest-dark leading-relaxed">
+                          <p className="text-xs text-forest-dark font-medium leading-relaxed">
                             {action.potentialImpact.qualitativeBenefit}
                           </p>
                         </div>
 
                         {/* Local Context / Tips Mahasiswa */}
                         {action.localContext && (
-                          <div className="bg-cream/70 rounded-2xl p-3 border border-sage/20 text-xs text-charcoal/80 flex items-start gap-2">
+                          <div className="bg-cream rounded-2xl p-3 border border-sage-light text-xs text-charcoal flex items-start gap-2">
                             <MapPin className="w-3.5 h-3.5 text-forest shrink-0 mt-0.5" />
                             <div>
-                              <strong className="text-forest font-semibold">Tips Praktis: </strong>
-                              <span>{action.localContext}</span>
+                              <strong className="text-forest font-bold">Tips Praktis: </strong>
+                              <span className="font-medium text-charcoal">{action.localContext}</span>
                             </div>
                           </div>
                         )}
 
                         {/* Financial Benefit */}
                         {action.financialBenefit && (
-                          <div className="bg-amber-50/70 rounded-2xl p-3 border border-amber-200/60 text-xs text-amber-900 flex items-start gap-2">
-                            <Coins className="w-3.5 h-3.5 text-amber-700 shrink-0 mt-0.5" />
+                          <div className="bg-amber-50 rounded-2xl p-3 border border-amber-300 text-xs text-amber-950 flex items-start gap-2">
+                            <Coins className="w-3.5 h-3.5 text-amber-800 shrink-0 mt-0.5" />
                             <div>
-                              <strong className="text-amber-800 font-semibold">
+                              <strong className="text-amber-900 font-bold">
                                 Manfaat Finansial:{" "}
                               </strong>
-                              <span>{action.financialBenefit}</span>
+                              <span className="font-medium text-amber-950">{action.financialBenefit}</span>
                             </div>
                           </div>
                         )}
@@ -500,7 +545,7 @@ export default function GreenActionPage() {
 
               {/* Filter Empty State */}
               {filteredActions.length === 0 && (
-                <div className="bg-white rounded-3xl p-8 border border-sage/30 text-center space-y-3">
+                <div className="bg-white rounded-3xl p-8 border border-sage-light text-center space-y-3">
                   <p className="text-sm font-semibold text-charcoal">
                     Tidak ada rekomendasi untuk filter yang dipilih.
                   </p>
@@ -524,7 +569,7 @@ export default function GreenActionPage() {
         )}
 
         {/* Bottom Navigation */}
-        <div className="pt-6 border-t border-sage/20 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="pt-6 border-t border-sage-light flex flex-col sm:flex-row items-center justify-between gap-4">
           <Link
             href="/hasil"
             className="text-xs sm:text-sm font-bold text-forest hover:underline flex items-center gap-1.5"
@@ -535,7 +580,7 @@ export default function GreenActionPage() {
           <div className="flex items-center gap-3">
             <Link
               href="/kalkulator"
-              className="px-4 py-2.5 rounded-xl border border-sage/40 bg-white hover:bg-mint/30 text-charcoal text-xs sm:text-sm font-bold transition-all"
+              className="px-4 py-2.5 rounded-xl border border-sage bg-white hover:bg-mint text-charcoal text-xs sm:text-sm font-bold transition-all"
             >
               Ubah Data Kalkulator
             </Link>

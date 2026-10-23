@@ -34,12 +34,15 @@ export function generateRuleBasedGreenActions(
         "Luar biasa! Kamu mencatatkan 0 penggunaan plastik sekali pakai baru minggu ini. Gaya hidup ramah lingkunganmu sudah sangat optimal dan menjadi inspirasi nyata bagi lingkungan sekitarmu.",
       primaryPriority: {
         category: "botol_minum",
-        categoryLabel: "Gaya Hidup Zero-Waste",
+        categoryLabel: "Belum Ada Emisi Terdeteksi",
         weeklyKgCO2e: 0,
         percentage: 0,
         itemCountPerWeek: 0,
         explanation:
-          "Tidak ada emisi plastik sekali pakai yang perlu dikurangi minggu ini. Fokus utamamu adalah mempertahankan kebiasaan baik ini dan menginspirasi teman-temanmu.",
+          "Tidak ada emisi plastik sekali pakai yang terdeteksi minggu ini. Berdasarkan data kalkulasimu saat ini, seluruh kategori bernilai 0 sehingga tidak ada faktor penyumbang emisi terbesar yang perlu dikurangi.",
+        allTopContributors: [],
+        isTied: false,
+        hasValidData: false,
       },
       isZeroPlasticHero: true,
       recommendations: [
@@ -50,11 +53,11 @@ export function generateRuleBasedGreenActions(
           priority: "Utama",
           title: "Pertahankan Perlengkapan Reusable & Ajak Teman Sekitarmu",
           reason:
-            "Kamu sudah berhasil menghindari plastik sekali pakai secara konsisten. Langkah terbaik adalah menjaga peralatan pakai ulang tetap bersih dan menularkan kebiasaan ini ke lingkaran pertemanan kampus.",
+            "Kamu sudah berhasil menghindari plastik sekali pakai secara konsisten. Langkah terbaik adalah menjaga peralatan pakai ulang tetap bersih dan menularkan kebiasaan ini ke lingkungan sekitarmu.",
           practicalSteps: [
-            "Pastikan tumbler dan kotak makan selalu dicuci bersih dan siap di dalam tas sebelum berangkat kuliah.",
-            "Bagikan pengalaman dan tips praktis membawa wadah sendiri saat makan bareng teman di warung kampus.",
-            "Dukung warung dan kantin kampus yang pro-lingkungan dan memfasilitasi wadah pribadi.",
+            "Pastikan tumbler dan kotak makan selalu dicuci bersih dan siap di dalam tas sebelum beraktivitas.",
+            "Bagikan pengalaman dan tips praktis membawa wadah sendiri saat makan bareng teman di warung.",
+            "Dukung tempat makan dan warung yang pro-lingkungan dan memfasilitasi wadah pribadi.",
           ],
           potentialImpact: {
             weeklySavingKgCO2e: null,
@@ -66,31 +69,126 @@ export function generateRuleBasedGreenActions(
           difficulty: "Mudah",
           financialBenefit: "Menghemat pengeluaran harian hingga ratusan ribu rupiah per bulan",
           localContext:
-            "Kampus di Darussalam sangat terbantu oleh mahasiswa yang aktif menjalankan budaya zero-waste sehari-hari.",
+            "Kampus dan komunitas lokal sangat terbantu oleh individu yang aktif menjalankan budaya zero-waste sehari-hari.",
+          targetFactor: "Gaya Hidup Zero-Waste",
+          isPrimaryContributorAction: false,
         },
       ],
     };
   }
 
-  const highestCat = result.highestCategory.category;
-  const highestLabel = CATEGORY_NAMES[highestCat];
-  const highestEmission = result.highestCategory.weeklyKgCO2e;
-  const highestPercent = result.highestCategory.percentage;
-  const highestItems = result.highestCategory.itemCountPerWeek;
+  // Dapatkan seluruh kategori dengan emisi aktif > 0
+  const categoriesList: PlasticCategory[] = [
+    "wadah_makanan",
+    "botol_minum",
+    "kantong_plastik",
+    "wadah_styrofoam",
+  ];
 
-  // Analisis kebiasaan berdasarkan data aktual
-  const activeCategoriesCount = [
-    input.kantongPlastik > 0,
-    input.wadahMakanan > 0,
-    input.botolMinum > 0,
-    input.wadahStyrofoam > 0,
-  ].filter(Boolean).length;
+  const activeCategories = categoriesList
+    .map((cat) => ({
+      category: cat,
+      categoryLabel: CATEGORY_NAMES[cat],
+      weeklyKgCO2e: result.categories[cat]?.weeklyKgCO2e ?? 0,
+      percentage: result.categories[cat]?.percentage ?? 0,
+      itemCountPerWeek: result.categories[cat]?.itemCountPerWeek ?? 0,
+    }))
+    .filter((c) => c.weeklyKgCO2e > 0);
 
-  let habitSummary = `Berdasarkan kalkulasi mingguan, kamu menggunakan total ${result.totalItemsPerWeek} barang plastik sekali pakai yang menghasilkan ~${result.totalWeeklyKgCO2e} kg CO₂e/minggu. `;
-  if (activeCategoriesCount === 1) {
-    habitSummary += `Emisi plastikmu sepenuhnya terkonsentrasi pada ${highestLabel}, sehingga fokus pada satu kebiasaan ini akan langsung memangkas jejak karbonmu secara drastis.`;
+  // Cari nilai emisi mingguan maksimum yang sebenarnya
+  const maxEmission = activeCategories.length > 0
+    ? Math.max(...activeCategories.map((c) => c.weeklyKgCO2e))
+    : 0;
+
+  // Temukan semua faktor yang menghasilkan emisi tertinggi (mendukung kasus tied/imbang)
+  const topContributors = activeCategories.filter(
+    (c) => Math.abs(c.weeklyKgCO2e - maxEmission) < 0.0001
+  );
+
+  const isTied = topContributors.length > 1;
+  const topCategorySet = new Set(topContributors.map((c) => c.category));
+
+  // Ambil rujukan kategori utama
+  const highestCat = topContributors[0]?.category ?? result.highestCategory.category;
+  const highestEmission = maxEmission;
+  const highestPercent = topContributors[0]?.percentage ?? result.highestCategory.percentage;
+  const highestItems = isTied
+    ? topContributors.reduce((s, c) => s + c.itemCountPerWeek, 0)
+    : (topContributors[0]?.itemCountPerWeek ?? result.highestCategory.itemCountPerWeek);
+
+  const highestLabel = isTied
+    ? topContributors.map((c) => c.categoryLabel).join(" & ")
+    : (topContributors[0]?.categoryLabel ?? CATEGORY_NAMES[highestCat]);
+
+  // Analisis kebiasaan berdasarkan kategori aktif yang benar-benar diinput
+  const activeInputDetails = activeCategories.map(
+    (c) => `**${c.categoryLabel}** (${c.itemCountPerWeek} barang/minggu)`
+  );
+
+  let habitSummary = `Dalam sepekan, kamu menggunakan total **${result.totalItemsPerWeek} barang plastik sekali pakai** dengan estimasi jejak emisi sebesar **~${result.totalWeeklyKgCO2e} kg CO₂e**. `;
+  if (activeCategories.length === 1) {
+    habitSummary += `Penggunaan plastikmu sepenuhnya berpusat pada satu kebiasaan, yaitu ${activeInputDetails[0]}. `;
   } else {
-    habitSummary += `Penyumbang emisi terbesarmu adalah ${highestLabel} sebesar ${highestPercent}% dari total emisi. Mengingat faktor emisi ${highestLabel} yang signifikan, intervensi pada kategori ini memberikan dampak penurunan terbesar.`;
+    habitSummary += `Pola konsumsimu tersebar pada beberapa kebiasaan harian, yaitu ${activeInputDetails.join(", ")}. `;
+  }
+
+  // Identifikasi faktor penyumbang emisi terbesar dan alasan ilmiah singkatnya
+  if (isTied) {
+    const tiedLabels = topContributors.map((c) => `**${c.categoryLabel}**`).join(" dan ");
+    habitSummary += `Dari pola tersebut, ${tiedLabels} secara setara menjadi faktor penyumbang emisi terbesar karena kombinasi frekuensi pemakaian dan intensitas emisi materialnya.`;
+  } else {
+    switch (highestCat) {
+      case "wadah_makanan":
+        habitSummary += `Dari pola tersebut, **Wadah Makanan Plastik** menjadi penyumbang emisi terbesar karena plastik polipropilena (PP) atau mika tebal membutuhkan energi manufaktur tinggi dan melepaskan emisi signifikan per unitnya.`;
+        break;
+      case "botol_minum":
+        habitSummary += `Dari pola tersebut, **Botol Minum Sekali Pakai** menjadi penyumbang emisi terbesar karena material plastik PET memerlukan proses ekstraksi minyak bumi dan pemurnian yang intensif energi.`;
+        break;
+      case "kantong_plastik":
+        habitSummary += `Dari pola tersebut, **Kantong Plastik** menjadi penyumbang emisi terbesar akibat frekuensi penggunaannya yang sangat sering dan tingkat daur ulang polietilena tipis yang masih sangat rendah.`;
+        break;
+      case "wadah_styrofoam":
+        habitSummary += `Dari pola tersebut, **Wadah Styrofoam** menjadi penyumbang emisi terbesar karena proses polimerisasi stirena dan foaming EPS memerlukan energi intensif, di samping dampak persistensi fisik sampahnya yang sulit terurai di alam.`;
+        break;
+    }
+  }
+
+  // Tindakan konkret yang diprioritaskan untuk kartu "Prioritas Reduksi Utama" (tanpa mengulang analisis emisi)
+  let explanation = "";
+  if (isTied) {
+    const tiedCats = topContributors.map((c) => c.category);
+    if (tiedCats.includes("botol_minum") && tiedCats.includes("kantong_plastik")) {
+      explanation =
+        "Tindakan prioritas utamamu adalah menerapkan dua kebiasaan praktis: **selalu membawa tumbler pribadi** serta **menyiapkan tas belanja kain lipat** saat bepergian untuk memangkas kedua sumber emisi utama ini secara serentak.";
+    } else if (tiedCats.includes("wadah_styrofoam") && tiedCats.includes("kantong_plastik")) {
+      explanation =
+        "Tindakan prioritas utamamu adalah **membawa wadah makan guna ulang (mistin/kotak bekal)** saat membeli makanan dan **menyiapkan tas belanja kain lipat** agar tidak lagi memerlukan styrofoam maupun kantong kresek.";
+    } else if (tiedCats.includes("wadah_makanan") && tiedCats.includes("botol_minum")) {
+      explanation =
+        "Tindakan prioritas utamamu adalah membawa perlengkapan harian: **selalu membawa tumbler pribadi** untuk minuman dan **kotak bekal guna ulang** saat membeli makanan di luar guna mengurangi emisi dari kedua kategori ini secara langsung.";
+    } else {
+      const tiedLabels = topContributors.map((c) => `**${c.categoryLabel}**`).join(" dan ");
+      explanation = `Tindakan prioritas utamamu adalah beralih ke wadah dan kemasan guna ulang untuk ${tiedLabels} secara bersamaan guna menekan kedua sumber emisi tersebut.`;
+    }
+  } else {
+    switch (highestCat) {
+      case "wadah_styrofoam":
+        explanation =
+          "Tindakan prioritas utamamu adalah **membawa wadah makan guna ulang (mistin/kotak bekal)** saat membeli makanan bawa pulang (take-away), atau memilih tempat makan yang menyediakan kemasan alternatif berbahan daun pisang atau kertas ramah lingkungan.";
+        break;
+      case "botol_minum":
+        explanation =
+          "Tindakan prioritas utamamu adalah **selalu membawa botol minum (tumbler) pribadi** dan memanfaatkan fasilitas isi ulang air minum di kampus atau tempat kerja untuk sepenuhnya menggantikan pembelian air mineral kemasan sekali pakai.";
+        break;
+      case "wadah_makanan":
+        explanation =
+          "Tindakan prioritas utamamu adalah **membawa kotak bekal reusable berbahan food-grade** saat membeli makanan siap santap dan meminta penjual tidak membungkusnya dengan kotak plastik mika sekali pakai.";
+        break;
+      case "kantong_plastik":
+        explanation =
+          "Tindakan prioritas utamamu adalah **selalu menyiapkan tas belanja kain lipat (tote bag)** di dalam tas ransel atau jok kendaraan, serta membiasakan diri menolak kantong kresek saat berbelanja.";
+        break;
+    }
   }
 
   const primaryPriority: PrimaryPriorityInfo = {
@@ -99,7 +197,10 @@ export function generateRuleBasedGreenActions(
     weeklyKgCO2e: highestEmission,
     percentage: highestPercent,
     itemCountPerWeek: highestItems,
-    explanation: `${highestLabel} menyumbang ${highestPercent}% dari seluruh emisi mingguanmu (~${highestEmission} kg CO₂e/minggu dari ${highestItems} barang). Mengurangi kategori ini merupakan prioritas paling efektif.`,
+    explanation,
+    allTopContributors: topContributors,
+    isTied,
+    hasValidData: true,
   };
 
   const recommendations: PersonalizedAction[] = [];
@@ -116,22 +217,26 @@ export function generateRuleBasedGreenActions(
     const itemCount = catResult.itemCountPerWeek;
     if (itemCount <= 0) continue;
 
-    const isPrimary = cat === highestCat;
+    const isPrimary = topCategorySet.has(cat);
     const factor = PLASTIC_EMISSION_FACTORS[cat].value;
 
     if (cat === "kantong_plastik") {
       const saving = Math.round(itemCount * factor * 1000) / 1000;
+      const reasonText = isPrimary
+        ? `Tindakan ini menargetkan pengurangan **Kantong Plastik**, yang merupakan **penyumbang emisi terbesar** dari jejak karbonmu (~${catResult.weeklyKgCO2e} kg CO₂e/minggu dari ${itemCount} kantong baru). Membawa tas belanja lipat kain akan langsung memangkas habis emisi kategori ini.`
+        : `Tindakan ini menargetkan pengurangan **Kantong Plastik** (${itemCount} kantong/minggu, ~${catResult.weeklyKgCO2e} kg CO₂e). Membawa tas belanja lipat mandiri secara konsisten membantu menghentikan timbulan kantong kresek sekali pakai.`;
+
       recommendations.push({
         id: `rule_action_${cat}`,
         category: cat,
         categoryLabel: CATEGORY_NAMES[cat],
         priority: isPrimary ? "Utama" : "Tambahan",
         title: "Bawa Tas Belanja Lipat (Tote Bag) & Tolak Kantong Kresek",
-        reason: `Kamu menggunakan ${itemCount} kantong kresek baru per minggu. Karena kantong plastik sering kali hanya dipakai beberapa menit sebelum dibuang, membawa tas kain lipat akan langsung mengeliminasi sampah ini.`,
+        reason: reasonText,
         practicalSteps: [
-          "Selalu selipkan 1 tas belanja kain lipat di saku atau kompartemen depan ransel kuliahmu.",
-          "Ucapkan secara proaktif ke kasir minimarket atau pedagang: 'Tidak usah pakai kantong kresek ya, Kak/Bang.'",
-          "Kumpulkan barang belanjaan kecil langsung ke dalam tas tanpa kantong terpisah.",
+          "Selalu selipkan 1 tas belanja kain lipat di saku atau kompartemen ransel harianmu.",
+          "Ucapkan secara proaktif ke kasir atau pedagang: 'Tidak usah pakai kantong kresek ya, Kak/Bang.'",
+          "Kumpulkan barang belanjaan kecil langsung ke dalam tas tanpa kantong plastik terpisah.",
         ],
         potentialImpact: {
           weeklySavingKgCO2e: saving,
@@ -143,23 +248,29 @@ export function generateRuleBasedGreenActions(
         difficulty: "Mudah",
         financialBenefit: "Bebas biaya kantong plastik berbayar di supermarket dan minimarket.",
         localContext:
-          "Pedagang di Pasar Rukoh, Peunayong, dan minimarket sekitar kampus sangat terbiasa dengan pembeli yang membawa tas belanja sendiri.",
+          "Pedagang di pasar tradisional dan minimarket sekitar kampus sangat terbiasa dengan pembeli yang membawa tas belanja sendiri.",
+        targetFactor: CATEGORY_NAMES[cat],
+        isPrimaryContributorAction: isPrimary,
       });
     } else if (cat === "wadah_makanan") {
       // Asumsi substitusi 80% wadah bawa pulang
       const reducedItems = Math.max(1, Math.round(itemCount * 0.8));
       const saving = Math.round(reducedItems * factor * 1000) / 1000;
+      const reasonText = isPrimary
+        ? `Tindakan ini menargetkan pengurangan **Wadah Makanan Plastik**, yang merupakan **penyumbang emisi terbesar** mingguanmu (~${catResult.weeklyKgCO2e} kg CO₂e/minggu). Karena wadah makanan memiliki faktor emisi tinggi (${factor} kg CO₂e/buah), mengganti ${reducedItems} dari ${itemCount} wadah takeaway dengan kotak makan guna ulang memberikan dampak reduksi emisi paling nyata.`
+        : `Tindakan ini menargetkan pengurangan **Wadah Makanan Plastik** (~${catResult.weeklyKgCO2e} kg CO₂e/minggu). Membawa wadah makan sendiri saat memesan makanan takeaway menghemat pemakaian wadah plastik tebal.`;
+
       recommendations.push({
         id: `rule_action_${cat}`,
         category: cat,
         categoryLabel: CATEGORY_NAMES[cat],
         priority: isPrimary ? "Utama" : "Tambahan",
         title: "Bawa Kotak Makan Sendiri Saat Beli Makanan Bawa Pulang (Takeaway)",
-        reason: `Wadah makanan plastik memiliki faktor emisi tinggi (${factor} kg CO₂e/buah) karena massanya yang tebal (~25 gram). Mengurangi ${reducedItems} dari ${itemCount} wadah per minggu memberikan dampak pengurangan emisi terbesar.`,
+        reason: reasonText,
         practicalSteps: [
-          "Bawa wadah makan bersekat atau thinwall tebal yang bisa dicuci ulang saat pergi keluar beli makan.",
-          "Serahkan kotak makanmu saat memesan mie aceh, nasi gurih, atau lauk makan siang di warung.",
-          "Jika makan di tempat, pilih piring atau mangkuk daripada wadah bungkus jika tidak terburu-buru.",
+          "Bawa wadah makan bersekat atau kotak makan yang bisa dicuci ulang saat pergi beli makan.",
+          "Serahkan kotak makanmu saat memesan mie, nasi bungkus, atau lauk makan siang di warung.",
+          "Jika makan di tempat, pilih piring atau mangkuk daripada wadah bungkus sekali pakai.",
         ],
         potentialImpact: {
           weeklySavingKgCO2e: saving,
@@ -170,23 +281,29 @@ export function generateRuleBasedGreenActions(
         },
         difficulty: "Sedang",
         financialBenefit:
-          "Banyak penjual warung nasi memberikan porsi lebih saat pembeli membawa wadah sendiri!",
+          "Banyak penjual warung makan memberikan porsi lebih saat pembeli membawa wadah sendiri!",
         localContext:
-          "Warung nasi dan warung mie di seputaran kampus USK/UIN sangat ramah melayani pesanan dengan wadah bawaan pembeli.",
+          "Warung nasi dan warung mie di seputaran kampus sangat ramah melayani pesanan dengan wadah bawaan pembeli.",
+        targetFactor: CATEGORY_NAMES[cat],
+        isPrimaryContributorAction: isPrimary,
       });
     } else if (cat === "botol_minum") {
       const saving = Math.round(itemCount * factor * 1000) / 1000;
+      const reasonText = isPrimary
+        ? `Tindakan ini menargetkan pengurangan **Botol Minum Plastik**, yang merupakan **penyumbang emisi terbesar** dari jejak karbonmu (~${catResult.weeklyKgCO2e} kg CO₂e/minggu dari ${itemCount} botol baru). Membawa botol minum isi ulang (tumbler) akan menghapus hingga 100% jejak emisi kategori ini.`
+        : `Tindakan ini menargetkan pengurangan **Botol Minum Plastik** (${itemCount} botol baru/minggu, ~${catResult.weeklyKgCO2e} kg CO₂e). Membawa tumbler dan memanfaatkan stasiun air minum kampus menghindarkan pembelian botol PET sekali pakai.`;
+
       recommendations.push({
         id: `rule_action_${cat}`,
         category: cat,
         categoryLabel: CATEGORY_NAMES[cat],
         priority: isPrimary ? "Utama" : "Tambahan",
         title: "Bawa Tumbler & Manfaatkan Stasiun Pengisian Air Minum Kampus",
-        reason: `Kamu membeli ${itemCount} botol plastik baru per minggu (~${catResult.weeklyKgCO2e} kg CO₂e). Membawa tumbler dan mengisi ulang air minum akan menghapus 100% jejak karbon kategori ini.`,
+        reason: reasonText,
         practicalSteps: [
-          "Isi penuh tumbler air minum dari kos sebelum berangkat kuliah di pagi hari.",
-          "Manfaatkan dispenser galon di fakultas, perpustakaan, atau musholla kampus untuk isi ulang gratis.",
-          "Bawa tumbler saat nongkrong di kafe/warkop untuk memesan minuman dingin.",
+          "Isi penuh tumbler air minum dari rumah/kos sebelum berangkat beraktivitas di pagi hari.",
+          "Manfaatkan dispenser galon di fakultas, perpustakaan, atau musholla untuk isi ulang gratis.",
+          "Bawa tumbler saat nongkrong di kafe atau warkop untuk memesan minuman dingin.",
         ],
         potentialImpact: {
           weeklySavingKgCO2e: saving,
@@ -199,19 +316,25 @@ export function generateRuleBasedGreenActions(
         financialBenefit:
           "Menghemat anggaran beli air mineral botol ~Rp 20.000 - 50.000 setiap minggunya.",
         localContext:
-          "Kampus di Darussalam menyediakan fasilitas air minum isi ulang di berbagai gedung perkuliahan.",
+          "Fasilitas air minum isi ulang di berbagai gedung perkuliahan dan perpustakaan dapat dimanfaatkan gratis.",
+        targetFactor: CATEGORY_NAMES[cat],
+        isPrimaryContributorAction: isPrimary,
       });
     } else if (cat === "wadah_styrofoam") {
       const saving = Math.round(itemCount * factor * 1000) / 1000;
+      const reasonText = isPrimary
+        ? `Tindakan ini menargetkan pengurangan **Wadah Styrofoam**, yang merupakan **penyumbang emisi terbesar** pengguna (~${catResult.weeklyKgCO2e} kg CO₂e/minggu dari ${itemCount} wadah). Styrofoam sulit terurai dan melepaskan zat berbahaya, sehingga menolaknya adalah prioritas utama.`
+        : `Tindakan ini menargetkan pengurangan **Wadah Styrofoam** (${itemCount} wadah/minggu, ~${catResult.weeklyKgCO2e} kg CO₂e). Memilih kemasan daun pisang atau kotak bekal sendiri mencegah polusi mikroplastik yang persisten di alam.`;
+
       recommendations.push({
         id: `rule_action_${cat}`,
         category: cat,
         categoryLabel: CATEGORY_NAMES[cat],
         priority: isPrimary ? "Utama" : "Tambahan",
         title: "Tolak Kemasan Styrofoam & Pilih Bungkus Daun / Kertas Cokelat",
-        reason: `Kamu menggunakan ${itemCount} wadah styrofoam per minggu. Styrofoam sangat sulit terurai (ratusan tahun) dan mudah pecah menjadi mikroplastik berbahaya.`,
+        reason: reasonText,
         practicalSteps: [
-          "Minta penjual membungkus makanan dengan kertas nasi atau daun pisang jika ada.",
+          "Minta penjual membungkus makanan dengan kertas nasi atau daun pisang jika tersedia.",
           "Bawa kotak makan sendiri saat membeli makanan cepat saji atau gorengan.",
           "Hindari menu makanan berkuah panas dimasukkan langsung ke dalam wadah styrofoam.",
         ],
@@ -225,10 +348,21 @@ export function generateRuleBasedGreenActions(
         difficulty: "Mudah",
         financialBenefit: "Mendukung tradisi kuliner lokal yang ramah lingkungan.",
         localContext:
-          "Kuliner tradisional Aceh seperti nasi gurih dan timphan secara alami dibungkus daun pisang yang jauh lebih sehat dan ramah lingkungan.",
+          "Kuliner tradisional seperti nasi gurih secara alami dibungkus daun pisang yang jauh lebih sehat dan ramah lingkungan.",
+        targetFactor: CATEGORY_NAMES[cat],
+        isPrimaryContributorAction: isPrimary,
       });
     }
   }
+
+  // Pastikan tindakan yang menargetkan penyumbang emisi terbesar berada di urutan teratas
+  recommendations.sort((a, b) => {
+    if (a.priority === "Utama" && b.priority !== "Utama") return -1;
+    if (a.priority !== "Utama" && b.priority === "Utama") return 1;
+    const saveA = a.potentialImpact.weeklySavingKgCO2e ?? 0;
+    const saveB = b.potentialImpact.weeklySavingKgCO2e ?? 0;
+    return saveB - saveA;
+  });
 
   return {
     habitAnalysis: habitSummary,
@@ -253,7 +387,35 @@ export async function generateGeminiGreenActions(
   const model = process.env.GEMINI_MODEL || "gemini-1.5-flash";
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
-  // Siapkan data faktual yang presisi untuk prompt
+  // Hitung faktor penyumbang emisi terbesar secara akurat dari nilai emisi riil
+  const categoriesList: PlasticCategory[] = [
+    "wadah_makanan",
+    "botol_minum",
+    "kantong_plastik",
+    "wadah_styrofoam",
+  ];
+
+  const activeCategories = categoriesList
+    .map((cat) => ({
+      category: cat,
+      categoryLabel: CATEGORY_NAMES[cat],
+      weeklyKgCO2e: result.categories[cat]?.weeklyKgCO2e ?? 0,
+      percentage: result.categories[cat]?.percentage ?? 0,
+      itemCountPerWeek: result.categories[cat]?.itemCountPerWeek ?? 0,
+    }))
+    .filter((c) => c.weeklyKgCO2e > 0);
+
+  const maxEmission = activeCategories.length > 0
+    ? Math.max(...activeCategories.map((c) => c.weeklyKgCO2e))
+    : 0;
+
+  const topContributors = activeCategories.filter(
+    (c) => Math.abs(c.weeklyKgCO2e - maxEmission) < 0.0001
+  );
+
+  const isTied = topContributors.length > 1;
+  const topCategorySet = new Set(topContributors.map((c) => c.category));
+
   const highest = result.highestCategory;
   const promptData = {
     weeklyInputItems: {
@@ -282,6 +444,8 @@ export async function generateGeminiGreenActions(
       weeklyKgCO2e: highest.weeklyKgCO2e,
       percentage: highest.percentage,
       itemCountPerWeek: highest.itemCountPerWeek,
+      isTied,
+      allTopContributors: topContributors,
     },
   };
 
@@ -289,24 +453,25 @@ export async function generateGeminiGreenActions(
 Tugasmu adalah menganalisis data jejak karbon plastik sekali pakai pengguna dan menghasilkan rekomendasi aksi hijau (Green Action) yang personal, suportif, dan realistis.
 
 ATURAN KETAT:
-1. Prioritaskan kategori yang menghasilkan EMISI CO₂e TERBESAR (${promptData.primaryHotspot.categoryLabel} = ${promptData.primaryHotspot.weeklyKgCO2e} kg CO₂e/minggu), bukan hanya jumlah barang. Contoh: wadah makanan bernilai 0.155 kg CO₂e/buah jauh lebih tinggi dampaknya dibanding kantong plastik 0.033 kg CO₂e/buah.
-2. JANGAN PERNAH mengarang angka pengurangan emisi! Pengurangan emisi mingguan (potentialImpact.weeklySavingKgCO2e) HANYA BOLEH dihitung dari jumlah barang yang dikurangi dikalikan faktor emisi resmi yang disediakan. Angka penghematan TIDAK BOLEH melebihi emisi kategori tersebut. Jika tidak dapat dihitung eksak, beri nilai null.
-3. Berikan bahasa Indonesia yang santun, hangat, suportif, memberdayakan, dan kontekstual dengan kehidupan mahasiswa/masyarakat sehari-hari (misal: kantin kampus, warung makan, kos, minimarket).
-4. Output HARUS berupa JSON valid persis sesuai struktur yang diminta, tanpa awalan atau akhiran teks selain JSON.`;
+1. Prioritaskan tindakan yang mengurangi faktor PENYUMBANG EMISI TERBESAR (${promptData.primaryHotspot.categoryLabel} = ${promptData.primaryHotspot.weeklyKgCO2e} kg CO₂e/minggu), bukan hanya jumlah barang terbanyak.
+2. Sebutkan secara EKSPLISIT nama faktor yang ingin dikurangi dalam setiap teks rekomendasi. Gunakan format bold (**nama faktor**) pada nama faktor utama dan kata-kata penting.
+3. JANGAN PERNAH mengarang angka pengurangan emisi! Pengurangan emisi mingguan (potentialImpact.weeklySavingKgCO2e) HANYA BOLEH dihitung dari jumlah barang yang dikurangi dikalikan faktor emisi resmi yang disediakan. Angka penghematan TIDAK BOLEH melebihi emisi kategori tersebut. Jika tidak dapat dihitung eksak, beri nilai null.
+4. Berikan bahasa Indonesia yang santun, hangat, suportif, memberdayakan, dan kontekstual dengan kehidupan mahasiswa/masyarakat sehari-hari (misal: kantin kampus, warung makan, kos, minimarket).
+5. Output HARUS berupa JSON valid persis sesuai struktur yang diminta, tanpa awalan atau akhiran teks selain JSON.`;
 
   const userPrompt = `Data kalkulasi jejak karbon pengguna:
 ${JSON.stringify(promptData, null, 2)}
 
 Buatlah respons JSON dengan format persis berikut:
 {
-  "habitAnalysis": "Analisis kebiasaan 2-3 kalimat yang personal berdasarkan data di atas",
+  "habitAnalysis": "Analisis pola konsumsi dan emisi pengguna 2-3 kalimat yang personal berdasarkan data di atas (sebutkan total barang, total emisi, pola kategori aktif yang diinput, dan alasan singkat mengapa faktor terbesar perlu diperhatikan dengan format bold). Jangan menuliskan rekomendasi aksi konkret di sini.",
   "primaryPriority": {
     "category": "${promptData.primaryHotspot.category}",
     "categoryLabel": "${promptData.primaryHotspot.categoryLabel}",
     "weeklyKgCO2e": ${promptData.primaryHotspot.weeklyKgCO2e},
     "percentage": ${promptData.primaryHotspot.percentage},
     "itemCountPerWeek": ${promptData.primaryHotspot.itemCountPerWeek},
-    "explanation": "Penjelasan mengapa kategori ini menjadi fokus utama reduksi emisi"
+    "explanation": "Tindakan konkret dan realistis yang perlu diprioritaskan pengguna untuk mengurangi ${promptData.primaryHotspot.categoryLabel} (fokus pada langkah nyata yang harus dilakukan, BUKAN mengulang data emisi atau persentase)"
   },
   "recommendations": [
     {
@@ -315,7 +480,7 @@ Buatlah respons JSON dengan format persis berikut:
       "categoryLabel": "${promptData.primaryHotspot.categoryLabel}",
       "priority": "Utama",
       "title": "Judul tindakan utama yang menarik & jelas",
-      "reason": "Alasan mengapa tindakan ini cocok untuk kebiasaan pengguna",
+      "reason": "Alasan spesifik menyebutkan faktor yang ingin dikurangi dan statusnya sebagai penyumbang emisi terbesar",
       "practicalSteps": [
         "Langkah 1 konkret",
         "Langkah 2 konkret",
@@ -386,10 +551,16 @@ Kembalikan HANYA JSON valid.`;
     throw new Error("GEMINI_INVALID_SCHEMA");
   }
 
+  // Lengkapi metadata primaryPriority dengan data akurat
+  parsed.primaryPriority.allTopContributors = topContributors;
+  parsed.primaryPriority.isTied = isTied;
+  parsed.primaryPriority.hasValidData = true;
+
   // Sanitasi & verifikasi angka emisi AI agar tidak melebihi nilai aktual (mencegah halusinasi emisi)
   parsed.recommendations = parsed.recommendations.map((action, idx) => {
     const cat = action.category || highest.category;
     const catMaxEmission = result.categories[cat]?.weeklyKgCO2e ?? highest.weeklyKgCO2e;
+    const isPrimary = topCategorySet.has(cat);
 
     let weeklySaving = action.potentialImpact?.weeklySavingKgCO2e ?? null;
     if (typeof weeklySaving === "number") {
@@ -408,7 +579,9 @@ Kembalikan HANYA JSON valid.`;
       id: action.id || `ai_action_${idx}`,
       category: cat,
       categoryLabel: CATEGORY_NAMES[cat] || action.categoryLabel,
-      priority: action.priority === "Utama" ? "Utama" : "Tambahan",
+      priority: isPrimary ? "Utama" : "Tambahan",
+      targetFactor: CATEGORY_NAMES[cat] || action.categoryLabel,
+      isPrimaryContributorAction: isPrimary,
       potentialImpact: {
         weeklySavingKgCO2e: weeklySaving,
         monthlySavingKgCO2e: monthlySaving,
@@ -419,6 +592,15 @@ Kembalikan HANYA JSON valid.`;
           "Mengurangi penumpukan sampah plastik di lingkungan dan mencegah polusi mikroplastik.",
       },
     };
+  });
+
+  // Urutkan aksi agar target penyumbang emisi terbesar selalu di atas
+  parsed.recommendations.sort((a, b) => {
+    if (a.priority === "Utama" && b.priority !== "Utama") return -1;
+    if (a.priority !== "Utama" && b.priority === "Utama") return 1;
+    const saveA = a.potentialImpact.weeklySavingKgCO2e ?? 0;
+    const saveB = b.potentialImpact.weeklySavingKgCO2e ?? 0;
+    return saveB - saveA;
   });
 
   return parsed;

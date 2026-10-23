@@ -146,13 +146,19 @@ export function calculateCarbonFootprint(
   ];
 
   const verifiedFactorsCount = allDetails.filter(
-    (d) => d.verificationStatus === "Terverifikasi Resmi"
+    (d) =>
+      d.verificationStatus === "Terverifikasi Resmi" ||
+      d.verificationStatus === "Bersumber dari Referensi Resmi"
   ).length;
   const literatureFactorsCount = allDetails.filter(
-    (d) => d.verificationStatus === "Estimasi Literatur Ilmiah"
+    (d) =>
+      d.verificationStatus === "Estimasi Literatur Ilmiah" ||
+      d.verificationStatus === "Estimasi Turunan Literatur"
   ).length;
   const provisionalFactorsCount = allDetails.filter(
-    (d) => d.verificationStatus === "Provisional (Perlu Riset Lokal)"
+    (d) =>
+      d.verificationStatus === "Provisional (Perlu Riset Lokal)" ||
+      d.verificationStatus === "Provisional (Perlu Validasi Lokal)"
   ).length;
 
   const totalFactorsUsed = allDetails.length || 1;
