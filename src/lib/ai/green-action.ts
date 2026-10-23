@@ -17,6 +17,59 @@ const CATEGORY_NAMES: Record<PlasticCategory, string> = {
   wadah_styrofoam: "Wadah Styrofoam",
 };
 
+export const TIE_BREAKER_CATEGORY_ORDER: Record<string, number> = {
+  wadah_makanan: 1,
+  botol_minum: 2,
+  kantong_plastik: 3,
+  wadah_styrofoam: 4,
+};
+
+/**
+ * Menentukan urutan rekomendasi Green Action secara otomatis:
+ * 1. Utamakan rekomendasi yang berkaitan dengan kategori plastik dengan estimasi emisi mingguan terbesar (weeklyKgCO2e)
+ * 2. Jika dua kategori memiliki nilai emisi yang sama (tied), gunakan urutan alternatif yang konsisten:
+ *    a. Status prioritas ("Utama" didahulukan dibanding "Tambahan")
+ *    b. Estimasi penghematan emisi mingguan terbesar (weeklySavingKgCO2e)
+ *    c. Urutan kategori deterministik yang konsisten
+ *    d. Judul rekomendasi secara alfabetis
+ */
+export function sortRecommendationsByFootprint(
+  recommendations: PersonalizedAction[],
+  result: CalculationResult
+): PersonalizedAction[] {
+  return [...recommendations].sort((a, b) => {
+    const emissionA = result.categories[a.category]?.weeklyKgCO2e ?? 0;
+    const emissionB = result.categories[b.category]?.weeklyKgCO2e ?? 0;
+
+    // 1. Utamakan kategori dengan estimasi emisi mingguan terbesar
+    if (Math.abs(emissionB - emissionA) > 0.0001) {
+      return emissionB - emissionA;
+    }
+
+    // 2. Pemutus seri alternatif yang konsisten:
+    // a. Status prioritas ("Utama" sebelum "Tambahan")
+    if (a.priority === "Utama" && b.priority !== "Utama") return -1;
+    if (a.priority !== "Utama" && b.priority === "Utama") return 1;
+
+    // b. Estimasi penghematan mingguan terbesar
+    const saveA = a.potentialImpact?.weeklySavingKgCO2e ?? 0;
+    const saveB = b.potentialImpact?.weeklySavingKgCO2e ?? 0;
+    if (Math.abs(saveB - saveA) > 0.0001) {
+      return saveB - saveA;
+    }
+
+    // c. Urutan kategori deterministik yang konsisten
+    const orderA = TIE_BREAKER_CATEGORY_ORDER[a.category] ?? 99;
+    const orderB = TIE_BREAKER_CATEGORY_ORDER[b.category] ?? 99;
+    if (orderA !== orderB) {
+      return orderA - orderB;
+    }
+
+    // d. Judul rekomendasi secara alfabetis
+    return a.title.localeCompare(b.title);
+  });
+}
+
 /**
  * Generator Rekomendasi Berbasis Aturan Ilmiah (Fallback Terverifikasi)
  * Digunakan jika API AI belum dikonfigurasi atau mengalami gangguan jaringan.
@@ -29,6 +82,118 @@ export function generateRuleBasedGreenActions(
   const isZero = result.totalItemsPerWeek === 0 || result.totalWeeklyKgCO2e === 0;
 
   if (isZero) {
+    const generalRecommendations: PersonalizedAction[] = [
+      {
+        id: "rule_hero_maintain",
+        category: "botol_minum",
+        categoryLabel: CATEGORY_NAMES.botol_minum,
+        priority: "Tambahan",
+        title: "Pertahankan Perlengkapan Reusable & Ajak Teman Sekitarmu",
+        reason:
+          "Membawa botol minum guna ulang (tumbler) secara konsisten merupakan langkah efektif untuk mencegah timbulan sampah botol plastik sekali pakai secara permanen.",
+        practicalSteps: [
+          "Pastikan tumbler air minum selalu dicuci bersih dan siap di dalam tas sebelum beraktivitas.",
+          "Manfaatkan dispenser galon atau fasilitas air minum gratis di kampus atau tempat kerja.",
+          "Ajak teman atau rekan sekitar untuk mulai membiasakan membawa wadah minum sendiri.",
+        ],
+        potentialImpact: {
+          weeklySavingKgCO2e: null,
+          monthlySavingKgCO2e: null,
+          formattedSaving: "Bebas Emisi (0 kg CO₂e)",
+          qualitativeBenefit:
+            "Mencegah timbulan sampah baru secara permanen dan membangun budaya peduli lingkungan.",
+        },
+        difficulty: "Mudah",
+        financialBenefit: "Menghemat pengeluaran harian hingga ratusan ribu rupiah per bulan untuk pembelian air kemasan.",
+        localContext:
+          "Fasilitas air minum isi ulang di berbagai gedung perkuliahan dan perpustakaan dapat dimanfaatkan gratis.",
+        targetFactor: CATEGORY_NAMES.botol_minum,
+        isPrimaryContributorAction: false,
+      },
+      {
+        id: "rule_hero_kantong",
+        category: "kantong_plastik",
+        categoryLabel: CATEGORY_NAMES.kantong_plastik,
+        priority: "Tambahan",
+        title: "Sediakan Tas Belanja Lipat (Tote Bag) di Dalam Tas Harian",
+        reason:
+          "Menyiapkan tas belanja kain lipat membantu membiasakan diri menolak kantong plastik sekali pakai saat berbelanja di minimarket atau pasar.",
+        practicalSteps: [
+          "Selipkan satu tas belanja kain lipat berukuran kecil di saku atau kompartemen ransel.",
+          "Biasakan menolak kantong kresek secara proaktif kepada kasir atau pedagang saat berbelanja.",
+          "Gunakan kembali kantong yang sudah ada di rumah untuk keperluan penyimpanan barang.",
+        ],
+        potentialImpact: {
+          weeklySavingKgCO2e: null,
+          monthlySavingKgCO2e: null,
+          formattedSaving: "Bebas Emisi (0 kg CO₂e)",
+          qualitativeBenefit:
+            "Mencegah sumbatan saluran drainase kota dan mengurangi beban tumpukan sampah plastik di TPA.",
+        },
+        difficulty: "Mudah",
+        financialBenefit: "Terbebas dari biaya kantong belanja berbayar di gerai perbelanjaan dan minimarket.",
+        localContext:
+          "Pedagang pasar tradisional dan minimarket sangat terbiasa dengan pembeli yang membawa tas belanja sendiri.",
+        targetFactor: CATEGORY_NAMES.kantong_plastik,
+        isPrimaryContributorAction: false,
+      },
+      {
+        id: "rule_hero_wadah",
+        category: "wadah_makanan",
+        categoryLabel: CATEGORY_NAMES.wadah_makanan,
+        priority: "Tambahan",
+        title: "Bawa Kotak Makan Guna Ulang Saat Membeli Makanan Takeaway",
+        reason:
+          "Membawa wadah makanan pribadi berbahan food-grade saat membeli makanan siap santap menghindarkan penggunaan kotak plastik mika sekali pakai.",
+        practicalSteps: [
+          "Bawa kotak makan bersekat atau mistin saat berencana membeli makanan di luar.",
+          "Minta penjual menaruh makanan langsung ke dalam wadah pribadi yang kamu bawa.",
+          "Pilih makan di tempat (dine-in) dengan piring atau mangkuk jika waktu luang memungkinkan.",
+        ],
+        potentialImpact: {
+          weeklySavingKgCO2e: null,
+          monthlySavingKgCO2e: null,
+          formattedSaving: "Bebas Emisi (0 kg CO₂e)",
+          qualitativeBenefit:
+            "Menghindari risiko paparan mikroplastik dan bahan kimia kemasan plastik saat terkena makanan panas.",
+        },
+        difficulty: "Sedang",
+        financialBenefit:
+          "Banyak penjual warung makan memberikan porsi lebih saat pembeli membawa wadah makan sendiri!",
+        localContext:
+          "Warung nasi dan warung makan di seputaran kampus sangat ramah melayani pesanan dengan wadah bawaan pembeli.",
+        targetFactor: CATEGORY_NAMES.wadah_makanan,
+        isPrimaryContributorAction: false,
+      },
+      {
+        id: "rule_hero_styrofoam",
+        category: "wadah_styrofoam",
+        categoryLabel: CATEGORY_NAMES.wadah_styrofoam,
+        priority: "Tambahan",
+        title: "Hindari Kemasan Styrofoam & Pilih Bungkus Daun atau Kotak Bekal",
+        reason:
+          "Menolak kemasan styrofoam dan memilih wadah sendiri atau pembungkus alami menjaga kesehatan sekaligus mencegah polusi lingkungan yang persisten.",
+        practicalSteps: [
+          "Minta pedagang membungkus makanan menggunakan kertas nasi atau daun pisang jika tersedia.",
+          "Gunakan kotak makan sendiri saat membeli bubur, nasi goreng, atau jajanan hangat.",
+          "Hindari meletakkan makanan berlemak atau berkuah panas langsung pada wadah styrofoam.",
+        ],
+        potentialImpact: {
+          weeklySavingKgCO2e: null,
+          monthlySavingKgCO2e: null,
+          formattedSaving: "Bebas Emisi (0 kg CO₂e)",
+          qualitativeBenefit:
+            "Mencegah pelepasan zat stirena karsinogenik ke makanan hangat dan melindungi ekosistem dari polusi mikroplastik.",
+        },
+        difficulty: "Mudah",
+        financialBenefit: "Mendukung tradisi kuliner lokal yang menggunakan kemasan daun alami ramah lingkungan.",
+        localContext:
+          "Kuliner tradisional seperti nasi gurih secara alami dibungkus daun pisang yang jauh lebih sehat dan ramah lingkungan.",
+        targetFactor: CATEGORY_NAMES.wadah_styrofoam,
+        isPrimaryContributorAction: false,
+      },
+    ];
+
     return {
       habitAnalysis:
         "Luar biasa! Kamu mencatatkan 0 penggunaan plastik sekali pakai baru minggu ini. Gaya hidup ramah lingkunganmu sudah sangat optimal dan menjadi inspirasi nyata bagi lingkungan sekitarmu.",
@@ -45,35 +210,7 @@ export function generateRuleBasedGreenActions(
         hasValidData: false,
       },
       isZeroPlasticHero: true,
-      recommendations: [
-        {
-          id: "rule_hero_maintain",
-          category: "botol_minum",
-          categoryLabel: "Pemeliharaan Kebiasaan",
-          priority: "Utama",
-          title: "Pertahankan Perlengkapan Reusable & Ajak Teman Sekitarmu",
-          reason:
-            "Kamu sudah berhasil menghindari plastik sekali pakai secara konsisten. Langkah terbaik adalah menjaga peralatan pakai ulang tetap bersih dan menularkan kebiasaan ini ke lingkungan sekitarmu.",
-          practicalSteps: [
-            "Pastikan tumbler dan kotak makan selalu dicuci bersih dan siap di dalam tas sebelum beraktivitas.",
-            "Bagikan pengalaman dan tips praktis membawa wadah sendiri saat makan bareng teman di warung.",
-            "Dukung tempat makan dan warung yang pro-lingkungan dan memfasilitasi wadah pribadi.",
-          ],
-          potentialImpact: {
-            weeklySavingKgCO2e: null,
-            monthlySavingKgCO2e: null,
-            formattedSaving: "Bebas Emisi (0 kg CO₂e)",
-            qualitativeBenefit:
-              "Mencegah timbulan sampah baru secara permanen dan membangun budaya peduli lingkungan.",
-          },
-          difficulty: "Mudah",
-          financialBenefit: "Menghemat pengeluaran harian hingga ratusan ribu rupiah per bulan",
-          localContext:
-            "Kampus dan komunitas lokal sangat terbantu oleh individu yang aktif menjalankan budaya zero-waste sehari-hari.",
-          targetFactor: "Gaya Hidup Zero-Waste",
-          isPrimaryContributorAction: false,
-        },
-      ],
+      recommendations: generalRecommendations,
     };
   }
 
@@ -355,19 +492,13 @@ export function generateRuleBasedGreenActions(
     }
   }
 
-  // Pastikan tindakan yang menargetkan penyumbang emisi terbesar berada di urutan teratas
-  recommendations.sort((a, b) => {
-    if (a.priority === "Utama" && b.priority !== "Utama") return -1;
-    if (a.priority !== "Utama" && b.priority === "Utama") return 1;
-    const saveA = a.potentialImpact.weeklySavingKgCO2e ?? 0;
-    const saveB = b.potentialImpact.weeklySavingKgCO2e ?? 0;
-    return saveB - saveA;
-  });
+  // Urutkan rekomendasi secara otomatis berdasarkan emisi mingguan terbesar dengan tie-breaker konsisten
+  const sortedRecommendations = sortRecommendationsByFootprint(recommendations, result);
 
   return {
     habitAnalysis: habitSummary,
     primaryPriority,
-    recommendations,
+    recommendations: sortedRecommendations,
   };
 }
 
@@ -379,6 +510,11 @@ export async function generateGeminiGreenActions(
   input: PlasticCalculatorInput,
   result: CalculationResult
 ): Promise<GreenActionAnalysisResult> {
+  const isZero = result.totalItemsPerWeek === 0 || result.totalWeeklyKgCO2e === 0;
+  if (isZero) {
+    return generateRuleBasedGreenActions(input, result);
+  }
+
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     throw new Error("GEMINI_API_KEY_NOT_CONFIGURED");
@@ -594,14 +730,8 @@ Kembalikan HANYA JSON valid.`;
     };
   });
 
-  // Urutkan aksi agar target penyumbang emisi terbesar selalu di atas
-  parsed.recommendations.sort((a, b) => {
-    if (a.priority === "Utama" && b.priority !== "Utama") return -1;
-    if (a.priority !== "Utama" && b.priority === "Utama") return 1;
-    const saveA = a.potentialImpact.weeklySavingKgCO2e ?? 0;
-    const saveB = b.potentialImpact.weeklySavingKgCO2e ?? 0;
-    return saveB - saveA;
-  });
+  // Urutkan aksi secara otomatis berdasarkan emisi mingguan terbesar dengan tie-breaker konsisten
+  parsed.recommendations = sortRecommendationsByFootprint(parsed.recommendations, result);
 
   return parsed;
 }

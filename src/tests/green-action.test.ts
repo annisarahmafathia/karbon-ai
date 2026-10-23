@@ -1,8 +1,11 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import fs from "node:fs";
+import path from "node:path";
 import { calculateCarbonFootprint } from "../lib/calculator/engine";
 import {
   generateRuleBasedGreenActions,
+  sortRecommendationsByFootprint,
 } from "../lib/ai/green-action";
 import { POST as greenActionPostHandler } from "../app/api/green-action/route";
 import { NextRequest } from "next/server";
@@ -315,6 +318,109 @@ test("11. Rekomendasi tindakan prioritas utama berubah dinamis sesuai faktor ter
   const inputWadah = { kantongPlastik: 0, wadahMakanan: 4, botolMinum: 0, wadahStyrofoam: 0 };
   const actionsWadah = generateRuleBasedGreenActions(inputWadah, calculateCarbonFootprint(inputWadah));
   assert.ok(actionsWadah.primaryPriority.explanation.toLowerCase().includes("kotak bekal reusable") || actionsWadah.primaryPriority.explanation.toLowerCase().includes("food-grade"));
+});
+
+test("12. Urutan rekomendasi otomatis mengutamakan kategori dengan estimasi emisi mingguan terbesar", () => {
+  // Skenario 4 kategori aktif dengan nilai emisi bertingkat:
+  // wadah_makanan: 4 * 0.155 = 0.62 kg CO2e (Terbesar ke-1)
+  // botol_minum: 5 * 0.083 = 0.415 kg CO2e (Terbesar ke-2)
+  // kantong_plastik: 8 * 0.033 = 0.264 kg CO2e (Terbesar ke-3)
+  // wadah_styrofoam: 2 * 0.035 = 0.07 kg CO2e (Terbesar ke-4)
+  const input = {
+    kantongPlastik: 8,
+    wadahMakanan: 4,
+    botolMinum: 5,
+    wadahStyrofoam: 2,
+  };
+  const result = calculateCarbonFootprint(input);
+  const greenActions = generateRuleBasedGreenActions(input, result);
+
+  assert.equal(greenActions.recommendations.length, 4);
+  assert.equal(greenActions.recommendations[0].category, "wadah_makanan");
+  assert.equal(greenActions.recommendations[1].category, "botol_minum");
+  assert.equal(greenActions.recommendations[2].category, "kantong_plastik");
+  assert.equal(greenActions.recommendations[3].category, "wadah_styrofoam");
+
+  // Uji juga fungsi utilitas sortRecommendationsByFootprint secara langsung
+  const reversed = [...greenActions.recommendations].reverse();
+  const sorted = sortRecommendationsByFootprint(reversed, result);
+  assert.equal(sorted[0].category, "wadah_makanan");
+  assert.equal(sorted[1].category, "botol_minum");
+  assert.equal(sorted[2].category, "kantong_plastik");
+  assert.equal(sorted[3].category, "wadah_styrofoam");
+});
+
+test("13. Konsistensi urutan alternatif (tie-breaker) ketika emisi dua kategori bernilai sama", () => {
+  // Skenario: 35 kantong plastik (1.155 kg CO2e) dan 33 wadah styrofoam (1.155 kg CO2e)
+  // Nilai emisi sama persis.
+  // Urutan tie-breaker deterministik KarbonAI: kantong_plastik (order 3) mendahului wadah_styrofoam (order 4)
+  const inputTied = {
+    kantongPlastik: 35,
+    wadahMakanan: 0,
+    botolMinum: 0,
+    wadahStyrofoam: 33,
+  };
+  const resultTied = calculateCarbonFootprint(inputTied);
+  const greenActions = generateRuleBasedGreenActions(inputTied, resultTied);
+
+  assert.equal(greenActions.recommendations.length, 2);
+  assert.equal(greenActions.recommendations[0].category, "kantong_plastik");
+  assert.equal(greenActions.recommendations[1].category, "wadah_styrofoam");
+
+  // Jalankan berulang kali untuk memastikan deterministik 100%
+  for (let i = 0; i < 5; i++) {
+    const actions = sortRecommendationsByFootprint([...greenActions.recommendations].reverse(), resultTied);
+    assert.equal(actions[0].category, "kantong_plastik");
+    assert.equal(actions[1].category, "wadah_styrofoam");
+  }
+});
+
+test("14. Kondisi data belum tersedia / zero plastic menyediakan rekomendasi umum untuk 4 kategori tanpa klaim prioritas personal", () => {
+  const zeroInput = {
+    kantongPlastik: 0,
+    wadahMakanan: 0,
+    botolMinum: 0,
+    wadahStyrofoam: 0,
+  };
+  const zeroResult = calculateCarbonFootprint(zeroInput);
+  const greenActions = generateRuleBasedGreenActions(zeroInput, zeroResult);
+
+  // Menyediakan 4 rekomendasi umum lengkap untuk setiap kategori
+  assert.equal(greenActions.recommendations.length, 4);
+
+  const categories = greenActions.recommendations.map((a) => a.category);
+  assert.ok(categories.includes("kantong_plastik"));
+  assert.ok(categories.includes("wadah_makanan"));
+  assert.ok(categories.includes("botol_minum"));
+  assert.ok(categories.includes("wadah_styrofoam"));
+
+  // Seluruh rekomendasi umum tidak mengklaim penghematan emisi numerik fiktif
+  for (const act of greenActions.recommendations) {
+    assert.equal(act.potentialImpact.weeklySavingKgCO2e, null);
+    assert.equal(act.potentialImpact.monthlySavingKgCO2e, null);
+    assert.equal(act.isPrimaryContributorAction, false);
+  }
+});
+
+test("15. Halaman Green Action menghapus filter prioritas manual dan mempertahankan filter kategori", () => {
+  const pagePath = path.resolve(__dirname, "../app/(app)/green-action/page.tsx");
+  const pageCode = fs.readFileSync(pagePath, "utf-8");
+
+  // Filter prioritas manual harus sudah dihapus dari UI dan state
+  assert.ok(!pageCode.includes("selectedPriority"), "selectedPriority state masih tertinggal");
+  assert.ok(!pageCode.includes("setSelectedPriority"), "setSelectedPriority handler masih tertinggal");
+  assert.ok(!pageCode.includes("Prioritas:"), "Label UI 'Prioritas:' masih tertinggal");
+
+  // Filter kategori wajib dipertahankan
+  assert.ok(pageCode.includes("selectedCategory"), "Filter kategori hilang");
+  assert.ok(pageCode.includes("Semua Kategori"), "Pilihan 'Semua Kategori' hilang");
+  assert.ok(pageCode.includes("kantong_plastik"), "Pilihan 'kantong_plastik' hilang");
+  assert.ok(pageCode.includes("wadah_makanan"), "Pilihan 'wadah_makanan' hilang");
+  assert.ok(pageCode.includes("botol_minum"), "Pilihan 'botol_minum' hilang");
+  assert.ok(pageCode.includes("wadah_styrofoam"), "Pilihan 'wadah_styrofoam' hilang");
+
+  // Fungsi pengurutan otomatis terhubung ke perhitungan emisi mingguan
+  assert.ok(pageCode.includes("sortRecommendationsByFootprint"), "Fungsi pengurutan otomatis tidak terhubung");
 });
 
 

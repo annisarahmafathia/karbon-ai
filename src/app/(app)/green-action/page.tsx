@@ -10,6 +10,7 @@ import {
 } from "@/types/green-action";
 import {
   generateRuleBasedGreenActions,
+  sortRecommendationsByFootprint,
 } from "@/lib/ai/green-action";
 import {
   Sparkles,
@@ -67,7 +68,6 @@ export default function GreenActionPage() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
-  const [selectedPriority, setSelectedPriority] = useState<string>("all");
 
   const isZeroPlastic = result.totalItemsPerWeek === 0 || result.totalWeeklyKgCO2e === 0;
 
@@ -152,20 +152,20 @@ export default function GreenActionPage() {
 
   const analysisData: GreenActionAnalysisResult | null = apiResponse?.data ?? null;
 
-  // Filter rekomendasi berdasarkan kategori dan tingkat prioritas
+  // Filter rekomendasi berdasarkan kategori yang dipilih pengguna
+  // Urutan rekomendasi ditentukan secara otomatis berdasarkan hasil perhitungan emisi mingguan pengguna
   const filteredActions: PersonalizedAction[] = useMemo(() => {
     if (!analysisData?.recommendations) return [];
 
-    return analysisData.recommendations.filter((act) => {
+    const actions = analysisData.recommendations.filter((act) => {
       if (selectedCategory !== "all" && act.category !== selectedCategory) {
-        return false;
-      }
-      if (selectedPriority !== "all" && act.priority !== selectedPriority) {
         return false;
       }
       return true;
     });
-  }, [analysisData, selectedCategory, selectedPriority]);
+
+    return sortRecommendationsByFootprint(actions, result);
+  }, [analysisData, selectedCategory, result]);
 
   return (
     <div className="w-full bg-cream py-10 md:py-16">
@@ -360,55 +360,36 @@ export default function GreenActionPage() {
             )}
 
             {/* Filter Controls Bar */}
-            <div className="bg-white rounded-2xl p-4 sm:p-5 border border-sage-light shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="w-full bg-white rounded-2xl p-4 sm:p-5 border border-sage-light shadow-xs">
               {/* Category Filter */}
-              <div className="flex items-center gap-2 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0">
-                <Filter className="w-4 h-4 text-forest shrink-0" />
-                <span className="text-xs font-bold text-charcoal shrink-0 mr-1">Kategori:</span>
+              <div className="w-full flex flex-wrap items-center gap-2.5 sm:gap-3">
+                <div className="flex items-center gap-2 shrink-0 mr-1">
+                  <Filter className="w-4 h-4 text-forest shrink-0" />
+                  <span className="text-xs font-bold text-charcoal shrink-0">Kategori:</span>
+                </div>
 
-                {[
-                  { id: "all", label: "Semua Kategori" },
-                  { id: "kantong_plastik", label: "Kantong Plastik" },
-                  { id: "wadah_makanan", label: "Wadah Makanan" },
-                  { id: "botol_minum", label: "Botol Minum" },
-                  { id: "wadah_styrofoam", label: "Wadah Styrofoam" },
-                ].map((f) => (
-                  <button
-                    type="button"
-                    key={f.id}
-                    onClick={() => setSelectedCategory(f.id)}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 ${
-                      selectedCategory === f.id
-                        ? "bg-forest text-cream shadow-xs"
-                        : "bg-cream text-charcoal border border-sage-light hover:bg-mint"
-                    }`}
-                  >
-                    {f.label}
-                  </button>
-                ))}
-              </div>
-
-              {/* Priority Filter */}
-              <div className="flex items-center gap-2 self-start sm:self-auto">
-                <span className="text-xs font-bold text-charcoal shrink-0">Prioritas:</span>
-                {[
-                  { id: "all", label: "Semua" },
-                  { id: "Utama", label: "Prioritas Utama" },
-                  { id: "Tambahan", label: "Tambahan" },
-                ].map((p) => (
-                  <button
-                    type="button"
-                    key={p.id}
-                    onClick={() => setSelectedPriority(p.id)}
-                    className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
-                      selectedPriority === p.id
-                        ? "bg-charcoal text-white"
-                        : "bg-cream text-charcoal border border-sage-light hover:bg-mint"
-                    }`}
-                  >
-                    {p.label}
-                  </button>
-                ))}
+                <div className="flex-1 flex flex-wrap items-center gap-2 sm:gap-2.5">
+                  {[
+                    { id: "all", label: "Semua Kategori" },
+                    { id: "kantong_plastik", label: "Kantong Plastik" },
+                    { id: "wadah_makanan", label: "Wadah Makanan" },
+                    { id: "botol_minum", label: "Botol Minum" },
+                    { id: "wadah_styrofoam", label: "Wadah Styrofoam" },
+                  ].map((f) => (
+                    <button
+                      type="button"
+                      key={f.id}
+                      onClick={() => setSelectedCategory(f.id)}
+                      className={`flex-1 min-w-fit text-center px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
+                        selectedCategory === f.id
+                          ? "bg-forest text-cream shadow-xs"
+                          : "bg-cream text-charcoal border border-sage-light hover:bg-mint"
+                      }`}
+                    >
+                      {f.label}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
 
@@ -416,7 +397,11 @@ export default function GreenActionPage() {
             <div className="space-y-6">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg sm:text-xl font-extrabold text-charcoal flex items-center gap-2">
-                  <span>Daftar Tindakan Personal untuk Profilmu</span>
+                  <span>
+                    {isZeroPlastic
+                      ? "Daftar Rekomendasi Umum Ramah Lingkungan"
+                      : "Daftar Tindakan Personal untuk Profilmu"}
+                  </span>
                   <span className="text-xs px-2.5 py-0.5 rounded-full bg-mint text-forest font-bold border border-sage">
                     {filteredActions.length} Rekomendasi
                   </span>
@@ -431,7 +416,7 @@ export default function GreenActionPage() {
                     <div
                       key={action.id}
                       className={`rounded-3xl p-6 sm:p-7 bg-white transition-all flex flex-col justify-between border ${
-                        isPrimary
+                        !isZeroPlastic && isPrimary
                           ? "border-2 border-forest shadow-sm"
                           : "border border-sage-light shadow-2xs hover:border-sage hover:shadow-xs"
                       }`}
@@ -440,7 +425,11 @@ export default function GreenActionPage() {
                         {/* Badges Header */}
                         <div className="flex items-center justify-between gap-2">
                           <div className="flex items-center gap-2">
-                            {isPrimary ? (
+                            {isZeroPlastic ? (
+                              <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-cream text-charcoal border border-sage">
+                                Rekomendasi Umum
+                              </span>
+                            ) : isPrimary ? (
                               <span className="inline-flex items-center gap-1.5 text-xs font-black px-3 py-1 rounded-full bg-forest text-cream shadow-xs border border-forest-dark">
                                 <Star className="w-3.5 h-3.5 fill-amber-300 text-amber-300 shrink-0" />
                                 <span>Prioritas Utama</span>
@@ -470,7 +459,11 @@ export default function GreenActionPage() {
                         <div className="bg-cream rounded-2xl p-3.5 border border-sage-light text-xs text-charcoal space-y-1">
                           <div className="font-bold text-forest flex items-center gap-1.5">
                             <Sparkles className="w-3.5 h-3.5 text-forest shrink-0" />
-                            <span>Alasan Rekomendasi Personal</span>
+                            <span>
+                              {isZeroPlastic
+                                ? "Panduan Praktis"
+                                : "Alasan Rekomendasi Personal"}
+                            </span>
                           </div>
                           <p className="text-xs text-charcoal leading-relaxed font-normal">
                             <FormattedText text={action.reason} />
@@ -547,16 +540,15 @@ export default function GreenActionPage() {
               {filteredActions.length === 0 && (
                 <div className="bg-white rounded-3xl p-8 border border-sage-light text-center space-y-3">
                   <p className="text-sm font-semibold text-charcoal">
-                    Tidak ada rekomendasi untuk filter yang dipilih.
+                    Tidak ada rekomendasi untuk kategori yang dipilih.
                   </p>
                   <p className="text-xs text-muted">
-                    Coba ganti pilihan kategori atau prioritas untuk melihat rekomendasi lainnya.
+                    Coba pilih kategori lain untuk melihat rekomendasi yang tersedia.
                   </p>
                   <button
                     type="button"
                     onClick={() => {
                       setSelectedCategory("all");
-                      setSelectedPriority("all");
                     }}
                     className="px-4 py-2 rounded-xl bg-forest text-cream text-xs font-bold hover:bg-forest-dark transition-all"
                   >

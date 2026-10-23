@@ -14,7 +14,6 @@ import {
   AlertTriangle,
   ArrowRight,
   Database,
-  FileCheck,
   CheckCircle2,
   BookMarked,
   Info,
@@ -39,11 +38,6 @@ export default function EdukasiPage() {
       f.verificationStatus === "Estimasi Literatur Ilmiah" ||
       f.verificationStatus === "Estimasi Turunan Literatur"
   ).length;
-  const provisionalCount = factorList.filter(
-    (f) =>
-      f.verificationStatus === "Provisional (Perlu Riset Lokal)" ||
-      f.verificationStatus === "Provisional (Perlu Validasi Lokal)"
-  ).length;
 
   const filteredFactors = factorList.filter((f) => {
     let matchesStatus = true;
@@ -55,10 +49,6 @@ export default function EdukasiPage() {
       matchesStatus =
         f.verificationStatus === "Estimasi Literatur Ilmiah" ||
         f.verificationStatus === "Estimasi Turunan Literatur";
-    } else if (statusFilter === "provisional") {
-      matchesStatus =
-        f.verificationStatus === "Provisional (Perlu Riset Lokal)" ||
-        f.verificationStatus === "Provisional (Perlu Validasi Lokal)";
     } else if (statusFilter !== "all") {
       matchesStatus = f.verificationStatus === statusFilter;
     }
@@ -157,7 +147,7 @@ export default function EdukasiPage() {
         </div>
 
         {/* Verification Tiers Summary Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="bg-white rounded-2xl p-5 border border-emerald-200 shadow-sm flex items-start gap-3.5">
             <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
               <CheckCircle2 className="w-5 h-5" />
@@ -183,23 +173,10 @@ export default function EdukasiPage() {
               </p>
             </div>
           </div>
-
-          <div className="bg-white rounded-2xl p-5 border border-amber-200 shadow-sm flex items-start gap-3.5">
-            <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center shrink-0">
-              <Info className="w-5 h-5" />
-            </div>
-            <div>
-              <div className="text-2xl font-black text-amber-900">{provisionalCount} Faktor</div>
-              <div className="text-xs font-bold text-charcoal">Provisional (Perlu Validasi Lokal)</div>
-              <p className="text-[11px] text-muted mt-1 leading-relaxed">
-                Penanda status untuk faktor emisi yang memerlukan kalibrasi lanjutan terhadap data bauran energi (grid mix) dan fasilitas persampahan lokal Indonesia.
-              </p>
-            </div>
-          </div>
         </div>
 
         {/* Core Formula Box */}
-        <div className="bg-white rounded-3xl p-6 sm:p-10 border border-sage/30 shadow-sm space-y-6">
+        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-sage/30 shadow-sm space-y-6">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-mint text-forest flex items-center justify-center">
               <ShieldCheck className="w-6 h-6" />
@@ -208,60 +185,36 @@ export default function EdukasiPage() {
               <h2 className="text-lg font-bold text-charcoal">
                 Rumus Dasar Perhitungan Emisi Mingguan
               </h2>
-              <span className="text-xs text-muted">
-                Standar Activity-Based Estimation & Pendekatan Estimasi Turunan (Massa × Faktor Emisi Material)
-              </span>
             </div>
           </div>
 
-          <div className="p-6 bg-cream/70 rounded-2xl border border-sage/30 text-center space-y-3">
-            <div className="text-xs uppercase font-extrabold text-muted tracking-wider">
-              Formula Matematika Utama
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* 1. Emisi Kategori */}
+            <div className="space-y-2 text-xs bg-cream/50 p-4 rounded-2xl border border-sage/20">
+              <h3 className="font-bold text-forest-dark flex items-center gap-1.5 text-sm">
+                <Scale className="w-4 h-4 text-forest shrink-0" />
+                <span>1. Emisi Setiap Kategori</span>
+              </h3>
+              <p className="font-mono text-xs font-bold text-forest bg-white/80 p-2.5 rounded-xl border border-sage/20 leading-relaxed">
+                Emisi kategori = jumlah barang baru per minggu × faktor emisi per barang
+              </p>
             </div>
-            <div className="text-base sm:text-xl font-mono font-black text-forest">
-              Emisi Kategori (kg CO₂e/minggu) = Jumlah Barang Baru (buah/minggu) × Faktor Emisi per Barang (kg CO₂e/buah)
+
+            {/* 2. Total Emisi Mingguan */}
+            <div className="space-y-2 text-xs bg-cream/50 p-4 rounded-2xl border border-sage/20">
+              <h3 className="font-bold text-forest-dark flex items-center gap-1.5 text-sm">
+                <RotateCcw className="w-4 h-4 text-forest shrink-0" />
+                <span>2. Total Emisi Mingguan</span>
+              </h3>
+              <p className="font-mono text-xs font-bold text-charcoal bg-white/80 p-2.5 rounded-xl border border-sage/20 leading-relaxed">
+                Total emisi mingguan = jumlah emisi dari empat kategori plastik (kg CO₂e/minggu)
+              </p>
             </div>
-            <div className="text-xs sm:text-sm font-mono font-bold text-forest-dark bg-white/70 py-1.5 px-3 rounded-xl border border-sage/20 inline-block">
-              Faktor Emisi per Barang = [Massa Acuan (kg) × Koefisien Polimer Resin (kg CO₂e/kg material)] + Emisi EoL
-            </div>
-            <div className="text-sm sm:text-lg font-mono font-bold text-charcoal">
-              Total Emisi Mingguan = Σ (Emisi dari 4 Kategori Plastik)
-            </div>
-            <p className="text-xs text-muted max-w-xl mx-auto pt-1 leading-relaxed">
-              Satuan utama adalah <strong>kg CO₂e/minggu</strong>. Proyeksi tahunan menggunakan 52 minggu per tahun, dan proyeksi bulanan menggunakan rata-rata ~4.333 minggu per bulan.
-            </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
-            <div className="space-y-2 text-xs">
-              <h3 className="font-bold text-forest-dark flex items-center gap-1.5">
-                <Scale className="w-4 h-4 text-forest" />
-                <span>1. Basis Massa & Estimasi Turunan</span>
-              </h3>
-              <p className="text-muted leading-relaxed">
-                Faktor emisi per barang merupakan estimasi turunan transparan dari massa rata-rata kemasan (gram) dikalikan faktor emisi polimer resin (kg CO₂e/kg) dari referensi LCA resmi internasional.
-              </p>
-            </div>
-
-            <div className="space-y-2 text-xs">
-              <h3 className="font-bold text-forest-dark flex items-center gap-1.5">
-                <RotateCcw className="w-4 h-4 text-forest" />
-                <span>2. Aturan Penggunaan Ulang</span>
-              </h3>
-              <p className="text-muted leading-relaxed">
-                Perhitungan menggunakan jumlah barang baru yang masuk siklus mingguan. Penggunaan ulang barang yang sama (misal mencuci kotak thinwall atau mengisi ulang botol) tidak menambah hitungan barang baru.
-              </p>
-            </div>
-
-            <div className="space-y-2 text-xs">
-              <h3 className="font-bold text-forest-dark flex items-center gap-1.5">
-                <FileCheck className="w-4 h-4 text-forest" />
-                <span>3. Batas Sistem Daur Hidup</span>
-              </h3>
-              <p className="text-muted leading-relaxed">
-                Mencakup emisi produksi resin hulu hingga pengangkutan dan pembuangan akhir di hilir (Cradle-to-Grave), namun tetap memperhatikan keterbatasan data lokal Indonesia.
-              </p>
-            </div>
+          <div className="p-4 bg-cream/70 rounded-2xl border border-sage/30 text-xs text-muted leading-relaxed">
+            <strong className="text-charcoal font-semibold">Catatan metodologi:</strong>{" "}
+            Perhitungan didasarkan pada jumlah barang baru yang digunakan setiap minggu. Penggunaan ulang barang yang sama tidak dihitung sebagai barang baru. Faktor emisi setiap jenis plastik ditentukan berdasarkan estimasi massa material dan referensi ilmiah yang digunakan. Nilainya dapat berbeda untuk setiap kategori plastik. Hasil merupakan estimasi dan dapat berbeda dari kondisi aktual.
           </div>
         </div>
 
@@ -276,7 +229,7 @@ export default function EdukasiPage() {
                 </h2>
               </div>
               <p className="text-xs text-muted mt-1">
-                Seluruh faktor emisi lengkap dengan data massa referensi, batas sistem LCA, status verifikasi, dan publikasi sumber
+                Rincian faktor emisi, asumsi massa, status verifikasi, dan sumber referensi ilmiah.
               </p>
             </div>
 
@@ -301,7 +254,6 @@ export default function EdukasiPage() {
                 <option value="all">Semua Status Verifikasi</option>
                 <option value="verified">Bersumber dari Referensi Resmi</option>
                 <option value="literature">Estimasi Turunan Literatur</option>
-                <option value="provisional">Provisional (Perlu Validasi Lokal)</option>
               </select>
             </div>
           </div>
