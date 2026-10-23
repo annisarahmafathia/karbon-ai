@@ -2,19 +2,17 @@
 
 import React from "react";
 import { useCalculator } from "@/context/CalculatorContext";
-import { Box, Info, Plus, Minus } from "lucide-react";
-import { PLASTIC_EMISSION_FACTORS } from "@/lib/constants/emission-factors";
+import { Box, Plus, Minus } from "lucide-react";
 
 export function StepStyrofoam() {
   const { input, updateWadahStyrofoam, result } = useCalculator();
   const count = input.wadahStyrofoam;
-  const factor = PLASTIC_EMISSION_FACTORS.wadah_styrofoam.value;
   const categoryResult = result.categories.wadah_styrofoam;
 
   const quickOptions = [0, 1, 3, 5, 7, 10];
 
   return (
-    <div className="space-y-8 animate-in fade-in-50 duration-300">
+    <div className="space-y-6 animate-in fade-in-50 duration-300">
       <div>
         <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-forest px-3 py-1 rounded-full bg-mint mb-2">
           <Box className="w-3.5 h-3.5" />
@@ -24,27 +22,8 @@ export function StepStyrofoam() {
           Wadah Styrofoam Sekali Pakai
         </h2>
         <p className="text-xs sm:text-sm text-muted mt-1">
-          Jumlah wadah styrofoam (expanded polystyrene) sekali pakai baru yang kamu gunakan selama satu minggu (seperti boks makanan styrofoam putih, wadah burger foam, atau mangkuk foam takeaway).
+          Boks makanan styrofoam putih, wadah burger foam, atau mangkuk foam takeaway per minggu.
         </p>
-      </div>
-
-      {/* Petunjuk Penggunaan Ulang */}
-      <div className="bg-mint/40 rounded-2xl p-4 sm:p-5 border border-sage/30 text-xs text-charcoal/90 space-y-2">
-        <div className="flex items-center gap-2 font-bold text-forest">
-          <Info className="w-4 h-4 text-forest shrink-0" />
-          <span>Aturan Penghitungan Barang Baru & Penggunaan Ulang</span>
-        </div>
-        <ul className="list-disc pl-5 space-y-1 text-charcoal/80 text-[11px] sm:text-xs leading-relaxed">
-          <li>
-            <strong>Hitung hanya wadah styrofoam baru:</strong> Masukkan hanya boks styrofoam baru yang kamu peroleh saat membeli makanan selama 1 minggu terakhir.
-          </li>
-          <li>
-            <strong>Wadah lama yang masih digunakan tidak dihitung:</strong> Kotak styrofoam yang sudah digunakan pada minggu sebelumnya tidak dihitung kembali sebagai barang baru.
-          </li>
-          <li>
-            <strong>Penggunaan ulang tidak menambah jumlah baru:</strong> Jika wadah styrofoam yang sama kamu gunakan beberapa kali (misal untuk wadah bibit/penyimpanan), tetap dihitung sebagai 1 barang.
-          </li>
-        </ul>
       </div>
 
       {/* Input Counter & Quick Select */}
@@ -54,7 +33,10 @@ export function StepStyrofoam() {
             <label htmlFor="wadah-styrofoam-input" className="text-xs font-bold uppercase tracking-wider text-charcoal block">
               Jumlah Wadah Styrofoam Baru
             </label>
-            <span className="text-xs text-muted">Satuan: buah / minggu</span>
+            <span className="text-xs text-muted block mt-0.5">Satuan: buah / minggu</span>
+            <p className="text-[11px] text-gray-400 mt-1">
+              Wadah styrofoam lama yang masih dipakai tidak dihitung kembali.
+            </p>
           </div>
 
           <div className="flex items-center gap-3">
@@ -115,23 +97,20 @@ export function StepStyrofoam() {
         </div>
 
         {/* Subtotal Emisi Kategori */}
-        <div className="bg-cream/60 rounded-2xl p-4 border border-sage/20 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-          <div className="space-y-0.5">
-            <span className="text-[11px] uppercase font-bold text-muted tracking-wider block">
-              Subtotal Emisi Kategori:
+        <div className="bg-cream/60 rounded-2xl p-4 border border-sage/20 flex items-center justify-between gap-3">
+          <div>
+            <span className="text-xs font-bold text-charcoal block">
+              Subtotal Emisi Kategori
             </span>
-            <div className="text-xs text-charcoal/80">
-              {count} buah × {factor} kg CO₂e/buah
-            </div>
+            <span className="text-[11px] text-muted">
+              ~{Math.round(categoryResult.yearlyKgCO2e)} kg CO₂e/tahun
+            </span>
           </div>
           <div className="text-right">
             <span className="text-xl sm:text-2xl font-black text-forest">
               {categoryResult.weeklyKgCO2e}
             </span>
             <span className="text-xs font-bold text-charcoal ml-1.5">kg CO₂e/minggu</span>
-            <span className="text-[11px] text-muted block">
-              (~{Math.round(categoryResult.yearlyKgCO2e)} kg CO₂e/tahun)
-            </span>
           </div>
         </div>
       </div>

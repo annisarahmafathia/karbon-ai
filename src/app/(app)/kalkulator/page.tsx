@@ -19,7 +19,6 @@ import {
   BarChart3,
   CheckCircle2,
   Sparkles,
-  Info,
 } from "lucide-react";
 
 export default function CalculatorPage() {
@@ -65,21 +64,6 @@ export default function CalculatorPage() {
           <p className="text-muted text-xs sm:text-base leading-relaxed">
             Perhitungan didasarkan pada jumlah <strong>barang plastik baru</strong> yang kamu gunakan selama <strong>satu minggu</strong> (satuan: buah/minggu). Penggunaan ulang barang yang sama tidak menambah hitungan barang baru.
           </p>
-        </div>
-
-        {/* Global Reuse Guideline Alert */}
-        <div className="mb-8 bg-white/90 rounded-2xl p-4 sm:p-5 border border-sage/40 shadow-sm flex items-start gap-3 text-xs">
-          <Info className="w-5 h-5 text-forest shrink-0 mt-0.5" />
-          <div className="space-y-1 text-charcoal/80">
-            <p className="font-bold text-forest-dark">
-              Aturan Penghitungan: Jumlah Barang Baru vs Penggunaan Ulang
-            </p>
-            <p className="leading-relaxed">
-              Kalkulator ini menghitung jumlah barang plastik baru, bukan berapa kali barang dipakai.
-              Contoh: satu botol yang diisi ulang 5 kali dalam seminggu tetap dihitung <strong>1 botol</strong>.
-              Barang dari minggu lalu yang kamu gunakan kembali tidak dihitung lagi.
-            </p>
-          </div>
         </div>
 
         {/* Step Navigation Tabs */}
