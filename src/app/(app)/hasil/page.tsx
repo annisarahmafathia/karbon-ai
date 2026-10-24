@@ -191,7 +191,7 @@ export default function ResultsPage() {
         )}
 
         {/* Hero Scorecard Banner */}
-        <div className="bg-white rounded-3xl p-6 sm:p-10 border border-sage/30 shadow-md">
+        <div className="bg-white rounded-3xl p-5 sm:p-8 lg:p-10 border border-sage/30 shadow-md">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
             {/* Big Numbers */}
             <div className="md:col-span-7 space-y-4">
@@ -199,7 +199,7 @@ export default function ResultsPage() {
                 Total Emisi Plastik Sekali Pakai Mingguan
               </span>
               <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                <span className="text-5xl sm:text-6xl font-black text-forest tracking-tight">
+                <span className="text-4xl sm:text-5xl lg:text-6xl font-black text-forest tracking-tight break-words">
                   {result.totalWeeklyKgCO2e}
                 </span>
                 <span className="text-lg font-bold text-charcoal">
@@ -461,7 +461,7 @@ export default function ResultsPage() {
           {showTransparencyAudit && (
             <div className="pt-4 border-t border-sage/20 space-y-4 animate-in fade-in-50 duration-200">
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs border-collapse">
+                <table className="w-full min-w-[700px] text-left text-xs border-collapse">
                   <thead>
                     <tr className="border-b border-sage/30 bg-cream text-charcoal">
                       <th className="py-2.5 px-3 font-bold">Kategori Plastik</th>
@@ -531,7 +531,7 @@ export default function ResultsPage() {
         </div>
 
         {/* Bottom CTA to Green Action */}
-        <div className="bg-gradient-to-br from-forest to-forest-dark text-cream rounded-3xl p-8 sm:p-12 shadow-xl flex flex-col md:flex-row items-center justify-between gap-8">
+        <div className="bg-gradient-to-br from-forest to-forest-dark text-cream rounded-3xl p-6 sm:p-10 lg:p-12 shadow-xl flex flex-col md:flex-row items-center justify-between gap-8">
           <div className="space-y-3 text-center md:text-left">
             <span className="text-xs uppercase font-extrabold tracking-wider text-sage">
               Langkah Selanjutnya

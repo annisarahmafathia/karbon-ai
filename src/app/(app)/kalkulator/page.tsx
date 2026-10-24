@@ -68,7 +68,7 @@ export default function CalculatorPage() {
 
         {/* Step Navigation Tabs */}
         <div className="bg-white rounded-2xl p-2 sm:p-3 border border-sage/30 shadow-sm mb-8 overflow-x-auto">
-          <div className="flex items-center justify-between min-w-[500px]">
+          <div className="flex items-center justify-between min-w-[480px]">
             {steps.map((st) => {
               const Icon = st.icon;
               const isActive = currentStep === st.id;
@@ -96,7 +96,7 @@ export default function CalculatorPage() {
         </div>
 
         {/* Step Content */}
-        <div className="bg-cream-card rounded-3xl p-6 sm:p-10 border border-sage/30 shadow-sm">
+        <div className="bg-cream-card rounded-3xl p-5 sm:p-8 lg:p-10 border border-sage/30 shadow-sm">
           {currentStep === 1 && <StepPlasticBags />}
           {currentStep === 2 && <StepFoodContainers />}
           {currentStep === 3 && <StepPlasticBottles />}
@@ -118,7 +118,7 @@ export default function CalculatorPage() {
               <button
                 type="button"
                 onClick={resetToDefault}
-                className="inline-flex items-center justify-center gap-1.5 px-4 py-3 rounded-xl text-xs font-semibold text-muted hover:text-red-700 transition-colors"
+                className="inline-flex items-center justify-center gap-1.5 px-4 py-3 rounded-xl text-xs font-semibold text-muted hover:text-red-700 transition-colors w-full sm:w-auto"
                 title="Kembalikan semua nilai ke 0"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
@@ -150,21 +150,24 @@ export default function CalculatorPage() {
       </div>
 
       {/* Floating Live Bar */}
-      <aside aria-label="Ringkasan Emisi Real-time" className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-sage/30 py-3 shadow-lg">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-mint text-forest flex items-center justify-center font-bold text-xs shrink-0">
+      <aside aria-label="Ringkasan Emisi Real-time" className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-sage/30 py-2.5 sm:py-3 shadow-lg">
+        <div className="max-w-5xl mx-auto px-3 sm:px-6 lg:px-8 flex items-center justify-between gap-3 sm:gap-4">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-mint text-forest flex items-center justify-center font-bold text-xs shrink-0">
               CO₂e
             </div>
-            <div>
-              <div className="text-[11px] text-muted uppercase font-bold tracking-wider">
+            <div className="min-w-0">
+              <div className="text-[10px] sm:text-[11px] text-muted uppercase font-bold tracking-wider truncate">
                 Total Emisi Mingguan:
               </div>
-              <div className="flex items-baseline gap-1.5">
-                <span className="text-xl sm:text-2xl font-black text-forest">
+              <div className="flex flex-wrap items-baseline gap-1 sm:gap-1.5">
+                <span className="text-lg sm:text-2xl font-black text-forest">
                   {result.totalWeeklyKgCO2e}
                 </span>
-                <span className="text-xs font-bold text-muted">kg CO₂e / minggu</span>
+                <span className="text-[10px] sm:text-xs font-bold text-muted whitespace-nowrap">
+                  <span className="inline sm:hidden">kg CO₂e/mgg</span>
+                  <span className="hidden sm:inline">kg CO₂e / minggu</span>
+                </span>
                 <span className="hidden sm:inline text-xs text-muted">
                   ({result.totalItemsPerWeek} barang baru/minggu · ~{Math.round(result.totalYearlyKgCO2e)} kg/tahun)
                 </span>
@@ -174,7 +177,7 @@ export default function CalculatorPage() {
 
           <Link
             href="/hasil"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-forest hover:bg-forest-dark text-cream text-xs sm:text-sm font-bold shadow transition-all shrink-0 active:scale-95"
+            className="inline-flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-xl bg-forest hover:bg-forest-dark text-cream text-xs sm:text-sm font-bold shadow transition-all shrink-0 active:scale-95"
           >
             <span>Lihat Hasil</span>
             <ArrowRight className="w-4 h-4 text-sage" />

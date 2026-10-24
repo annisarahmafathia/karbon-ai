@@ -129,7 +129,7 @@ function LoginForm() {
       </div>
 
       {/* Card Form */}
-      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-sage/30 shadow-md space-y-6">
+      <div className="bg-white rounded-3xl p-5 sm:p-8 border border-sage/30 shadow-md space-y-6">
         {errorMessage && (
           <div
             role="alert"
@@ -260,7 +260,7 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <div className="w-full min-h-[calc(100vh-160px)] bg-cream py-10 sm:py-16 flex items-center justify-center px-4 sm:px-6 lg:px-8">
+    <div className="w-full min-h-[calc(100vh-160px)] bg-cream py-8 sm:py-16 flex items-center justify-center px-3 sm:px-6 lg:px-8">
       <Suspense
         fallback={
           <div className="max-w-md w-full p-8 bg-white rounded-3xl border border-sage/30 flex items-center justify-center gap-3 text-muted">

@@ -272,7 +272,7 @@ export default function GreenActionPage() {
             {!isZeroPlastic && (
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* 1. Habit Analysis Card (lg:col-span-2) */}
-                <div className="lg:col-span-2 bg-white rounded-3xl p-6 sm:p-8 border border-sage-light shadow-sm flex flex-col justify-between space-y-4">
+                <div className="lg:col-span-2 bg-white rounded-3xl p-5 sm:p-8 border border-sage-light shadow-sm flex flex-col justify-between space-y-4">
                   <div className="space-y-3">
                     <div className="flex items-center gap-2 text-xs font-bold text-forest uppercase tracking-wider">
                       <Sparkles className="w-4 h-4 text-forest" />
@@ -305,7 +305,7 @@ export default function GreenActionPage() {
                 </div>
 
                 {/* 2. Primary Priority / Faktor Penyumbang Emisi Terbesar Card (lg:col-span-1) */}
-                <div className="bg-forest text-cream rounded-3xl p-6 sm:p-7 shadow-md flex flex-col justify-between space-y-4">
+                <div className="bg-forest text-cream rounded-3xl p-5 sm:p-7 shadow-md flex flex-col justify-between space-y-4">
                   <div className="space-y-3">
                     <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-mint text-forest border border-sage text-xs font-black uppercase tracking-wider">
                       <Star className="w-3.5 h-3.5 fill-forest text-forest" />
@@ -415,7 +415,7 @@ export default function GreenActionPage() {
                   return (
                     <div
                       key={action.id}
-                      className={`rounded-3xl p-6 sm:p-7 bg-white transition-all flex flex-col justify-between border ${
+                      className={`rounded-3xl p-5 sm:p-7 bg-white transition-all flex flex-col justify-between border ${
                         !isZeroPlastic && isPrimary
                           ? "border-2 border-forest shadow-sm"
                           : "border border-sage-light shadow-2xs hover:border-sage hover:shadow-xs"
@@ -423,8 +423,8 @@ export default function GreenActionPage() {
                     >
                       <div className="space-y-4">
                         {/* Badges Header */}
-                        <div className="flex items-center justify-between gap-2">
-                          <div className="flex items-center gap-2">
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
                             {isZeroPlastic ? (
                               <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-cream text-charcoal border border-sage">
                                 Rekomendasi Umum
@@ -492,7 +492,7 @@ export default function GreenActionPage() {
 
                         {/* Potential Impact Box (Scientifically Verified) */}
                         <div className="bg-mint rounded-2xl p-3.5 border border-sage space-y-2">
-                          <div className="flex items-center justify-between gap-2">
+                          <div className="flex flex-wrap items-center justify-between gap-2">
                             <div className="flex items-center gap-1.5 text-xs font-bold text-forest">
                               <ShieldCheck className="w-4 h-4 text-forest shrink-0" />
                               <span>Dampak Potensial Pengurangan Emisi</span>
@@ -569,17 +569,17 @@ export default function GreenActionPage() {
             <span>← Kembali ke Hasil Kalkulasi</span>
           </Link>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
             <Link
               href="/kalkulator"
-              className="px-4 py-2.5 rounded-xl border border-sage bg-white hover:bg-mint text-charcoal text-xs sm:text-sm font-bold transition-all"
+              className="w-full sm:w-auto text-center px-4 py-2.5 rounded-xl border border-sage bg-white hover:bg-mint text-charcoal text-xs sm:text-sm font-bold transition-all"
             >
               Ubah Data Kalkulator
             </Link>
 
             <Link
               href="/edukasi"
-              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-forest hover:bg-forest-dark text-cream text-xs sm:text-sm font-bold shadow-xs transition-all"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-forest hover:bg-forest-dark text-cream text-xs sm:text-sm font-bold shadow-xs transition-all"
             >
               <span>Pelajari Metodologi Ilmiah</span>
               <ArrowRight className="w-4 h-4 text-mint" />

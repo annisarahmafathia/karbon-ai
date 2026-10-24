@@ -92,7 +92,7 @@ export function Navbar() {
               <span className="text-xl font-extrabold tracking-tight text-forest">
                 Karbon<span className="text-sage-dark">AI</span>
               </span>
-              <span className="hidden text-xs font-medium text-muted sm:block">
+              <span className="hidden text-xs font-medium text-muted xl:block">
                 Kalkulator Jejak Karbon
               </span>
             </div>
@@ -108,38 +108,38 @@ export function Navbar() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`inline-flex items-center gap-1.5 rounded-xl px-2.5 py-2 text-sm font-semibold transition-all duration-200 xl:gap-2 xl:px-3 ${
+                  className={`inline-flex items-center gap-1 rounded-xl px-2 py-1.5 text-xs font-semibold transition-all duration-200 xl:gap-2 xl:px-3 xl:py-2 xl:text-sm ${
                     active
                       ? "bg-forest text-cream shadow-sm"
                       : "text-charcoal/80 hover:bg-mint/60 hover:text-forest"
                   }`}
                 >
                   <Icon
-                    className={`h-4 w-4 ${
+                    className={`h-4 w-4 shrink-0 ${
                       active ? "text-sage-light" : "text-muted"
                     }`}
                   />
-                  <span>{link.label}</span>
+                  <span className="whitespace-nowrap">{link.label}</span>
                 </Link>
               );
             })}
           </nav>
 
           {/* Desktop Account Actions */}
-          <div className="hidden shrink-0 items-center gap-2 lg:flex">
+          <div className="hidden shrink-0 items-center gap-1.5 xl:gap-2 lg:flex">
             {!isLoading &&
               (user ? (
                 <>
                   <Link
                     href="/profil"
                     aria-label="Buka profil akun"
-                    className={`inline-flex max-w-40 items-center gap-2 rounded-xl border px-3 py-2 text-sm font-semibold transition-all ${
+                    className={`inline-flex max-w-28 xl:max-w-40 items-center gap-1.5 xl:gap-2 rounded-xl border px-2.5 xl:px-3 py-1.5 xl:py-2 text-xs xl:text-sm font-semibold transition-all ${
                       isActive("/profil")
                         ? "border-forest bg-forest text-cream"
                         : "border-sage/40 bg-white text-charcoal shadow-sm hover:bg-mint/60"
                     }`}
                   >
-                    <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-forest text-xs font-bold text-cream">
+                    <div className="flex h-5 w-5 xl:h-6 xl:w-6 shrink-0 items-center justify-center rounded-full bg-forest text-[10px] xl:text-xs font-bold text-cream">
                       {initial}
                     </div>
                     <span className="truncate">{displayName}</span>
@@ -149,7 +149,7 @@ export function Navbar() {
                     type="button"
                     onClick={handleLogout}
                     disabled={isLoggingOut}
-                    className="rounded-xl border border-red-200 bg-red-50 p-2 text-red-600 transition-colors hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="rounded-xl border border-red-200 bg-red-50 p-1.5 xl:p-2 text-red-600 transition-colors hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60"
                     title="Keluar akun"
                     aria-label="Keluar akun"
                   >
@@ -161,10 +161,10 @@ export function Navbar() {
                   </button>
                 </>
               ) : (
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5 xl:gap-2">
                   <Link
                     href="/login"
-                    className="inline-flex items-center gap-1.5 rounded-xl px-3 py-2 text-sm font-semibold text-charcoal transition-all hover:bg-mint/60 hover:text-forest"
+                    className="inline-flex items-center gap-1.5 rounded-xl px-2.5 xl:px-3 py-1.5 xl:py-2 text-xs xl:text-sm font-semibold text-charcoal transition-all hover:bg-mint/60 hover:text-forest"
                   >
                     <LogIn className="h-4 w-4 text-forest" />
                     Masuk
@@ -172,7 +172,7 @@ export function Navbar() {
 
                   <Link
                     href="/register"
-                    className="inline-flex items-center gap-2 rounded-xl bg-forest px-4 py-2 text-sm font-semibold text-cream shadow transition-all hover:bg-forest-dark hover:shadow-md active:scale-95"
+                    className="inline-flex items-center gap-1.5 xl:gap-2 rounded-xl bg-forest px-3 xl:px-4 py-1.5 xl:py-2 text-xs xl:text-sm font-semibold text-cream shadow transition-all hover:bg-forest-dark hover:shadow-md active:scale-95"
                   >
                     Daftar
                     <ArrowRight className="h-3.5 w-3.5 text-sage" />

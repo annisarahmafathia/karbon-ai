@@ -68,8 +68,8 @@ export function HistoryResultView({
       )}
 
       {/* Main Score Card */}
-      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-sage/30 shadow-sm space-y-2">
-        <div className="flex items-center justify-between">
+      <div className="bg-white rounded-3xl p-5 sm:p-8 border border-sage/30 shadow-sm space-y-2">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
           <p className="text-xs font-bold uppercase tracking-wider text-muted">
             {isPlastic ? "Total Emisi Plastik Sekali Pakai" : "Total Emisi Historis"}
           </p>
@@ -84,7 +84,7 @@ export function HistoryResultView({
           </span>
         </div>
 
-        <p className="text-4xl font-black text-forest tracking-tight">
+        <p className="text-3xl sm:text-4xl font-black text-forest tracking-tight break-words">
           {isPlastic
             ? (snapshot as CalculationResult)?.totalWeeklyKgCO2e ??
               calculation.total_weekly_kg ??
@@ -189,7 +189,7 @@ export function HistoryResultView({
             })
           ) : (
             // Fallback jika snapshot tidak terbaca
-            <div className="col-span-2 bg-white rounded-2xl p-5 border border-sage/30 text-xs text-muted">
+            <div className="col-span-1 sm:col-span-2 bg-white rounded-2xl p-5 border border-sage/30 text-xs text-muted">
               Rincian snapshot kategori tidak tersedia untuk catatan ini.
             </div>
           )}

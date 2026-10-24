@@ -138,9 +138,9 @@ export function EmissionsCharts({ result }: EmissionsChartsProps) {
 
   return (
     <div className="grid grid-cols-1 gap-8">
-      <div className="bg-white rounded-3xl p-6 sm:p-7 border border-sage/30 shadow-sm flex flex-col justify-between">
+      <div className="bg-white rounded-3xl p-5 sm:p-7 border border-sage/30 shadow-sm flex flex-col justify-between">
         <div>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
             <h3 className="text-base font-bold text-charcoal">
               Distribusi Emisi per Kategori
             </h3>

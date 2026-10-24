@@ -36,7 +36,7 @@ export default async function RiwayatPage() {
   return (
     <div className="w-full bg-cream py-10 md:py-16">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-charcoal">
               Riwayat Jejak Karbon
@@ -47,7 +47,7 @@ export default async function RiwayatPage() {
           </div>
           <Link
             href="/kalkulator"
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-forest hover:bg-forest-dark text-cream text-xs font-bold shadow transition-all"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-forest hover:bg-forest-dark text-cream text-xs font-bold shadow transition-all"
           >
             <Sparkles className="w-3.5 h-3.5" />
             <span>Hitung Baru</span>

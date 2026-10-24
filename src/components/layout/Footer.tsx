@@ -5,10 +5,10 @@ import { Leaf, ShieldCheck } from "lucide-react";
 export function Footer() {
   return (
     <footer className="mt-auto border-t border-sage/20 bg-forest text-cream">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10">
           {/* Brand info */}
-          <div className="lg:col-span-2 space-y-4">
+          <div className="sm:col-span-2 lg:col-span-2 space-y-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-2xl bg-cream flex items-center justify-center text-forest shadow">
                 <Leaf className="w-6 h-6 text-forest" />

@@ -187,7 +187,7 @@ export default function ProfilPage() {
         </div>
 
         {/* Profile Card */}
-        <section className="rounded-3xl border border-sage/30 bg-white p-6 shadow-sm sm:p-8">
+        <section className="rounded-3xl border border-sage/30 bg-white p-5 shadow-sm sm:p-8">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
             <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-forest text-3xl font-black text-cream">
               {initial}
@@ -255,7 +255,7 @@ export default function ProfilPage() {
         </section>
 
         {/* Pengaturan Notifikasi Email Mingguan */}
-        <section className="rounded-3xl border border-sage/30 bg-white p-6 shadow-sm sm:p-8 space-y-6">
+        <section className="rounded-3xl border border-sage/30 bg-white p-5 shadow-sm sm:p-8 space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-start gap-3.5">
               <div className="h-11 w-11 rounded-2xl bg-mint text-forest flex items-center justify-center shrink-0 mt-0.5">
@@ -263,7 +263,7 @@ export default function ProfilPage() {
               </div>
 
               <div className="space-y-1">
-                <div className="flex items-center gap-2.5">
+                <div className="flex flex-wrap items-center gap-2">
                   <h3 className="text-lg font-bold text-charcoal">
                     Notifikasi Email Mingguan
                   </h3>

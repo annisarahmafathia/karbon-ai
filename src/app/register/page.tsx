@@ -122,7 +122,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="flex min-h-[calc(100vh-160px)] w-full items-center justify-center bg-cream px-4 py-10 sm:px-6 sm:py-16 lg:px-8">
+    <div className="flex min-h-[calc(100vh-160px)] w-full items-center justify-center bg-cream px-3 py-8 sm:px-6 sm:py-16 lg:px-8">
       <div className="w-full max-w-md space-y-6">
         {/* Brand Header */}
         <div className="space-y-2 text-center">
@@ -153,7 +153,7 @@ export default function RegisterPage() {
 
         {/* Email Confirmation */}
         {isSuccessConfirmationNeeded ? (
-          <div className="animate-in fade-in space-y-6 rounded-3xl border border-sage/30 bg-white p-6 text-center shadow-md duration-300 sm:p-8">
+          <div className="animate-in fade-in space-y-6 rounded-3xl border border-sage/30 bg-white p-5 text-center shadow-md duration-300 sm:p-8">
             <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-mint text-forest">
               <CheckCircle2 className="h-9 w-9" />
             </div>
@@ -195,7 +195,7 @@ export default function RegisterPage() {
           </div>
         ) : (
           /* Registration Form */
-          <div className="space-y-6 rounded-3xl border border-sage/30 bg-white p-6 shadow-md sm:p-8">
+          <div className="space-y-6 rounded-3xl border border-sage/30 bg-white p-5 shadow-md sm:p-8">
             {errorMessage && (
               <div
                 role="alert"

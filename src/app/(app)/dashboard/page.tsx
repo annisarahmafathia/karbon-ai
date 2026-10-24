@@ -319,7 +319,7 @@ export default function DashboardPage() {
 
           <Link
             href="/kalkulator"
-            className="inline-flex min-h-11 items-center justify-center gap-2 self-start rounded-xl bg-forest px-5 py-3 text-sm font-semibold text-white transition hover:bg-forest-dark shadow-sm"
+            className="w-full sm:w-auto inline-flex min-h-11 items-center justify-center gap-2 self-start sm:self-auto rounded-xl bg-forest px-5 py-3 text-sm font-semibold text-white transition hover:bg-forest-dark shadow-sm"
           >
             <Calculator size={18} />
             Hitung Jejak Plastik
@@ -744,7 +744,7 @@ export default function DashboardPage() {
 
             <Link
               href="/green-action"
-              className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 self-start rounded-xl bg-white px-5 py-3 text-sm font-semibold text-forest transition hover:bg-mint"
+              className="w-full sm:w-auto inline-flex min-h-11 shrink-0 items-center justify-center gap-2 self-start sm:self-auto rounded-xl bg-white px-5 py-3 text-sm font-semibold text-forest transition hover:bg-mint"
             >
               Lihat Green Action
               <ArrowRight size={16} />

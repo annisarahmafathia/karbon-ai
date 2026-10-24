@@ -27,7 +27,7 @@ export function StepPlasticBags() {
       </div>
 
       {/* Input Counter & Quick Select */}
-      <div className="bg-white p-6 sm:p-8 rounded-3xl border border-sage/30 shadow-sm space-y-6">
+      <div className="bg-white p-5 sm:p-8 rounded-3xl border border-sage/30 shadow-sm space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <label htmlFor="kantong-plastik-input" className="text-xs font-bold uppercase tracking-wider text-charcoal block">
@@ -97,7 +97,7 @@ export function StepPlasticBags() {
         </div>
 
         {/* Subtotal Emisi Kategori */}
-        <div className="bg-cream/60 rounded-2xl p-4 border border-sage/20 flex items-center justify-between gap-3">
+        <div className="bg-cream/60 rounded-2xl p-4 border border-sage/20 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
             <span className="text-xs font-bold text-charcoal block">
               Subtotal Emisi Kategori
@@ -106,7 +106,7 @@ export function StepPlasticBags() {
               ~{Math.round(categoryResult.yearlyKgCO2e)} kg CO₂e/tahun
             </span>
           </div>
-          <div className="text-right">
+          <div className="sm:text-right">
             <span className="text-xl sm:text-2xl font-black text-forest">
               {categoryResult.weeklyKgCO2e}
             </span>

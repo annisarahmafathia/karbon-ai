@@ -48,7 +48,7 @@ export default function HomePage() {
                 Langkah kecil, dampak berarti
               </span>
 
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight text-charcoal">
+              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black leading-tight text-charcoal">
                 Kenali Jejak Karbonmu,
                 <span className="text-forest"> Kurangi Plastik Sekali Pakai.</span>
               </h1>
@@ -84,7 +84,7 @@ export default function HomePage() {
             <div className="relative">
               <div className="absolute -inset-4 bg-mint/50 rounded-[2.5rem] rotate-3" />
 
-              <div className="relative bg-white rounded-[2rem] border border-sage/30 shadow-lg p-7 sm:p-10 space-y-6">
+              <div className="relative bg-white rounded-[2rem] border border-sage/30 shadow-lg p-5 sm:p-8 lg:p-10 space-y-6">
                 <div className="w-16 h-16 rounded-2xl bg-forest flex items-center justify-center">
                   <Leaf className="w-9 h-9 text-cream" />
                 </div>
@@ -175,7 +175,7 @@ export default function HomePage() {
 
       <section className="py-14 md:py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="rounded-3xl bg-forest text-cream p-7 sm:p-10 lg:p-12 flex flex-col md:flex-row md:items-center justify-between gap-7">
+          <div className="rounded-3xl bg-forest text-cream p-6 sm:p-10 lg:p-12 flex flex-col md:flex-row md:items-center justify-between gap-7">
             <div className="max-w-2xl space-y-3">
               <div className="flex items-center gap-2 text-sage-light">
                 <MapPin className="w-5 h-5" />
@@ -195,7 +195,7 @@ export default function HomePage() {
 
             <Link
               href="/kalkulator"
-              className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-cream text-forest hover:bg-mint font-bold transition-colors shrink-0"
+              className="w-full md:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-cream text-forest hover:bg-mint font-bold transition-colors shrink-0"
             >
               <Lightbulb className="w-5 h-5" />
               Mulai Sekarang
